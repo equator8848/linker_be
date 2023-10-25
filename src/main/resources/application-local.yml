@@ -1,0 +1,91 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
+  mvc:
+    converters:
+      preferred-json-mapper: jackson
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_xiyoucloud_dayu?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+  lifecycle:
+    timeout-per-shutdown-phase: 60
+mybatis:
+  type-aliases-package: com.xiyoucloud.dayu.inf.model.po
+  configuration:
+    map-underscore-to-camel-case: true
+pagehelper:
+  offsetAsPageNum: true
+  pageSizeZero: true
+  params: pageNum=pageHelperStart;pageSize=pageHelperRows;
+  reasonable: false
+  rowBoundsWithCount: true
+  supportMethodsArguments: false
+linker:
+  security:
+    md5-salt: LYcuh0TA8q7w
+    des-key: 0pe.*VZk
+    mofang-api-token: 13N2hov7v71hSfVBscHaySOhMebGWeiEWCwn9igDDnIFvP2SO8HFe0lyCTPpb8bx
+    mofang-md5-salt: Av9mh6Vn8idHOVINgu
+  base:
+    env: local
+    data-backup-save-dir: /data_backup
+  cos:
+    secret-id: AKIDMYWIrFPOBl7IH4gqoZ7RYR7bsBSWN1Rc
+    secret-key: XrxoRq0vd8RWRWFtVxCDzXszrZ5RaWu5
+    region: ap-shanghai
+    bucket: xiyou-1257578045
+  email:
+    observer: 841116931@qq.com
+    administrators:
+      - 841116931@qq.com
+    sender: dayu@xiyoucloud.net
+    sender-personal: XiyouDayu
+    auth-code: fgX7aumcztMCeyBE
+    ali-email-configuration:
+      access-key: LTAI5tEohzLB37cu1SYWBVtk
+      secret-key: pdDtSPmE8oiV2AQt9gIVrhPgdTb7K1
+      account-name: dayu@email.xiyoucloud.net
+      fromAlias: 西柚云大禹系统
+  lxd:
+    unix-socket-base-path: /var/snap/lxd/common/lxd/unix.socket
+    keystore-path: key-store.p12
+    keystore-password: 123456
+    authentication-type: Trusted
+    storage-pool: remote
+    bridge-name: bridge0
+    network-egress-limit: 200Mbit
+    network-ingress-limit: 100Mbit
+    soft-delete-protect-hours: 24
+    hard-delete-protect-hours: 24
+  prometheus:
+    server-base-url: http://172.16.0.10:9090
+    job-name-of-lxd: lxd-cluster-host
+  external:
+    mofang-host: http://127.0.0.1:12345/mofang_exporter
+    wx-api-host: https://api.weixin.qq.com
+  alert:
+    notice-types: [ "WECHAT_OFFICIAL_ACCOUNT" ]
+  open:
+    wx:
+      app-id: wx065f07cea49f9221
+      original-id: gh_7bac36915a38
+      app-secret: 62e3feb514bbf909d481a00a2d6297fa
+      token: N4J4qdRYmRN13Rf46PVhWzi5pqJuSWH8
+      encoding-aes-key: AAoXSHlNPeydX58N8wNR752wOVgBt7kX9FLbwJiafLM
+      web-hook-url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=0636984b-35d5-44b3-86b6-0e9d1ca6254d
+      important-notice-web-hook-url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e4ea38b8-b2c3-4871-b4c5-d9181d8c288c
+      storage-cleaner-notice-web-hook-url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=3c023e83-b46d-430d-ac7e-d5ea554f5364
+      template-host: http://localhost:8890/dayu_open
+server:
+  shutdown: graceful
+
+logging:
+  level:
+    root: info
+    com.xiyoucloud.dayu.inf.dao: debug
+  file:
+    path: ./logs

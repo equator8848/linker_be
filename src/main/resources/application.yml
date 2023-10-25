@@ -1,0 +1,12 @@
+server:
+  servlet:
+    context-path: /linker
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  port: 8888
+spring:
+  application:
+    name: Linker
+
