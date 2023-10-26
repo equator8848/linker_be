@@ -10,3 +10,6 @@ spring:
   application:
     name: Linker
 
+logging:
+  file:
+    path: ./logs

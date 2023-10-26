@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class AppConfig {
     private final LoadingCache<Integer, VersionCacheElement<Date, DynamicAppConfiguration>> dynamicConfigCache =
             VersionCacheBuilder.newBuilder().refreshAfterWrite(10, TimeUnit.SECONDS).expireAfterWrite(6,
                     TimeUnit.HOURS).maximumSize(2).build(new LogVersionCacheLoader<Integer, Date,
-                                        DynamicAppConfiguration>() {
+                    DynamicAppConfiguration>() {
                 @Override
                 public Date loadVersion(Integer key, DynamicAppConfiguration data) {
                     return settingMapper.selectMaxUpdateTime();
@@ -54,12 +54,19 @@ public class AppConfig {
 
                 @Override
                 public DynamicAppConfiguration loadData(Integer key) throws Exception {
-                    Map<String, String> settingMap =
-                            settingMapper.selectList(Wrappers.<TbAppSetting>lambdaQuery().isNotNull(TbAppSetting::getSettingKey)).stream().collect(Collectors.toMap(TbAppSetting::getSettingKey, TbAppSetting::getSettingValue));
+                    List<TbAppSetting> appSettings = settingMapper.selectList(Wrappers.<TbAppSetting>lambdaQuery().isNotNull(TbAppSetting::getSettingKey));
+
+                    Map<String, String> settingMap;
+                    if (CollectionUtils.isEmpty(appSettings)) {
+                        settingMap = new HashMap<>();
+                    } else {
+                        settingMap = appSettings.stream().collect(Collectors.toMap(TbAppSetting::getSettingKey, TbAppSetting::getSettingValue));
+                    }
+
                     DynamicAppConfiguration configuration = new DynamicAppConfiguration();
                     ModelTransformer.stringMapToObject(settingMap, configuration);
                     // 设置版本
-                    configuration.setVersion(settingMapper.selectMaxUpdateTime().getTime());
+                    configuration.setVersion(Optional.ofNullable(settingMapper.selectMaxUpdateTime()).orElse(new Date()).getTime());
                     return configuration;
                 }
 
