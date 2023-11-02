@@ -1,12 +1,8 @@
 package com.equator.linker.model.dto;
 
 
-import com.equator.core.dynamic.config.CommaSeparatedItem;
 import com.equator.core.dynamic.config.ModelTransformerField;
 import lombok.Data;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @Author: Equator
@@ -23,4 +19,7 @@ public class DynamicAppConfiguration {
     @ModelTransformerField(defaultValue = "false")
     private Boolean allowRegister;
 
+    private String jenkinsEndpoint;
+
+    private String jenkinsCredentials;
 }
