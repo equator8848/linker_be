@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /linker
+    context-path: /linker-server
     encoding:
       charset: UTF-8
       force: true
