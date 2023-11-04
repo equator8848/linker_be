@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clean') {
+            steps {
+                script {
+                    echo "cleanWs >>>"
+                    echo "${WORKSPACE}"
+                    cleanWs()
+                }
+            }
+        }
+        stage('Package') {
+            agent {
+                docker {
+                    image 'lsage/pnpm-circleci-node:16.13.1-pnpm7.5.1'
+                    args '-v /usr/local/share/jenkins/jenkins_home/workspace/${WORKSPACE}:/home/circleci/project'
+                }
+            }
+            steps {
+                sh 'git --version'
+                sh 'echo "${WORKSPACE}"'
+                sh 'rm -rf linker-fe'
+                sh 'git clone http://equator:glpat-kFqFt1vEP_DGRHf3mxuE@gitlab.localhost.com/equator/linker-fe.git'
+                dir('linker-fe') {
+                    sh 'pwd'
+                    sh 'ls'
+                    sh 'npm install'
+                    sh 'npm run build'
+                    sh 'ls'
+                    // sh 'cp -r dist /home/circleci/project'
+                    // sh 'ls /home/circleci/project'
+                    stash(name:'PackageOutput', includes: 'dist/**')
+                }
+            }
+        }
+        stage('BuildImage') {
+            steps {
+                unstash("PackageOutput")
+                sh 'pwd'
+                sh 'ls'
+                sh 'curl -O http://172.16.8.2:29999/default.conf'
+                sh 'curl -O http://172.16.8.2:29999/Dockerfile'
+                sh 'ls'
+                sh 'docker build -t my-nginx-image .'
+                sh 'docker images'
+            }
+        }
+        stage('RunContainer') {
+            steps {
+                sh 'docker rm -vf my-nginx'
+                sh 'docker run -d -p 28888:80 --name my-nginx my-nginx-image'
+            }
+        }
+    }
+}

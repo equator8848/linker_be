@@ -35,4 +35,13 @@ public class JenkinsTest extends SpringBaseTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void testJenkinsAddCredentials() {
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            //
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
