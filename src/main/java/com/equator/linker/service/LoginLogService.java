@@ -1,7 +1,7 @@
 package com.equator.linker.service;
 
 import com.equator.linker.dao.service.LoginLogDaoService;
-import com.equator.linker.model.po.TbLoginLog;
+import com.equator.linker.model.po.TbInfLoginLog;
 import com.equator.linker.model.vo.login.LoginLogVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -18,7 +18,7 @@ public class LoginLogService {
     private LoginLogDaoService loginLogDaoService;
 
     public List<LoginLogVO> getLoginLogList(Integer days) {
-        List<TbLoginLog> loginLogList = loginLogDaoService.getLoginLogList(days);
+        List<TbInfLoginLog> loginLogList = loginLogDaoService.getLoginLogList(days);
         return loginLogList.stream().map(loginLog -> {
             LoginLogVO loginLogVO = new LoginLogVO();
             BeanUtils.copyProperties(loginLog, loginLogVO);

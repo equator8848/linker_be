@@ -3,7 +3,6 @@ package com.equator.linker.service.user;
 
 import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.constant.ModelStatus;
-import com.equator.linker.model.po.CommonUser;
 import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
 import com.equator.linker.model.vo.user.UserLoginDataVO;
@@ -12,18 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DayuLoginHandler implements LoginHandler {
+public class PasswordLoginHandler implements LoginHandler {
     @Autowired
     private UserDaoService userDaoService;
 
     @Override
     public LoginHandlerType loginHandlerType() {
-        return LoginHandlerType.DAYU;
+        return LoginHandlerType.PASSWORD;
     }
 
     @Override
-    public Triple<LoginStatus, LoginUser, CommonUser> login(UserLoginDataVO userLoginVO) {
-        TbUser tbUser = userDaoService.getUserByIdentification(userLoginVO, ModelStatus.UserSystemType.DAYU);
+    public Triple<LoginStatus, LoginUser, TbUser> login(UserLoginDataVO userLoginVO) {
+        TbUser tbUser = userDaoService.getUserByIdentification(userLoginVO);
         if (tbUser == null) {
             return Triple.of(LoginStatus.USER_NOT_FOUND, null, null);
         }
@@ -37,7 +36,6 @@ public class DayuLoginHandler implements LoginHandler {
         loginUser.setUid(tbUser.getId());
         loginUser.setNickName(tbUser.getUserName());
         loginUser.setUserName(tbUser.getUserName());
-        loginUser.setUserType(ModelStatus.UserType.USER);
         return Triple.of(LoginStatus.SUCCESS, loginUser, tbUser);
     }
 }

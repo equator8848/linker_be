@@ -7,9 +7,9 @@ import com.equator.core.model.exception.PreCondition;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
-import com.equator.linker.dao.service.AdminDaoService;
+import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.constant.ModelStatus;
-import com.equator.linker.model.po.TbAdmin;
+import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,7 @@ import java.io.IOException;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
-    private AdminDaoService adminDaoService;
+    private UserDaoService userDaoService;
 
 
     @Override
@@ -46,10 +46,9 @@ public class LoginInterceptor implements HandlerInterceptor {
             invalidToken(res);
             return false;
         } else {
-            PreCondition.isTrue(ModelStatus.SystemType.ADMIN.equals(loginUser.getSystemType()), "使用的登录密钥不属于DAYU-ADMIN系统，清空浏览器缓存后重试");
-            PreCondition.isTrue(ModelStatus.UserType.ADMIN.equals(loginUser.getUserType()), "该用户没有管理员权限");
-            TbAdmin tbAdminByIdFromCache = adminDaoService.getTbAdminByIdFromCache(loginUser.getUid());
-            PreCondition.isTrue(ModelStatus.UserStatus.NORMAL.equals(tbAdminByIdFromCache.getStatus()), "当前账号已被冻结，请联系管理员");
+            TbUser userFromCacheByUid = userDaoService.getUserFromCacheByUid(loginUser.getUid());
+            PreCondition.isNotNull(userFromCacheByUid, "找不到对应用户");
+            PreCondition.isTrue(ModelStatus.UserStatus.NORMAL.equals(userFromCacheByUid.getStatus()), "当前账号已被冻结，请联系管理员");
             UserContextUtil.addUser(loginUser);
             return true;
         }

@@ -1,10 +1,9 @@
 package com.equator.linker.model.po;
 
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * <p>
@@ -12,36 +11,16 @@ import java.util.Date;
  * </p>
  *
  * @author equator
- * @since 2022-09-18
+ * @since 2023-11-05
  */
-@TableName("tb_user")
 @Data
-public class TbUser implements CommonUser {
-    /**
-     *
-     */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
-
-    /**
-     *
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     *
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
+@TableName("tb_user")
+public class TbUser extends BaseEntityField{
 
     /**
      *
      */
     private Short status;
-
-    @TableField("user_type")
-    private Short userType;
 
     /**
      *
@@ -67,21 +46,26 @@ public class TbUser implements CommonUser {
     private String phoneNumber;
 
     /**
-     *
+     * 微信ID
      */
-    @TableField(value = "phone_number_prefix")
-    private String phoneNumberPrefix;
-
-    @TableField("relation_id")
-    private Integer relationId;
-
-    @TableField("wx_open_id")
+    @TableField(value = "wx_open_id")
     private String wxOpenId;
 
-    @TableField("email_notice_switch")
-    private Boolean emailNoticeSwitch;
+    /**
+     * 邮箱通知开关
+     */
+    @TableField(value = "email_notice_switch")
+    private Integer emailNoticeSwitch;
 
-    @TableField("wx_notice_switch")
-    private Boolean wxNoticeSwitch;
+    /**
+     * 微信通知开关
+     */
+    @TableField(value = "wx_notice_switch")
+    private Integer wxNoticeSwitch;
 
+    /**
+     * 角色类型
+     */
+    @TableField(value = "role_type")
+    private Integer roleType;
 }

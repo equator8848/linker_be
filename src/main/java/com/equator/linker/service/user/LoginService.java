@@ -8,7 +8,7 @@ import com.equator.core.util.json.JsonUtil;
 import com.equator.core.util.security.DESUtil;
 import com.equator.linker.configuration.SecurityConfiguration;
 import com.equator.linker.dao.service.LoginLogDaoService;
-import com.equator.linker.model.po.CommonUser;
+import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
 import com.equator.linker.model.vo.user.UserLoginDataVO;
 import com.equator.linker.service.captcha.CaptchaSecret;
@@ -29,13 +29,7 @@ public class LoginService implements InitializingBean {
     private final List<LoginHandler> loginHandlers = new LinkedList<>();
 
     @Autowired
-    private MofangLoginHandler mofangLoginHandler;
-
-    @Autowired
-    private DayuLoginHandler dayuLoginHandler;
-
-    @Autowired
-    private AdminLoginHandler adminLoginHandler;
+    private PasswordLoginHandler passwordLoginHandler;
 
     @Autowired
     private LoginLogDaoService loginLogDaoService;
@@ -43,14 +37,11 @@ public class LoginService implements InitializingBean {
     @Autowired
     private SecurityConfiguration securityConfiguration;
 
-    public Pair<LoginUser, CommonUser> login(UserLoginDataVO userLoginVO, boolean isAdmin) {
+    public Pair<LoginUser, TbUser> login(UserLoginDataVO userLoginVO) {
         captchaVerify(userLoginVO);
         Set<Integer> loginStatusSet = new HashSet<>();
         for (LoginHandler loginHandler : loginHandlers) {
-            if (isAdmin && !loginHandler.loginHandlerType().equals(LoginHandlerType.ADMIN)) {
-                continue;
-            }
-            Triple<LoginStatus, LoginUser, CommonUser> loginTriple = loginHandler.login(userLoginVO);
+            Triple<LoginStatus, LoginUser, TbUser> loginTriple = loginHandler.login(userLoginVO);
             LoginUser loginUser = loginTriple.getMiddle();
             if (loginUser != null) {
                 loginLogDaoService.appendLoginLog(String.format("%s##%s", loginHandler.loginHandlerType(), userLoginVO.getUserIdentification()),
@@ -104,8 +95,6 @@ public class LoginService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        loginHandlers.add(mofangLoginHandler);
-        loginHandlers.add(dayuLoginHandler);
-        loginHandlers.add(adminLoginHandler);
+        loginHandlers.add(passwordLoginHandler);
     }
 }

@@ -19,7 +19,7 @@ import java.util.Date;
 public class UserAuthUtil {
     private final static String SYSTEM_KEY = "system";
 
-    private final static String SYSTEM_VALUE = "dayu";
+    private final static String SYSTEM_VALUE = "LinkerSystem";
 
     private final static String LOGIN_USER_KEY = "loginUser";
 
@@ -67,9 +67,9 @@ public class UserAuthUtil {
     /**
      * @param uid 操作的目标资源uid
      */
-    public static void checkPermission(Integer uid) {
+    public static void checkPermission(Long uid) {
         LoginUser loginUser = UserContextUtil.getUser();
-        if (!ModelStatus.UserType.ADMIN.equals(loginUser.getUserType())) {
+        if (!isAdmin()) {
             if (!loginUser.getUid().equals(uid)) {
                 throw new ForbiddenException("你没有权限操作该资源");
             }
@@ -83,7 +83,17 @@ public class UserAuthUtil {
      */
     public static boolean isAdmin() {
         LoginUser loginUser = UserContextUtil.getUser();
-        return ModelStatus.UserType.ADMIN.equals(loginUser.getUserType());
+        return isAdmin(loginUser);
+    }
+
+    /**
+     * 判断是否是管理员
+     *
+     * @return
+     */
+    public static boolean isAdmin(LoginUser loginUser) {
+        return ModelStatus.RoleType.SYSTEM_ADMIN.equals(loginUser.getRoleType()) ||
+                ModelStatus.RoleType.SUPER_ADMIN.equals(loginUser.getRoleType());
     }
 
     /**
@@ -93,6 +103,6 @@ public class UserAuthUtil {
      */
     public static boolean isUser() {
         LoginUser loginUser = UserContextUtil.getUser();
-        return ModelStatus.UserType.USER.equals(loginUser.getUserType());
+        return ModelStatus.RoleType.USER.equals(loginUser.getRoleType());
     }
 }

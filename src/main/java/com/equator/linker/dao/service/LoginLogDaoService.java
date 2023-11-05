@@ -3,11 +3,9 @@ package com.equator.linker.dao.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.equator.linker.dao.mapper.TbLoginLogMapper;
-import com.equator.linker.model.constant.ModelStatus;
-import com.equator.linker.model.po.TbLoginLog;
+import com.equator.linker.dao.mapper.TbInfLoginLogMapper;
+import com.equator.linker.model.po.TbInfLoginLog;
 import com.equator.linker.service.user.LoginStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -19,17 +17,14 @@ import java.util.List;
  * @Date: 2022/9/18 11:47
  **/
 @Component
-public class LoginLogDaoService extends ServiceImpl<TbLoginLogMapper, TbLoginLog> implements IService<TbLoginLog> {
-    @Autowired
-    private TbLoginLogMapper loginLogMapper;
+public class LoginLogDaoService extends ServiceImpl<TbInfLoginLogMapper, TbInfLoginLog> implements IService<TbInfLoginLog> {
 
     public void appendLoginLog(String userKey, LoginStatus loginStatus, String remoteAddress) {
-        TbLoginLog tbLoginLog = new TbLoginLog();
-        tbLoginLog.setStatus(ModelStatus.Base.NORMAL);
-        tbLoginLog.setUserKey(userKey);
+        TbInfLoginLog tbLoginLog = new TbInfLoginLog();
+        tbLoginLog.setLoginUserKey(userKey);
         tbLoginLog.setLoginStatus(loginStatus.ordinal());
         tbLoginLog.setRemoteAddress(remoteAddress);
-        loginLogMapper.insert(tbLoginLog);
+        save(tbLoginLog);
     }
 
     /**
@@ -38,7 +33,7 @@ public class LoginLogDaoService extends ServiceImpl<TbLoginLogMapper, TbLoginLog
      * @param days
      * @return
      */
-    public List<TbLoginLog> getLoginLogList(Integer days) {
-        return loginLogMapper.selectList(Wrappers.<TbLoginLog>lambdaQuery().ge(TbLoginLog::getCreateTime, Instant.now().minus(days, ChronoUnit.DAYS)));
+    public List<TbInfLoginLog> getLoginLogList(Integer days) {
+        return list(Wrappers.<TbInfLoginLog>lambdaQuery().ge(TbInfLoginLog::getCreateTime, Instant.now().minus(days, ChronoUnit.DAYS)));
     }
 }

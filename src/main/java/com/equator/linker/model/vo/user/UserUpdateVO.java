@@ -13,12 +13,10 @@ import jakarta.validation.constraints.Pattern;
 @Data
 public class UserUpdateVO {
     @NotNull
-    private Integer id;
+    private Long id;
 
     @NotNull
     private String userName;
-
-    private String phoneNumberPrefix;
 
     private String phoneNumber;
 
@@ -27,8 +25,6 @@ public class UserUpdateVO {
 
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$", message = "密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间")
     private String userPassword;
-
-    private Integer relationId;
 
     @NotNull
     private Short status;

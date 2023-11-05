@@ -39,7 +39,7 @@ public final class ThreadPoolService {
 
         @Override
         public Thread newThread(Runnable r) {
-            return new Thread(r, String.format("DayuSystem-Thread-%s", counter.getAndIncrement()));
+            return new Thread(r, String.format("LinkerSystem-Thread-%s", counter.getAndIncrement()));
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.equator.linker.model.vo;
 
 
-import com.equator.linker.model.constant.ModelStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,23 +15,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginUser {
-    private Integer uid;
-    private String avatarUrl;
-    private String userName;
-    private String nickName;
-    private Integer gender;
-    private Short userType;
-    private Short systemType;
-    private Integer roleType;
+    private Long uid;
 
-    private Boolean loginByToken;
+    private String avatarUrl;
+
+    private String userName;
+
+    private String nickName;
+
+    private Integer gender;
+
+    private Short roleType;
 
     public static LoginUser buildSystemUser() {
         LoginUser loginUser = new LoginUser();
-        loginUser.setUid(0);
-        loginUser.setUserName("dayuSystem");
-        loginUser.setNickName("dayuSystem");
-        loginUser.setUserType(ModelStatus.UserType.ADMIN);
+        loginUser.setUid(0L);
+        loginUser.setUserName("LinkerSystem");
+        loginUser.setNickName("LinkerSystem");
         return loginUser;
     }
 }

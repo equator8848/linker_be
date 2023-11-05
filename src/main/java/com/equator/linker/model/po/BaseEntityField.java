@@ -1,9 +1,6 @@
 package com.equator.linker.model.po;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,23 +10,35 @@ public class BaseEntityField {
     /**
      *
      */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      *
      */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time")
     private Date createTime;
 
     /**
      *
      */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "create_user_id")
+    private Long createUserId;
+
+    /**
+     *
+     */
+    @TableField(value = "update_time")
     private Date updateTime;
 
     /**
      *
      */
-    private Short status;
+    @TableField(value = "update_user_id")
+    private Long updateUserId;
+
+    /**
+     *
+     */
+    @TableField(value = "del_flag")
+    private Integer delFlag;
 }

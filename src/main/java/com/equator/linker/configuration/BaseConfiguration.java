@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "dayu.base")
+@ConfigurationProperties(prefix = "linker.base")
 public class BaseConfiguration {
 
     /**

@@ -89,6 +89,62 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatisplus-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <!-- 输出目录(默认java.io.tmpdir) -->
+                    <outputDir>C:\Data\code\linker\src\main\java</outputDir>
+                    <!-- 是否覆盖同名文件(默认false) -->
+                    <fileOverride>true</fileOverride>
+                    <!-- mapper.xml 中添加二级缓存配置(默认true) -->
+                    <enableCache>false</enableCache>
+                    <!-- 开发者名称 -->
+                    <author>equator</author>
+                    <!-- 是否开启 ActiveRecord 模式(默认true) -->
+                    <activeRecord>false</activeRecord>
+                    <!-- 数据源配置，( **必配** ) -->
+                    <dataSource>
+                        <driverName>com.mysql.cj.jdbc.Driver</driverName>
+                        <url>jdbc:mysql://localhost:3306/db_linker?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;useSSL=false&amp;serverTimezone=GMT%2B8&amp;allowPublicKeyRetrieval=true&amp;useSSL=false</url>
+                        <username>root</username>
+                        <password>123456</password>
+                    </dataSource>
+                    <strategy>
+                        <superMapperClass>com.baomidou.mybatisplus.core.mapper.BaseMapper</superMapperClass>
+                        <superServiceClass>com.baomidou.mybatisplus.extension.service.IService</superServiceClass>
+                        <superServiceImplClass>com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+                        </superServiceImplClass>
+                        <naming>underline_to_camel</naming>
+                        <!-- 表前缀 -->
+                        <tablePrefix>tb_</tablePrefix>
+                        <!--Entity中的ID生成策略（默认 id_worker）-->
+                        <idGenType>id_worker</idGenType>
+                        <!-- 要生成的表名 include 与 exclude 二选一配置-->
+                        <exclude>
+                            <property>tb_init</property>
+                        </exclude>
+                    </strategy>
+                    <packageInfo>
+                        <!--项目的包结构-->
+                        <parent>com.equator.linker.generate</parent>
+                        <entity>entity</entity>
+                        <service>service.interfaces</service>
+                        <!--serviceImpl包名(默认service.impl)-->
+                        <serviceImpl>service.impl</serviceImpl>
+                        <mapper>mapper</mapper>
+                        <xml>xml</xml>
+                    </packageInfo>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.16</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>

@@ -8,19 +8,13 @@ import lombok.Data;
  **/
 @Data
 public class UserInfoVO {
-    private Integer id;
+    private Long id;
 
     private String userName;
-
-    private String phoneNumberPrefix;
 
     private String phoneNumber;
 
     private String email;
 
     private Short status;
-
-    private Short userSystemType;
-
-    private Integer relationId;
 }

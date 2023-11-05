@@ -1,8 +1,6 @@
 package com.equator.linker.common.util;
 
 
-
-import com.equator.linker.model.constant.ModelStatus;
 import com.equator.linker.model.vo.LoginUser;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -38,16 +36,16 @@ public class UserContextUtil {
      */
     public static Pair<Boolean, LoginUser> getUserPair() {
         LoginUser loginUser = entrySet.get();
-        return Pair.of(ModelStatus.UserType.ADMIN.equals(loginUser.getUserType()), loginUser);
+        return Pair.of(UserAuthUtil.isAdmin(loginUser), loginUser);
     }
 
     /***
      * 直接获取UID
      * @return
      */
-    public static Integer getUserId() {
+    public static Long getUserId() {
         LoginUser loginUser = entrySet.get();
-        return loginUser == null ? 0 : loginUser.getUid();
+        return loginUser == null ? 0L : loginUser.getUid();
     }
 
     /**

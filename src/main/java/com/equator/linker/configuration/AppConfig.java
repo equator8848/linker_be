@@ -8,9 +8,9 @@ import com.equator.cache.guava.VersionCacheElement;
 import com.equator.core.dynamic.config.ModelTransformer;
 import com.equator.core.model.exception.InnerException;
 import com.equator.linker.common.ThreadPoolService;
-import com.equator.linker.dao.mapper.TbAppSettingMapper;
+import com.equator.linker.dao.mapper.TbInfAppSettingMapper;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
-import com.equator.linker.model.po.TbAppSetting;
+import com.equator.linker.model.po.TbInfAppSetting;
 import com.google.common.cache.LoadingCache;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Component
 public class AppConfig {
     @Autowired
-    private TbAppSettingMapper settingMapper;
+    private TbInfAppSettingMapper settingMapper;
 
     @PostConstruct
     public void init() {
@@ -54,13 +54,13 @@ public class AppConfig {
 
                 @Override
                 public DynamicAppConfiguration loadData(Integer key) throws Exception {
-                    List<TbAppSetting> appSettings = settingMapper.selectList(Wrappers.<TbAppSetting>lambdaQuery().isNotNull(TbAppSetting::getSettingKey));
+                    List<TbInfAppSetting> appSettings = settingMapper.selectList(Wrappers.<TbInfAppSetting>lambdaQuery().isNotNull(TbInfAppSetting::getSettingKey));
 
                     Map<String, String> settingMap;
                     if (CollectionUtils.isEmpty(appSettings)) {
                         settingMap = new HashMap<>();
                     } else {
-                        settingMap = appSettings.stream().collect(Collectors.toMap(TbAppSetting::getSettingKey, TbAppSetting::getSettingValue));
+                        settingMap = appSettings.stream().collect(Collectors.toMap(TbInfAppSetting::getSettingKey, TbInfAppSetting::getSettingValue));
                     }
 
                     DynamicAppConfiguration configuration = new DynamicAppConfiguration();
