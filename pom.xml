@@ -23,6 +23,7 @@
 
         <jenkins-rest.version>1.0.2</jenkins-rest.version>
         <junit.version>4.12</junit.version>
+        <hutool.version>5.8.22</hutool.version>
     </properties>
     <dependencies>
         <dependency>
@@ -83,6 +84,12 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
             <version>${junit.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
     </dependencies>
 

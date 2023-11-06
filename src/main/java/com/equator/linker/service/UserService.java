@@ -7,24 +7,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.core.model.exception.VerifyException;
 import com.equator.core.util.security.PasswordUtil;
-import com.equator.linker.common.util.IpNetUtil;
-import com.equator.linker.common.util.UserAuthUtil;
-import com.equator.linker.configuration.SecurityConfiguration;
 import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.constant.ModelStatus;
 import com.equator.linker.model.po.TbUser;
-import com.equator.linker.model.vo.LoginUser;
 import com.equator.linker.model.vo.PageData;
-import com.equator.linker.model.vo.user.*;
-import com.equator.linker.service.user.LoginService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.equator.linker.model.vo.user.UserCreateVO;
+import com.equator.linker.model.vo.user.UserInfoVO;
+import com.equator.linker.model.vo.user.UserUpdateVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.stream.Collectors;
 
 
@@ -38,12 +32,6 @@ public class UserService {
 
     @Autowired
     private UserDaoService userDaoService;
-
-    @Autowired
-    private SecurityConfiguration securityConfiguration;
-
-    @Autowired
-    private LoginService loginService;
 
     public void addUser(UserCreateVO userCreateVO) {
         if (StringUtils.isEmpty(userCreateVO.getPhoneNumber()) && StringUtils.isEmpty(userCreateVO.getEmail())) {
@@ -121,27 +109,5 @@ public class UserService {
         userInfoVO.setEmail(tbUser.getEmail());
         userInfoVO.setStatus(tbUser.getStatus());
         return userInfoVO;
-    }
-
-    public UserLoginResponse login(UserLoginDataVO userLoginVO, HttpServletRequest request) {
-        userLoginVO.setRemoteAddress(IpNetUtil.getRealIp(request));
-        log.info("user {} try login at IP {}", userLoginVO.getUserIdentification(), userLoginVO.getRemoteAddress());
-        Pair<LoginUser, TbUser> userPair = loginService.login(userLoginVO);
-        UserLoginResponse userLoginResponse = new UserLoginResponse();
-        LoginUser loginUser = userPair.getKey();
-        userLoginResponse.setLoginUser(loginUser);
-        Pair<String, Date> tokenWithExpiredTime = UserAuthUtil.buildTokenWithExpiredTime(loginUser);
-        userLoginResponse.setToken(tokenWithExpiredTime.getLeft());
-        userLoginResponse.setTokenExpiredAt(tokenWithExpiredTime.getRight().getTime());
-        return userLoginResponse;
-    }
-
-    public UserLoginResponse getUserInfo(String token) {
-        Pair<LoginUser, Date> loginUserDatePair = UserAuthUtil.parseLoginUserFromJWT(token);
-        UserLoginResponse userLoginResponse = new UserLoginResponse();
-        userLoginResponse.setLoginUser(loginUserDatePair.getKey());
-        userLoginResponse.setToken(token);
-        userLoginResponse.setTokenExpiredAt(loginUserDatePair.getRight().getTime());
-        return userLoginResponse;
     }
 }

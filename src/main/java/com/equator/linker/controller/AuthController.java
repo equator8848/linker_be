@@ -3,6 +3,7 @@ package com.equator.linker.controller;
 
 import com.equator.core.http.model.Response;
 import com.equator.linker.model.vo.user.UserLoginDataVO;
+import com.equator.linker.service.AuthService;
 import com.equator.linker.service.UserService;
 import com.equator.linker.service.captcha.CaptchaGenerator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,16 +18,14 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private CaptchaGenerator captchaGenerator;
+    private AuthService authService;
 
-    @GetMapping("/user-info")
-    public Response getUserInfo(@RequestParam Integer uid) {
-        return Response.success(userService.getUserInfo(uid));
-    }
+    @Autowired
+    private CaptchaGenerator captchaGenerator;
 
     @PostMapping("/login")
     public Response login(@Validated @RequestBody UserLoginDataVO userLoginVO, HttpServletRequest request) {
-        return Response.success(userService.login(userLoginVO, request));
+        return Response.success(authService.login(userLoginVO, request));
     }
 
     @GetMapping("/check-token")

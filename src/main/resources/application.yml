@@ -9,6 +9,20 @@ server:
 spring:
   application:
     name: Linker
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
+  mvc:
+    converters:
+      preferred-json-mapper: jackson
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: del_flag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
 
 logging:
   file:

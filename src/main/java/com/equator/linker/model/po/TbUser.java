@@ -67,5 +67,5 @@ public class TbUser extends BaseEntityField{
      * 角色类型
      */
     @TableField(value = "role_type")
-    private Integer roleType;
+    private Short roleType;
 }

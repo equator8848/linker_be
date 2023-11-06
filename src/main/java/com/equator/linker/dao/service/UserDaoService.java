@@ -46,7 +46,7 @@ public class UserDaoService extends ServiceImpl<TbUserMapper, TbUser> implements
 
                 @Override
                 public TbUser loadData(Long key) throws Exception {
-                    return tbUserMapper.selectById(key);
+                    return getById(key);
                 }
 
                 @Override

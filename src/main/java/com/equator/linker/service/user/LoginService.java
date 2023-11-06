@@ -6,8 +6,15 @@ import com.equator.core.model.exception.PreCondition;
 import com.equator.core.model.exception.VerifyException;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.core.util.security.DESUtil;
+import com.equator.core.util.security.IDUtil;
+import com.equator.core.util.security.PasswordUtil;
+import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.configuration.SecurityConfiguration;
 import com.equator.linker.dao.service.LoginLogDaoService;
+import com.equator.linker.dao.service.UserDaoService;
+import com.equator.linker.model.constant.BaseConstant;
+import com.equator.linker.model.constant.ModelStatus;
+import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
 import com.equator.linker.model.vo.user.UserLoginDataVO;
@@ -37,6 +44,12 @@ public class LoginService implements InitializingBean {
     @Autowired
     private SecurityConfiguration securityConfiguration;
 
+    @Autowired
+    private AppConfig appConfig;
+
+    @Autowired
+    private UserDaoService userDaoService;
+
     public Pair<LoginUser, TbUser> login(UserLoginDataVO userLoginVO) {
         captchaVerify(userLoginVO);
         Set<Integer> loginStatusSet = new HashSet<>();
@@ -63,10 +76,40 @@ public class LoginService implements InitializingBean {
             throw new VerifyException(LoginStatus.FORBIDDEN.getMessage());
         }
         if (loginStatusSet.size() == 1 && loginStatusSet.contains(LoginStatus.USER_NOT_FOUND.ordinal())) {
+            DynamicAppConfiguration config = appConfig.getConfig();
+            if (config.getAllowRegister()) {
+                TbUser tbUser = registerUser(userLoginVO);
+                LoginUser loginUser = new LoginUser();
+                loginUser.setUid(tbUser.getId());
+                loginUser.setNickName(tbUser.getUserName());
+                loginUser.setUserName(tbUser.getUserName());
+                return Pair.of(loginUser, tbUser);
+            }
             loginLogDaoService.appendLoginLog(userLoginVO.getUserIdentification(), LoginStatus.USER_NOT_FOUND, userLoginVO.getRemoteAddress());
             throw new VerifyException(LoginStatus.USER_NOT_FOUND.getMessage());
         }
         throw new InnerException("找不到合适的登录处理器");
+    }
+
+    private TbUser registerUser(UserLoginDataVO userLoginVO) {
+        TbUser tbUser = new TbUser();
+        tbUser.setUserName("用户" + IDUtil.getRandomChar(4));
+        tbUser.setUserPassword(PasswordUtil.generateSha512CryptPassword(userLoginVO.getUserPassword()));
+        if (BaseConstant.UserIdentificationType.PHONE.equals(userLoginVO.getUserIdentificationType())) {
+            tbUser.setPhoneNumber(userLoginVO.getUserIdentification());
+        } else if (BaseConstant.UserIdentificationType.EMAIL.equals(userLoginVO.getUserIdentificationType())) {
+            tbUser.setEmail(userLoginVO.getUserIdentification());
+        } else {
+            throw new VerifyException("不合法的登录类型");
+        }
+        long userCount = userDaoService.count();
+        if (userCount == 0) {
+            // 第一个注册的用户，视为超级管理员
+            tbUser.setRoleType(ModelStatus.RoleType.SUPER_ADMIN);
+        }
+        tbUser.setStatus(ModelStatus.UserStatus.NORMAL);
+        userDaoService.save(tbUser);
+        return tbUser;
     }
 
     /**
