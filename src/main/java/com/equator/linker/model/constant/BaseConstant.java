@@ -28,33 +28,21 @@ public class BaseConstant {
         public static final String USERNAME = "username";
     }
 
-    /**
-     * 付费计划
-     */
-    public static final class Planing {
-        /**
-         * 测试
-         */
-        public static final int TEST = 1;
-        /**
-         * 试用版
-         */
-        public static final int EXPLORER = 2;
-        /**
-         * 标准版
-         */
-        public static final int STANDARD = 4;
-        /**
-         * 专业版
-         */
-        public static final int PROFESSION = 8;
-        /**
-         * 旗舰版
-         */
-        public static final int FLAGSHIP = 16;
-        /**
-         * 定制版
-         */
-        public static final int CUSTOM = 32;
+    public enum AccessLevel {
+        PRIVATE(1),
+
+        PROTECTED(2),
+
+        PUBLIC(4);
+
+        private int code;
+
+        AccessLevel(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
     }
 }

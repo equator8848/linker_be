@@ -60,8 +60,8 @@ public class TbProject extends BaseEntityField {
 	/**
 	 * 入口相对路径
 	 */
-	@TableField(value="access_path")
-	private String accessPath;
+	@TableField(value="access_entrance")
+	private String accessEntrance;
 
 	/**
 	 * 权限等级，1私有、2指定人可访问、4公开
