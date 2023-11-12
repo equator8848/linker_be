@@ -14,7 +14,7 @@ public interface ProjectService {
 
     void delete(Long projectId);
 
-    List<ProjectSimpleInfo> list(Integer pageNum, Integer pageSize);
+    List<ProjectSimpleInfo> all();
 
     ProjectDetailsInfo details(Long projectId);
 }

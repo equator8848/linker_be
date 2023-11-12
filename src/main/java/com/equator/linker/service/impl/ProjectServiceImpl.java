@@ -1,9 +1,13 @@
 package com.equator.linker.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.equator.core.util.json.JsonUtil;
+import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.dao.service.ProjectDaoService;
+import com.equator.linker.dao.service.ProjectUserRefDaoService;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.po.TbProject;
+import com.equator.linker.model.po.TbProjectUserRef;
 import com.equator.linker.model.vo.project.ProjectCreateRequest;
 import com.equator.linker.model.vo.project.ProjectDetailsInfo;
 import com.equator.linker.model.vo.project.ProjectSimpleInfo;
@@ -11,15 +15,22 @@ import com.equator.linker.model.vo.project.ProjectUpdateRequest;
 import com.equator.linker.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectDaoService projectDaoService;
 
+    @Autowired
+    private ProjectUserRefDaoService projectUserRefDaoService;
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long create(ProjectCreateRequest projectCreateRequest) {
         TbProject tbProject = new TbProject();
         tbProject.setName(projectCreateRequest.getName());
@@ -32,6 +43,12 @@ public class ProjectServiceImpl implements ProjectService {
         tbProject.setAccessEntrance(projectCreateRequest.getAccessEntrance());
         tbProject.setAccessLevel(BaseConstant.AccessLevel.valueOf(projectCreateRequest.getAccessLevel()).getCode());
         projectDaoService.save(tbProject);
+
+        TbProjectUserRef projectUserRef = new TbProjectUserRef();
+        projectUserRef.setProjectId(tbProject.getId());
+        projectUserRef.setUserId(UserContextUtil.getUserId());
+        projectUserRef.setRefType(BaseConstant.ProjectInstanceRefType.OWNER.ordinal());
+        projectUserRefDaoService.save(projectUserRef);
         return tbProject.getId();
     }
 
@@ -46,8 +63,24 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSimpleInfo> list(Integer pageNum, Integer pageSize) {
-        return null;
+    public List<ProjectSimpleInfo> all() {
+        // 获取自己创建或加入的
+        Set<Long> targetProjectIds = projectUserRefDaoService.getProjectIdByUserId(UserContextUtil.getUserId());
+        // 公开的
+        Set<Long> publicProjectIds = projectDaoService
+                .getProjectIdsByAccessLevel(BaseConstant.AccessLevel.PUBLIC.getCode(), targetProjectIds);
+        targetProjectIds.addAll(publicProjectIds);
+
+        return projectDaoService.list(Wrappers.<TbProject>lambdaQuery()
+                        .select(TbProject::getId, TbProject::getName, TbProject::getIntro)
+                        .in(TbProject::getId, targetProjectIds)).stream()
+                .map(tbProject -> {
+                    ProjectSimpleInfo projectSimpleInfo = new ProjectSimpleInfo();
+                    projectSimpleInfo.setId(tbProject.getId());
+                    projectSimpleInfo.setName(tbProject.getName());
+                    projectSimpleInfo.setIntro(tbProject.getIntro());
+                    return projectSimpleInfo;
+                }).collect(Collectors.toList());
     }
 
     @Override

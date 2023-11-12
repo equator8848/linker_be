@@ -45,4 +45,15 @@ public class BaseConstant {
             return code;
         }
     }
+
+    public enum ProjectInstanceRefType {
+        /**
+         * 自己创建
+         */
+        OWNER,
+        /**
+         * 加入
+         */
+        JOIN;
+    }
 }
