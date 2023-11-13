@@ -22,4 +22,9 @@ public class ProjectController {
     public Response all() {
         return Response.success(projectService.all());
     }
+
+    @GetMapping("/details")
+    public Response all(@RequestParam Long projectId) {
+        return Response.success(projectService.details(projectId));
+    }
 }

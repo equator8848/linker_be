@@ -1,10 +1,14 @@
 package com.equator.linker.dao.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.equator.linker.dao.mapper.TbInstanceMapper;
 import com.equator.linker.model.po.TbInstance;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Equator
@@ -12,4 +16,10 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance> implements IService<TbInstance> {
+
+    public Set<Long> getInstanceIdsByAccessLevel(Integer accessLevel, Set<Long> ignoreInstanceIds) {
+        return list(Wrappers.<TbInstance>lambdaQuery().eq(TbInstance::getAccessLevel, accessLevel)
+                .notIn(TbInstance::getId, ignoreInstanceIds)).stream().map(TbInstance::getId)
+                .collect(Collectors.toSet());
+    }
 }

@@ -19,6 +19,24 @@ public class DynamicAppConfiguration {
     @ModelTransformerField(defaultValue = "false")
     private Boolean allowRegister;
 
+    /**
+     * 访问主机
+     */
+    @ModelTransformerField(defaultValue = "http://localhost")
+    private String accessHost;
+
+    /**
+     * 最小访问端口
+     */
+    @ModelTransformerField(defaultValue = "10000")
+    private Integer minAccessPort;
+
+    /***
+     * 最大访问端口
+     */
+    @ModelTransformerField(defaultValue = "60000")
+    private Integer maxAccessPort;
+
     private String jenkinsEndpoint;
 
     private String jenkinsCredentials;

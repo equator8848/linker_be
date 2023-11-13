@@ -8,11 +8,9 @@ import com.equator.linker.dao.service.ProjectUserRefDaoService;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.po.TbProjectUserRef;
-import com.equator.linker.model.vo.project.ProjectCreateRequest;
-import com.equator.linker.model.vo.project.ProjectDetailsInfo;
-import com.equator.linker.model.vo.project.ProjectSimpleInfo;
-import com.equator.linker.model.vo.project.ProjectUpdateRequest;
+import com.equator.linker.model.vo.project.*;
 import com.equator.linker.service.ProjectService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,6 +83,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDetailsInfo details(Long projectId) {
-        return null;
+        TbProject tbProject = projectDaoService.getById(projectId);
+        ProjectDetailsInfo projectDetailsInfo = new ProjectDetailsInfo();
+        BeanUtils.copyProperties(tbProject, projectDetailsInfo);
+        projectDetailsInfo.setScmConfig(JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class));
+        projectDetailsInfo.setProxyConfig(JsonUtil.fromJson(tbProject.getProxyConfig(), ProxyConfig.class));
+        if (!tbProject.getCreateUserId().equals(UserContextUtil.getUserId())) {
+            projectDetailsInfo.getScmConfig().setAccessToken("保密");
+        }
+        return projectDetailsInfo;
     }
 }

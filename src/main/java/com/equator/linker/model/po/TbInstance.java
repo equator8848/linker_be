@@ -7,7 +7,7 @@ import lombok.Data;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author equator
@@ -17,44 +17,50 @@ import lombok.Data;
 @TableName("tb_instance")
 public class TbInstance extends BaseEntityField {
 
-	/**
-	 * 项目ID
-	 */
-	@TableField(value="project_id")
-	private Long projectId;
+    /**
+     * 项目ID
+     */
+    @TableField(value = "project_id")
+    private Long projectId;
 
-	/**
-	 * 实例名称
-	 */
-	private String name;
+    /**
+     * 实例名称
+     */
+    private String name;
 
-	/**
-	 * 实例介绍
-	 */
-	private String intro;
+    /**
+     * 实例介绍
+     */
+    private String intro;
 
-	/**
-	 * SCM分支
-	 */
-	@TableField(value="scm_branch")
-	private String scmBranch;
+    /**
+     * SCM分支
+     */
+    @TableField(value = "scm_branch")
+    private String scmBranch;
 
-	/**
-	 * Nginx代理配置
-	 */
-	@TableField(value="proxy_config")
-	private String proxyConfig;
+    /**
+     * Nginx代理配置
+     */
+    @TableField(value = "proxy_config")
+    private String proxyConfig;
 
-	/**
-	 * 完整访问链接
-	 */
-	@TableField(value="access_link")
-	private String accessLink;
+    /**
+     * 访问端口
+     */
+    @TableField(value = "access_port")
+    private Integer accessPort;
 
-	/**
-	 * 权限等级，1私有、2指定人可访问、4公开
-	 */
-	@TableField(value="access_level")
-	private Integer accessLevel;
+    /**
+     * 完整访问链接
+     */
+    @TableField(value = "access_link")
+    private String accessLink;
+
+    /**
+     * 权限等级，1私有、2指定人可访问、4公开
+     */
+    @TableField(value = "access_level")
+    private Integer accessLevel;
 
 }

@@ -1,6 +1,7 @@
-package com.equator.linker.model.vo.project;
+package com.equator.linker.model.vo.instance;
 
 
+import com.equator.linker.model.vo.project.ProxyConfig;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -15,9 +16,8 @@ import java.util.Date;
  * @since 2023-11-05
  */
 @Data
-public class ProjectDetailsInfo {
+public class InstanceDetailsInfo {
     private Long id;
-
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
@@ -27,48 +27,31 @@ public class ProjectDetailsInfo {
     private Date updateTime;
 
     /**
-     * 项目名称
+     * 项目ID
+     */
+    private Long projectId;
+
+    /**
+     * 实例名称
      */
     private String name;
 
     /**
-     * 项目介绍
+     * 实例介绍
      */
     private String intro;
 
     /**
-     * SCM配置
+     * SCM分支
      */
-    private ScmConfig scmConfig;
+    private String scmBranch;
 
     /**
      * Nginx代理配置
      */
     private ProxyConfig proxyConfig;
 
-    /**
-     * 打包镜像
-     */
-    private String packageImage;
 
-    /**
-     * 打包脚本
-     */
-    private String packageScript;
-
-    /**
-     * 打包输出目录
-     */
-    private String packageOutputDir;
-
-    /**
-     * 入口相对路径
-     */
-    private String accessEntrance;
-
-    /**
-     * 权限等级，1私有、2指定人可访问、4公开
-     */
     private String accessLevel;
 
 }
