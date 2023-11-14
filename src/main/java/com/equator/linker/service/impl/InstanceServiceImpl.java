@@ -1,8 +1,10 @@
 package com.equator.linker.service.impl;
 
+import cn.hutool.core.util.EnumUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.core.util.json.JsonUtil;
+import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.dao.service.InstanceDaoService;
@@ -94,12 +96,42 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void update(InstanceUpdateRequest instanceUpdateRequest) {
+        Long instanceId = instanceUpdateRequest.getId();
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "实例不存在");
+        UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
 
+        tbInstance.setName(instanceUpdateRequest.getName());
+        tbInstance.setIntro(instanceUpdateRequest.getIntro());
+
+        if (StringUtils.isNotEmpty(instanceUpdateRequest.getScmBranch())) {
+            tbInstance.setScmBranch(instanceUpdateRequest.getScmBranch());
+        }
+
+        ProxyConfig requestProxyConfig = instanceUpdateRequest.getProxyConfig();
+        if (requestProxyConfig != null && !CollectionUtils.isEmpty(requestProxyConfig.getProxyPassConfigs())) {
+            tbInstance.setProxyConfig(JsonUtil.toJson(requestProxyConfig));
+        }
+
+        tbInstance.setAccessLevel(BaseConstant.AccessLevel.valueOf(instanceUpdateRequest.getAccessLevel()).getCode());
+        instanceDaoService.updateById(tbInstance);
+
+        if (BaseConstant.AccessLevel.PRIVATE.ordinal() == tbInstance.getAccessLevel()) {
+            // 设置为私密实例，删除其它关联
+            instanceUserRefDaoService.remove(Wrappers.<TbInstanceUserRef>lambdaQuery()
+                    .eq(TbInstanceUserRef::getInstanceId, instanceId)
+                    .eq(TbInstanceUserRef::getRefType, BaseConstant.ProjectInstanceRefType.JOIN.ordinal()));
+        }
     }
 
     @Override
     public void delete(Long instanceId) {
-
+        instanceDaoService.removeById(instanceId);
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "实例不存在");
+        UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
+        instanceUserRefDaoService.remove(Wrappers.<TbInstanceUserRef>lambdaQuery()
+                .eq(TbInstanceUserRef::getInstanceId, instanceId));
     }
 
     @Override
@@ -114,11 +146,17 @@ public class InstanceServiceImpl implements InstanceService {
         return instanceDaoService.list(Wrappers.<TbInstance>lambdaQuery()
                         .like(StringUtils.isNotEmpty(instanceListRequest.getSearchKeyword()),
                                 TbInstance::getName, instanceListRequest.getSearchKeyword())
+                        .eq(TbInstance::getProjectId, instanceListRequest.getProjectId())
                         .in(TbInstance::getId, targetInstanceIds).orderByDesc(TbInstance::getId)).stream()
                 .map(tbInstance -> {
                     InstanceDetailsInfo instanceDetailsInfo = new InstanceDetailsInfo();
                     BeanUtils.copyProperties(tbInstance, instanceDetailsInfo);
                     instanceDetailsInfo.setProxyConfig(JsonUtil.fromJson(tbInstance.getProxyConfig(), ProxyConfig.class));
+                    instanceDetailsInfo.setAccessLevel(EnumUtil.getFieldBy(BaseConstant.AccessLevel::name,
+                            BaseConstant.AccessLevel::getCode, tbInstance.getAccessLevel()));
+
+                    boolean isOwner = tbInstance.getCreateUserId().equals(UserContextUtil.getUserId());
+                    instanceDetailsInfo.setIsOwner(isOwner);
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
     }

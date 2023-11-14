@@ -54,4 +54,7 @@ public class InstanceDetailsInfo {
 
     private String accessLevel;
 
+
+    private Boolean isOwner;
+
 }

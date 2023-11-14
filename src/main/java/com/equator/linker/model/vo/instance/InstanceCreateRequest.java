@@ -2,6 +2,7 @@ package com.equator.linker.model.vo.instance;
 
 
 import com.equator.linker.model.vo.project.ProxyConfig;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -18,16 +19,19 @@ public class InstanceCreateRequest {
     /**
      * 项目ID
      */
+    @NotNull
     private Long projectId;
 
     /**
      * 实例名称
      */
+    @NotNull
     private String name;
 
     /**
      * 实例介绍
      */
+    @NotNull
     private String intro;
 
     /**
@@ -41,6 +45,7 @@ public class InstanceCreateRequest {
     private ProxyConfig proxyConfig;
 
 
+    @NotNull
     private String accessLevel;
 
 }

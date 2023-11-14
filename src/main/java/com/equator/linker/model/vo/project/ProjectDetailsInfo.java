@@ -71,4 +71,5 @@ public class ProjectDetailsInfo {
      */
     private String accessLevel;
 
+    private Boolean isOwner;
 }
