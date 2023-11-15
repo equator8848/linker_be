@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -83,9 +84,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long projectId) {
-        projectDaoService.removeById(projectId);
         TbProject tbProject = projectDaoService.getById(projectId);
         PreCondition.isNotNull(tbProject, "项目不存在");
+        projectDaoService.removeById(projectId);
         UserAuthUtil.checkPermission(tbProject.getCreateUserId());
         projectUserRefDaoService.remove(Wrappers.<TbProjectUserRef>lambdaQuery()
                 .eq(TbProjectUserRef::getProjectId, projectId));
@@ -102,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         return projectDaoService.list(Wrappers.<TbProject>lambdaQuery()
                         .select(TbProject::getId, TbProject::getName, TbProject::getIntro)
-                        .in(TbProject::getId, targetProjectIds)).stream()
+                        .in(!CollectionUtils.isEmpty(targetProjectIds), TbProject::getId, targetProjectIds)).stream()
                 .map(tbProject -> {
                     ProjectSimpleInfo projectSimpleInfo = new ProjectSimpleInfo();
                     projectSimpleInfo.setId(tbProject.getId());
@@ -115,6 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDetailsInfo details(Long projectId) {
         TbProject tbProject = projectDaoService.getById(projectId);
+        PreCondition.isNotNull(tbProject, "项目不存在");
         ProjectDetailsInfo projectDetailsInfo = new ProjectDetailsInfo();
         BeanUtils.copyProperties(tbProject, projectDetailsInfo);
         projectDetailsInfo.setAccessLevel(EnumUtil.getFieldBy(BaseConstant.AccessLevel::name, BaseConstant.AccessLevel::getCode, tbProject.getAccessLevel()));

@@ -23,7 +23,7 @@ public class BaseEntityField {
     /**
      *
      */
-    @TableField(value = "create_user_id", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
     /**
@@ -36,7 +36,7 @@ public class BaseEntityField {
     /**
      *
      */
-    @TableField(value = "update_user_id", fill = FieldFill.INSERT)
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 
     /**

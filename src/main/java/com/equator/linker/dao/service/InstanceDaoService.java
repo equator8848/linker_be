@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.equator.linker.dao.mapper.TbInstanceMapper;
 import com.equator.linker.model.po.TbInstance;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance
 
     public Set<Long> getInstanceIdsByAccessLevel(Integer accessLevel, Set<Long> ignoreInstanceIds) {
         return list(Wrappers.<TbInstance>lambdaQuery().eq(TbInstance::getAccessLevel, accessLevel)
-                .notIn(TbInstance::getId, ignoreInstanceIds)).stream().map(TbInstance::getId)
+                .notIn(!CollectionUtils.isEmpty(ignoreInstanceIds), TbInstance::getId, ignoreInstanceIds)).stream().map(TbInstance::getId)
                 .collect(Collectors.toSet());
     }
 }

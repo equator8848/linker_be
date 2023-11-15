@@ -126,9 +126,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void delete(Long instanceId) {
-        instanceDaoService.removeById(instanceId);
         TbInstance tbInstance = instanceDaoService.getById(instanceId);
         PreCondition.isNotNull(tbInstance, "实例不存在");
+        instanceDaoService.removeById(instanceId);
         UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
         instanceUserRefDaoService.remove(Wrappers.<TbInstanceUserRef>lambdaQuery()
                 .eq(TbInstanceUserRef::getInstanceId, instanceId));
@@ -147,7 +147,8 @@ public class InstanceServiceImpl implements InstanceService {
                         .like(StringUtils.isNotEmpty(instanceListRequest.getSearchKeyword()),
                                 TbInstance::getName, instanceListRequest.getSearchKeyword())
                         .eq(TbInstance::getProjectId, instanceListRequest.getProjectId())
-                        .in(TbInstance::getId, targetInstanceIds).orderByDesc(TbInstance::getId)).stream()
+                        .in(!CollectionUtils.isEmpty(targetInstanceIds),
+                                TbInstance::getId, targetInstanceIds).orderByDesc(TbInstance::getId)).stream()
                 .map(tbInstance -> {
                     InstanceDetailsInfo instanceDetailsInfo = new InstanceDetailsInfo();
                     BeanUtils.copyProperties(tbInstance, instanceDetailsInfo);
