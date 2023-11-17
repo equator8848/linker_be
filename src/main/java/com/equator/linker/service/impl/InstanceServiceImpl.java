@@ -161,4 +161,9 @@ public class InstanceServiceImpl implements InstanceService {
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
     }
+
+    @Override
+    public void buildPipeline(Long instanceId) {
+
+    }
 }

@@ -15,4 +15,6 @@ public interface InstanceService {
     void delete(Long instanceId);
 
     List<InstanceDetailsInfo> list(InstanceListRequest instanceListRequest);
+
+    void buildPipeline(Long instanceId);
 }

@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clean') {
+            steps {
+                script {
+                    echo "cleanWs >>>"
+                    echo "${WORKSPACE}"
+                    cleanWs()
+                }
+            }
+        }
+        stage('Package') {
+            agent {
+                docker {
+                    image '$PACKAGE_IMAGE'
+                }
+            }
+            steps {
+                sh 'git --version'
+                sh 'echo "${WORKSPACE}"'
+                sh 'rm -rf $SCM_PROJECT_NAME'
+                sh 'git clone $SCM_REPOSITORY_URL'
+                dir('$SCM_PROJECT_NAME') {
+                    $PACKAGE_SCRIPTS
+                    stash(name:'PackageOutput', includes: '$PACKAGE_OUTPUT_DIR/**')
+                }
+            }
+        }
+        stage('BuildImage') {
+            steps {
+                unstash("PackageOutput")
+                sh 'pwd'
+                sh 'ls'
+                sh 'curl -O $GET_NGINX_CONF_URL'
+                sh 'curl -O $GET_DOCKER_FILE_URL'
+                sh 'ls'
+                sh 'docker build -t $DOCKER_CONTAINER_IMAGE_NAME .'
+                sh 'docker images'
+            }
+        }
+        stage('RunContainer') {
+            steps {
+                sh 'docker rm -vf $DOCKER_CONTAINER_NAME'
+                sh 'docker run -d -p $INSTANCE_ACCESS_PORT:80 --name KER_CONTAINER_NAME $DOCKER_CONTAINER_IMAGE_NAME'
+            }
+        }
+    }
+}
