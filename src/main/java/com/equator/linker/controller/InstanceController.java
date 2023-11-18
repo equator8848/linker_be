@@ -36,4 +36,15 @@ public class InstanceController {
     public Response create(@RequestBody @Valid InstanceListRequest instanceListRequest) {
         return Response.success(instanceService.list(instanceListRequest));
     }
+
+    @PutMapping("/build-pipeline")
+    public Response buildPipeline(@RequestParam Long instanceId) {
+        instanceService.buildPipeline(instanceId);
+        return Response.success();
+    }
+
+    @GetMapping("/pipeline-build-result")
+    public Response getPipelineBuildResult(@RequestParam Long instanceId) {
+        return Response.success(instanceService.getPipelineBuildResult(instanceId));
+    }
 }

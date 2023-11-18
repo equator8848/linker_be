@@ -57,4 +57,5 @@ public class InstanceDetailsInfo {
 
     private Boolean isOwner;
 
+    private InstancePipelineBuildResult instancePipelineBuildResult;
 }

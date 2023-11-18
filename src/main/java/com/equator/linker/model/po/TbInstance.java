@@ -63,4 +63,41 @@ public class TbInstance extends BaseEntityField {
     @TableField(value = "access_level")
     private Integer accessLevel;
 
+
+    /**
+     * 流水线模板ID
+     */
+    @TableField(value = "pipeline_template_id")
+    private String pipelineTemplateId;
+
+    /**
+     * 流水线唯一名称
+     */
+    @TableField(value = "pipeline_name")
+    private String pipelineName;
+
+    /**
+     * 最近一次构建的ID
+     */
+    @TableField(value = "latest_build_number")
+    private Integer latestBuildNumber;
+
+    /**
+     * 是否正在构建中
+     */
+    @TableField(value = "building_flag")
+    private Boolean buildingFlag;
+
+
+    /**
+     * 最近一次构建的状态
+     */
+    @TableField(value = "latest_build_result")
+    private Integer latestBuildResult;
+
+    /**
+     * 最近一次构建耗时
+     */
+    @TableField(value = "latest_build_duration")
+    private Long latestBuildDuration;
 }

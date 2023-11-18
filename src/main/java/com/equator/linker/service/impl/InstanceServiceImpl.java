@@ -2,8 +2,16 @@ package com.equator.linker.service.impl;
 
 import cn.hutool.core.util.EnumUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.cdancy.jenkins.rest.JenkinsClient;
+import com.cdancy.jenkins.rest.domain.common.IntegerResponse;
+import com.cdancy.jenkins.rest.domain.common.RequestStatus;
+import com.cdancy.jenkins.rest.domain.job.BuildInfo;
+import com.cdancy.jenkins.rest.domain.job.JobInfo;
+import com.cdancy.jenkins.rest.features.JobsApi;
+import com.equator.core.model.exception.InnerException;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.core.util.json.JsonUtil;
+import com.equator.core.util.security.DESUtil;
 import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.configuration.AppConfig;
@@ -15,13 +23,12 @@ import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbInstanceUserRef;
 import com.equator.linker.model.po.TbProject;
-import com.equator.linker.model.vo.instance.InstanceCreateRequest;
-import com.equator.linker.model.vo.instance.InstanceDetailsInfo;
-import com.equator.linker.model.vo.instance.InstanceListRequest;
-import com.equator.linker.model.vo.instance.InstanceUpdateRequest;
+import com.equator.linker.model.vo.instance.*;
 import com.equator.linker.model.vo.project.ProxyConfig;
 import com.equator.linker.model.vo.project.ScmConfig;
 import com.equator.linker.service.InstanceService;
+import com.equator.linker.service.jenkins.JenkinsClientFactory;
+import com.equator.linker.service.util.TemplateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +57,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private JenkinsClientFactory jenkinsClientFactory;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -81,9 +92,11 @@ public class InstanceServiceImpl implements InstanceService {
 
         tbInstance.setAccessPort(nextAccessPort);
         tbInstance.setAccessLink(String.format("%s:%s:%s",
-                dynamicAppConfiguration.getAccessHost(), nextAccessPort,
+                dynamicAppConfiguration.getDeployAccessHost(), nextAccessPort,
                 Optional.ofNullable(tbProject.getAccessEntrance()).orElse("/")));
         tbInstance.setAccessLevel(BaseConstant.AccessLevel.valueOf(instanceCreateRequest.getAccessLevel()).getCode());
+
+        tbInstance.setPipelineTemplateId(dynamicAppConfiguration.getJenkinsPipelineTemplateId());
         instanceDaoService.save(tbInstance);
 
         TbInstanceUserRef tbInstanceUserRef = new TbInstanceUserRef();
@@ -158,12 +171,121 @@ public class InstanceServiceImpl implements InstanceService {
 
                     boolean isOwner = tbInstance.getCreateUserId().equals(UserContextUtil.getUserId());
                     instanceDetailsInfo.setIsOwner(isOwner);
+
+
+                    instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
     }
 
+    private InstancePipelineBuildResult getInstancePipelineBuildResult(TbInstance tbInstance) {
+        Long instanceId = tbInstance.getId();
+        if (tbInstance.getBuildingFlag()) {
+            return getPipelineBuildResult(instanceId);
+        }
+        InstancePipelineBuildResult instancePipelineBuildResult = new InstancePipelineBuildResult();
+        instancePipelineBuildResult.setId(tbInstance.getLatestBuildNumber().toString());
+        instancePipelineBuildResult.setDuration(tbInstance.getLatestBuildDuration());
+        instancePipelineBuildResult.setPipelineResultStr(tbInstance.getLatestBuildResult().toString());
+        return instancePipelineBuildResult;
+    }
+
     @Override
     public void buildPipeline(Long instanceId) {
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "找不到实例信息");
 
+        TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
+        PreCondition.isNotNull(tbProject, "找不到项目信息");
+
+
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            String pipelineName = TemplateUtil.getPipelineName(instanceId);
+            JobsApi jobsApi = jenkinsClient.api().jobsApi();
+            if (tbInstance.getLatestBuildNumber() == null) {
+                // 未构建过
+                createJob(jobsApi, tbProject, tbInstance, pipelineName);
+                tbInstance.setPipelineName(pipelineName);
+            }
+            JobInfo jobInfo = jobsApi.jobInfo(null, pipelineName);
+            int nextBuildNumber = jobInfo.nextBuildNumber();
+            tbInstance.setLatestBuildNumber(nextBuildNumber);
+            tbInstance.setBuildingFlag(false);
+            instanceDaoService.updateById(tbInstance);
+            IntegerResponse buildPipelineResult = jobsApi.build(null, pipelineName);
+            log.info("buildPipeline, instanceId {}, buildPipelineResult {}", instanceId, buildPipelineResult);
+        } catch (IOException e) {
+            log.error("buildPipeline error {}", instanceId, e);
+            throw new InnerException("实例构建触发失败，请联系管理员");
+        }
+    }
+
+    private void createJob(JobsApi jobsApi, TbProject tbProject, TbInstance tbInstance, String pipelineName) {
+        Long instanceId = tbInstance.getId();
+        DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
+
+        String linkerServerHostBaseUrl = dynamicAppConfiguration.getLinkerServerHostBaseUrl();
+
+        GetNginxConfRequest getNginxConfRequest = new GetNginxConfRequest();
+        getNginxConfRequest.setInstanceId(instanceId);
+        String getNginxConfSecret = DESUtil.encrypt(dynamicAppConfiguration.getDesSecretKey(), JsonUtil.toJson(getNginxConfRequest));
+        String GET_NGINX_CONF_URL = linkerServerHostBaseUrl + "/api/v1/open-api/nginx-conf?getNginxConfSecret=%s".formatted(getNginxConfSecret);
+
+        GetDockerfileRequest getDockerfileRequest = new GetDockerfileRequest();
+        getDockerfileRequest.setInstanceId(instanceId);
+        String getDockerfileSecret = DESUtil.encrypt(dynamicAppConfiguration.getDesSecretKey(), JsonUtil.toJson(getDockerfileRequest));
+        String GET_DOCKER_FILE_URL = linkerServerHostBaseUrl + "/api/v1/open-api/dockerfile?getDockerfileSecret=%s".formatted(getDockerfileSecret);
+
+
+        String pipelineScriptsTemplate = TemplateUtil.getPipelineScriptsTemplate(tbInstance.getPipelineTemplateId());
+        ScmConfig scmConfig = JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class);
+
+        String scmProjectNameFromUrl = TemplateUtil.getScmProjectNameFromUrl(scmConfig.getRepositoryUrl());
+
+        String packageScripts = TemplateUtil.getPackageScripts(tbProject);
+
+        pipelineScriptsTemplate = pipelineScriptsTemplate
+                .replaceAll("\\$PACKAGE_IMAGE", tbProject.getPackageImage())
+                .replaceAll("\\$SCM_PROJECT_NAME", scmProjectNameFromUrl)
+                .replaceAll("\\$SCM_BRANCH", tbInstance.getScmBranch())
+                .replaceAll("\\$SCM_REPOSITORY_URL", scmConfig.getRepositoryUrl())
+                .replaceAll("\\$PACKAGE_SCRIPTS", packageScripts)
+                .replaceAll("\\$PACKAGE_OUTPUT_DIR", tbProject.getPackageOutputDir())
+                .replaceAll("\\$GET_NGINX_CONF_URL", GET_NGINX_CONF_URL)
+                .replaceAll("\\$GET_DOCKER_FILE_URL", GET_DOCKER_FILE_URL)
+                .replaceAll("\\$DOCKER_CONTAINER_IMAGE_NAME", TemplateUtil.getDockerContainerImageName(instanceId))
+                .replaceAll("\\$DOCKER_CONTAINER_NAME", TemplateUtil.getDockerContainerName(instanceId))
+                .replaceAll("\\$INSTANCE_ACCESS_PORT", String.valueOf(tbInstance.getAccessPort()));
+
+        String jenkinsFileTemplate = TemplateUtil.getJenkinsFileTemplate(tbInstance.getPipelineTemplateId());
+        jenkinsFileTemplate = jenkinsFileTemplate
+                .replaceAll("\\$JOB_DESCRIPTION", "由Linker系统自动化创建，请勿手动修改")
+                .replaceAll("\\$PIPELINE_SCRIPTS", pipelineScriptsTemplate);
+        RequestStatus requestStatus = jobsApi.create(null, pipelineName, jenkinsFileTemplate);
+        PreCondition.isTrue(requestStatus.value(), "Jenkins流水线创建失败");
+    }
+
+    @Override
+    public InstancePipelineBuildResult getPipelineBuildResult(Long instanceId) {
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "找不到实例信息");
+
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            JobsApi jobsApi = jenkinsClient.api().jobsApi();
+
+            BuildInfo buildInfo = jobsApi.buildInfo(null, tbInstance.getPipelineName(), tbInstance.getLatestBuildNumber());
+            InstancePipelineBuildResult instancePipelineBuildResult = new InstancePipelineBuildResult();
+            instancePipelineBuildResult.setId(buildInfo.id());
+            instancePipelineBuildResult.setDuration(buildInfo.duration());
+            instancePipelineBuildResult.setPipelineResultStr(buildInfo.result());
+
+            tbInstance.setBuildingFlag(false);
+            tbInstance.setLatestBuildDuration(buildInfo.duration());
+            instanceDaoService.updateById(tbInstance);
+            return instancePipelineBuildResult;
+        } catch (Exception e) {
+            log.error("getPipelineBuildResult error {}", instanceId, e);
+            throw new InnerException("获取流水线构建状态失败，请联系管理员");
+        }
     }
 }

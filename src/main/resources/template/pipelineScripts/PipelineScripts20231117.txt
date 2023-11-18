@@ -5,7 +5,6 @@ pipeline {
             steps {
                 script {
                     echo "cleanWs >>>"
-                    echo "${WORKSPACE}"
                     cleanWs()
                 }
             }
@@ -18,9 +17,8 @@ pipeline {
             }
             steps {
                 sh 'git --version'
-                sh 'echo "${WORKSPACE}"'
                 sh 'rm -rf $SCM_PROJECT_NAME'
-                sh 'git clone $SCM_REPOSITORY_URL'
+                sh 'git clone -b $SCM_BRANCH $SCM_REPOSITORY_URL'
                 dir('$SCM_PROJECT_NAME') {
                     $PACKAGE_SCRIPTS
                     stash(name:'PackageOutput', includes: '$PACKAGE_OUTPUT_DIR/**')
@@ -42,7 +40,7 @@ pipeline {
         stage('RunContainer') {
             steps {
                 sh 'docker rm -vf $DOCKER_CONTAINER_NAME'
-                sh 'docker run -d -p $INSTANCE_ACCESS_PORT:80 --name KER_CONTAINER_NAME $DOCKER_CONTAINER_IMAGE_NAME'
+                sh 'docker run -d -p $INSTANCE_ACCESS_PORT:80 --name $DOCKER_CONTAINER_NAME $DOCKER_CONTAINER_IMAGE_NAME'
             }
         }
     }

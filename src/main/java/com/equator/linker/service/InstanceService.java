@@ -1,9 +1,6 @@
 package com.equator.linker.service;
 
-import com.equator.linker.model.vo.instance.InstanceCreateRequest;
-import com.equator.linker.model.vo.instance.InstanceDetailsInfo;
-import com.equator.linker.model.vo.instance.InstanceListRequest;
-import com.equator.linker.model.vo.instance.InstanceUpdateRequest;
+import com.equator.linker.model.vo.instance.*;
 
 import java.util.List;
 
@@ -17,4 +14,6 @@ public interface InstanceService {
     List<InstanceDetailsInfo> list(InstanceListRequest instanceListRequest);
 
     void buildPipeline(Long instanceId);
+
+    InstancePipelineBuildResult getPipelineBuildResult(Long instanceId);
 }

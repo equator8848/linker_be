@@ -55,6 +55,7 @@ public class MVCConfiguration implements WebMvcConfigurer {
         passList.add("/api/v1/auth/captcha");
         passList.add("/api/v1/auth/login");
         passList.add("/api/v1/anonymous/**");
+        passList.add("/api/v1/open-api/**");
         registry.addInterceptor(loginInterceptor()).addPathPatterns(interceptorList).excludePathPatterns(passList);
     }
 }

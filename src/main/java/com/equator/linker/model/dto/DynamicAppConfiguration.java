@@ -20,10 +20,16 @@ public class DynamicAppConfiguration {
     private Boolean allowRegister;
 
     /**
-     * 访问主机
+     * 部署访问主机
      */
     @ModelTransformerField(defaultValue = "http://localhost")
-    private String accessHost;
+    private String deployAccessHost;
+
+    /**
+     * Linker系统服务器访问主机
+     */
+    @ModelTransformerField(defaultValue = "http://localhost:8888/linker-server/")
+    private String linkerServerHostBaseUrl;
 
     /**
      * 最小访问端口
@@ -37,7 +43,27 @@ public class DynamicAppConfiguration {
     @ModelTransformerField(defaultValue = "60000")
     private Integer maxAccessPort;
 
+    /**
+     * Jenkins访问地址
+     */
+    @ModelTransformerField(defaultValue = "#")
     private String jenkinsEndpoint;
 
+    /**
+     * Jenkins凭证
+     */
+    @ModelTransformerField(defaultValue = "#")
     private String jenkinsCredentials;
+
+    /**
+     * 流水线模板
+     */
+    @ModelTransformerField(defaultValue = "20231117")
+    private String jenkinsPipelineTemplateId;
+
+    /**
+     * DES密钥
+     */
+    @ModelTransformerField(defaultValue = "9ac.*VZk")
+    private String desSecretKey;
 }

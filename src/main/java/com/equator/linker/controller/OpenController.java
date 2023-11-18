@@ -1,16 +1,26 @@
 package com.equator.linker.controller;
 
 import com.equator.core.http.model.Response;
+import com.equator.linker.service.OpenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/open")
+@RequestMapping("/api/v1/open-api")
 public class OpenController {
+    @Autowired
+    private OpenService openService;
 
-    @GetMapping("/ping")
-    public Response ping() {
-        return Response.success();
+    @GetMapping("/nginx-conf")
+    public Response getNginxConf(@RequestParam String getNginxConfSecret) {
+        return Response.success(openService.getNginxConf(getNginxConfSecret));
+    }
+
+    @GetMapping("/dockerfile")
+    public Response getDockerfile(@RequestParam String getDockerfileSecret) {
+        return Response.success(openService.getDockerfile(getDockerfileSecret));
     }
 }

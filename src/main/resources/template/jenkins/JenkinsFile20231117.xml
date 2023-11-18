@@ -9,7 +9,6 @@
         </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
     </actions>
     <description>$JOB_DESCRIPTION</description>
-    <displayName>$JOB_DISPLAY_NAME</displayName>
     <keepDependencies>false</keepDependencies>
     <properties>
         <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty>
