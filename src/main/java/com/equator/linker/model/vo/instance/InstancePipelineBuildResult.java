@@ -8,5 +8,11 @@ public class InstancePipelineBuildResult {
 
     private Long duration;
 
+    private String durationStr;
+
+    private String submitTimeStr;
+
     private String pipelineResultStr;
+
+    private String pipelineUrl;
 }

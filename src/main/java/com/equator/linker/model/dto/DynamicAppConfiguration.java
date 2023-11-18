@@ -26,9 +26,9 @@ public class DynamicAppConfiguration {
     private String deployAccessHost;
 
     /**
-     * Linker系统服务器访问主机
+     * Linker系统服务器访问地址
      */
-    @ModelTransformerField(defaultValue = "http://localhost:8888/linker-server/")
+    @ModelTransformerField(defaultValue = "http://localhost:8888/linker-server")
     private String linkerServerHostBaseUrl;
 
     /**
@@ -66,4 +66,10 @@ public class DynamicAppConfiguration {
      */
     @ModelTransformerField(defaultValue = "9ac.*VZk")
     private String desSecretKey;
+
+    /**
+     * SM4
+     */
+    @ModelTransformerField(defaultValue = "6a0150d920232858462c94bdd0a967a6")
+    private String sm4SecretKey;
 }

@@ -157,18 +157,21 @@ public class JenkinsTest extends SpringBaseTest {
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
             // 不存在则返回null
-            JobInfo jobInfo = jobsApi.jobInfo(null, "JenkinsPipeline2");
-            log.info("testJenkinsGetJobInfo {}", jobInfo.nextBuildNumber());
+            JobInfo jobInfo = jobsApi.jobInfo(null, "Pipeline_1725898110754353153");
+            log.info("testJenkinsGetJobInfo {}", jobInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * BuildInfo{artifacts=[], actions=[Action{causes=[Cause{clazz=hudson.model.Cause$UserIdCause, shortDescription=Started by user api, userId=api, userName=api}], parameters=[], text=null, iconPath=null, _class=hudson.model.CauseAction}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=org.jenkinsci.plugins.workflow.libs.LibrariesAction}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=org.jenkinsci.plugins.workflow.cps.EnvActionImpl}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=org.jenkinsci.plugins.displayurlapi.actions.RunDisplayAction}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=org.jenkinsci.plugins.workflow.job.views.FlowGraphAction}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}, Action{causes=[], parameters=[], text=null, iconPath=null, _class=null}], building=false, description=null, displayName=#1, duration=136055, estimatedDuration=136055, fullDisplayName=Pipeline_1725898110754353153 #1, id=1, keepLog=false, number=1, queueId=103, result=SUCCESS, timestamp=1700321165134, url=http://172.16.8.2:28080/job/Pipeline_1725898110754353153/1/, changeSets=[], builtOn=null, culprits=[]}
+     */
     @Test
     public void testJenkinsGetJobBuildInfo() {
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
-            BuildInfo buildInfo = jobsApi.buildInfo(null, "JenkinsPipeline2", 1);
+            BuildInfo buildInfo = jobsApi.buildInfo(null, "Pipeline_1725898110754353153", 3);
             log.info("testJenkinsGetJobInfo {}", buildInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);

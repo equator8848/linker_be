@@ -8,6 +8,7 @@ import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.project.ProxyConfig;
 import com.equator.linker.model.vo.project.ProxyPassConfig;
+import com.equator.linker.model.vo.project.ScmConfig;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class TemplateUtil {
     }
 
     public static String getDockerfileTemplate(String templateId) {
-        return getTemplateAsString("template/docker", () -> getDockerfileFileName(templateId));
+        return getTemplateAsString("template/docker/", () -> getDockerfileFileName(templateId));
     }
 
     private static String getJenkinsFileTemplateFileName(String templateId) {
@@ -44,7 +45,7 @@ public class TemplateUtil {
     }
 
     public static String getJenkinsFileTemplate(String templateId) {
-        return getTemplateAsString("template/jenkins", () -> getJenkinsFileTemplateFileName(templateId));
+        return getTemplateAsString("template/jenkins/", () -> getJenkinsFileTemplateFileName(templateId));
     }
 
     private static String getNginxConfFileName(String templateId) {
@@ -52,7 +53,7 @@ public class TemplateUtil {
     }
 
     public static String getNginxConfTemplate(String templateId) {
-        return getTemplateAsString("template/nginx", () -> getNginxConfFileName(templateId));
+        return getTemplateAsString("template/nginx/", () -> getNginxConfFileName(templateId));
     }
 
     public static String getNginxProxyPassConfig(TbInstance tbInstance) {
@@ -73,7 +74,7 @@ public class TemplateUtil {
         String[] packageScriptsArr = tbProject.getPackageScript().split("\n");
         StringBuilder sb = new StringBuilder();
         for (String commandLine : packageScriptsArr) {
-            sb.append("sh %s".formatted(commandLine));
+            sb.append("sh '%s'\n".formatted(commandLine));
         }
         return sb.toString();
     }
@@ -87,12 +88,24 @@ public class TemplateUtil {
         throw new VerifyException("无法从SCM仓库地址获取仓库名称，请检查仓库地址是否以.git结尾");
     }
 
+    /**
+     * http://gitlab.localhost.com/equator/linker-fe.git
+     * http://equator:glpat-kFqFt1vEP_DGRHf3mxuE@gitlab.localhost.com/equator/linker-fe.git
+     *
+     * @param scmConfig
+     * @return
+     */
+    public static String getScmUrlWithAccessToken(ScmConfig scmConfig) {
+        String usernameAndToken = "%s:%s@".formatted(scmConfig.getUsername(), scmConfig.getAccessToken());
+        return scmConfig.getRepositoryUrl().replaceFirst("://(.*?)/", "://%s$1/".formatted(usernameAndToken));
+    }
+
     private static String getPipelineScriptsFileName(String templateId) {
         return String.format("PipelineScripts%s.txt".formatted(templateId));
     }
 
     public static String getPipelineScriptsTemplate(String templateId) {
-        return getTemplateAsString("template/pipelineScripts", () -> getPipelineScriptsFileName(templateId));
+        return getTemplateAsString("template/pipelineScripts/", () -> getPipelineScriptsFileName(templateId));
     }
 
 

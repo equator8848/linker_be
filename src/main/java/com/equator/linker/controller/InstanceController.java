@@ -42,9 +42,4 @@ public class InstanceController {
         instanceService.buildPipeline(instanceId);
         return Response.success();
     }
-
-    @GetMapping("/pipeline-build-result")
-    public Response getPipelineBuildResult(@RequestParam Long instanceId) {
-        return Response.success(instanceService.getPipelineBuildResult(instanceId));
-    }
 }

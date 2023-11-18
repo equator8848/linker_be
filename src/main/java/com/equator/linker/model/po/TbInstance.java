@@ -83,6 +83,18 @@ public class TbInstance extends BaseEntityField {
     private Integer latestBuildNumber;
 
     /**
+     * 最近一次构建提交时间
+     */
+    @TableField(value = "latest_submit_timestamp")
+    private Long latestSubmitTimestamp;
+
+    /**
+     * 最近一次构建的URL
+     */
+    @TableField(value = "latest_build_pipeline_url")
+    private String latestBuildPipelineUrl;
+
+    /**
      * 是否正在构建中
      */
     @TableField(value = "building_flag")

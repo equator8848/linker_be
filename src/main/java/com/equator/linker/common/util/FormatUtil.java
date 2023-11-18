@@ -58,5 +58,9 @@ public class FormatUtil {
         }
     }
 
+    public static String msTimePretty(long timeMs) {
+        return timePretty(timeMs / 1000);
+    }
+
 
 }

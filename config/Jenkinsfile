@@ -36,8 +36,8 @@ pipeline {
                 unstash("PackageOutput")
                 sh 'pwd'
                 sh 'ls'
-                sh 'curl -O http://172.16.8.2:29999/default.conf'
-                sh 'curl -O http://172.16.8.2:29999/Dockerfile'
+                sh 'curl -o default.conf http://172.16.8.2:29999/default.conf'
+                sh 'curl -o Dockerfile http://172.16.8.2:29999/Dockerfile'
                 sh 'ls'
                 sh 'docker build -t my-nginx-image .'
                 sh 'docker images'

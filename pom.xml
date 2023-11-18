@@ -24,6 +24,8 @@
         <jenkins-rest.version>1.0.2</jenkins-rest.version>
         <junit.version>4.12</junit.version>
         <hutool.version>5.8.22</hutool.version>
+
+        <bcprov.version>1.55</bcprov.version>
     </properties>
     <dependencies>
         <dependency>
@@ -90,6 +92,12 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>${hutool.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${bcprov.version}</version>
         </dependency>
     </dependencies>
 

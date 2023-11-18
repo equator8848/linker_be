@@ -57,5 +57,10 @@ public class InstanceDetailsInfo {
 
     private Boolean isOwner;
 
+    /**
+     * 访问地址
+     */
+    private String accessUrl;
+
     private InstancePipelineBuildResult instancePipelineBuildResult;
 }
