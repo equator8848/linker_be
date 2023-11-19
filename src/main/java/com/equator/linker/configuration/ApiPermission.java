@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  * @Date: 2021/2/10 10:45
  **/
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Administrator {
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface ApiPermission {
+    int requireRoleType();
 }

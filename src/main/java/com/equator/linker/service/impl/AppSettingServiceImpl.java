@@ -41,9 +41,14 @@ public class AppSettingServiceImpl implements AppSettingService {
     }
 
     @Override
-    public void update(Integer id, String settingValue) {
+    public void update(Long id, String settingValue) {
         TbInfAppSetting tbAppSetting = appSettingDaoService.getById(id);
         tbAppSetting.setSettingValue(settingValue);
         appSettingDaoService.updateById(tbAppSetting);
+    }
+
+    @Override
+    public void delete(Long id) {
+        appSettingDaoService.removeById(id);
     }
 }

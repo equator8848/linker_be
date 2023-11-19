@@ -2,10 +2,13 @@ package com.equator.linker.controller;
 
 
 import com.equator.core.http.model.Response;
+import com.equator.linker.configuration.ApiPermission;
+import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.service.AppSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
 @RestController
 @RequestMapping("/api/v1/app-settings")
 public class AppSettingController {
@@ -27,7 +30,7 @@ public class AppSettingController {
     }
 
     @PutMapping("/update")
-    public Response update(@RequestParam Integer id, @RequestParam String settingValue) {
+    public Response update(@RequestParam Long id, @RequestParam String settingValue) {
         appSettingService.update(id, settingValue);
         return Response.success();
     }

@@ -6,7 +6,7 @@ import com.equator.core.model.exception.ForbiddenException;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.core.util.jwt.JwtUtil;
-import com.equator.linker.model.constant.ModelStatus;
+import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.model.vo.LoginUser;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -92,8 +92,8 @@ public class UserAuthUtil {
      * @return
      */
     public static boolean isAdmin(LoginUser loginUser) {
-        return ModelStatus.RoleType.SYSTEM_ADMIN.equals(loginUser.getRoleType()) ||
-                ModelStatus.RoleType.SUPER_ADMIN.equals(loginUser.getRoleType());
+        return RoleType.SYSTEM_ADMIN == loginUser.getRoleType() ||
+                RoleType.SUPER_ADMIN == loginUser.getRoleType();
     }
 
     /**
@@ -103,6 +103,6 @@ public class UserAuthUtil {
      */
     public static boolean isUser() {
         LoginUser loginUser = UserContextUtil.getUser();
-        return ModelStatus.RoleType.USER.equals(loginUser.getRoleType());
+        return RoleType.USER == loginUser.getRoleType();
     }
 }

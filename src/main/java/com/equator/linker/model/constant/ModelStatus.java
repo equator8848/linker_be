@@ -49,31 +49,4 @@ public class ModelStatus {
         }
 
     }
-
-    public static final String DEFAULT_PHONE_PREFIX = "86";
-
-    /**
-     * 角色类型
-     */
-    public static class RoleType {
-        /**
-         * 游客
-         */
-        public final static Short VISITOR = 1;
-
-        /**
-         * 普通用户
-         */
-        public final static Short USER = 2;
-
-        /**
-         * 系统管理员
-         */
-        public final static Short SYSTEM_ADMIN = 4;
-
-        /**
-         * 超级管理员
-         */
-        public final static Short SUPER_ADMIN = 8;
-    }
 }

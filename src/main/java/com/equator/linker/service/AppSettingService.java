@@ -10,5 +10,7 @@ public interface AppSettingService {
 
     void add(String settingKey, String settingValue, String remark);
 
-    void update(Integer id, String settingValue);
+    void update(Long id, String settingValue);
+
+    void delete(Long id);
 }

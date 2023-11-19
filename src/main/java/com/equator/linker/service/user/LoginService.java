@@ -14,6 +14,7 @@ import com.equator.linker.dao.service.LoginLogDaoService;
 import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.ModelStatus;
+import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
@@ -107,7 +108,7 @@ public class LoginService implements InitializingBean {
         long userCount = userDaoService.count();
         if (userCount == 0) {
             // 第一个注册的用户，视为超级管理员
-            tbUser.setRoleType(ModelStatus.RoleType.SUPER_ADMIN);
+            tbUser.setRoleType(RoleType.SUPER_ADMIN);
         }
         tbUser.setStatus(ModelStatus.UserStatus.NORMAL);
         userDaoService.save(tbUser);

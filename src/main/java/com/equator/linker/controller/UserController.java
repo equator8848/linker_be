@@ -2,6 +2,8 @@ package com.equator.linker.controller;
 
 
 import com.equator.core.http.model.Response;
+import com.equator.linker.configuration.ApiPermission;
+import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.model.vo.user.UserCreateVO;
 import com.equator.linker.model.vo.user.UserPasswordUpdateVO;
 import com.equator.linker.model.vo.user.UserUpdateVO;
@@ -18,24 +20,28 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/add")
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
     public Response addUser(@RequestBody @Validated UserCreateVO userCreateVO) {
         userService.addUser(userCreateVO);
         return Response.success();
     }
 
     @PutMapping("/update")
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
     public Response updateUser(@RequestBody @Validated UserUpdateVO updateVO) {
         userService.updateUser(updateVO);
         return Response.success();
     }
 
     @PutMapping("/update-status")
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
     public Response updateUserStatus(@RequestParam Long userId, @RequestParam Short userStatus) {
         userService.updateUserStatus(userId, userStatus);
         return Response.success();
     }
 
     @GetMapping("/user-list")
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
     public Response getUserList(@RequestParam(required = false) String search,
                                 @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                 @RequestParam(required = false, defaultValue = "16") Integer pageSize) {
@@ -43,6 +49,7 @@ public class UserController {
     }
 
     @GetMapping("/user-info")
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
     public Response getUserInfo(@RequestParam Long uid) {
         return Response.success(userService.getUserInfo(uid));
     }

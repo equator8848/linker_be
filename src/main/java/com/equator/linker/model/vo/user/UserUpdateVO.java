@@ -28,4 +28,7 @@ public class UserUpdateVO {
 
     @NotNull
     private Short status;
+
+    @NotNull
+    private Short roleType;
 }

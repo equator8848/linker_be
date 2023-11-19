@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
         tbUser.setPhoneNumber(userCreateVO.getPhoneNumber());
         tbUser.setEmail(userCreateVO.getEmail());
         tbUser.setStatus(ModelStatus.UserStatus.NORMAL);
+        tbUser.setRoleType(userCreateVO.getRoleType());
         userDaoService.save(tbUser);
     }
 
@@ -71,6 +72,7 @@ public class UserServiceImpl implements UserService {
         tbUser.setPhoneNumber(userUpdateVO.getPhoneNumber());
         tbUser.setEmail(userUpdateVO.getEmail());
         tbUser.setStatus(userUpdateVO.getStatus());
+        tbUser.setRoleType(userUpdateVO.getRoleType());
         userDaoService.updateById(tbUser);
     }
 
@@ -118,6 +120,7 @@ public class UserServiceImpl implements UserService {
         userInfoVO.setPhoneNumber(tbUser.getPhoneNumber());
         userInfoVO.setEmail(tbUser.getEmail());
         userInfoVO.setStatus(tbUser.getStatus());
+        userInfoVO.setRoleType(tbUser.getRoleType());
         return userInfoVO;
     }
 

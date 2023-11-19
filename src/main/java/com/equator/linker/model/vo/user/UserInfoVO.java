@@ -19,4 +19,6 @@ public class UserInfoVO {
     private String email;
 
     private Short status;
+
+    private Short roleType;
 }

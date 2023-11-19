@@ -20,7 +20,7 @@ public class UserLoginDataVO {
      * 用户手机或者邮箱
      */
     @NotNull
-    @Email(message = "邮箱格式不对")
+    @Email(message = "账号不符合邮箱格式")
     private String userIdentification;
 
     @NotNull
