@@ -34,4 +34,10 @@ public class AppSettingController {
         appSettingService.update(id, settingValue);
         return Response.success();
     }
+
+    @DeleteMapping("/delete")
+    public Response delete(@RequestParam Long id) {
+        appSettingService.delete(id);
+        return Response.success();
+    }
 }
