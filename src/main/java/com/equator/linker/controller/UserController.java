@@ -3,8 +3,10 @@ package com.equator.linker.controller;
 
 import com.equator.core.http.model.Response;
 import com.equator.linker.model.vo.user.UserCreateVO;
+import com.equator.linker.model.vo.user.UserPasswordUpdateVO;
 import com.equator.linker.model.vo.user.UserUpdateVO;
 import com.equator.linker.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping("/update-status")
-    public Response updateUserStatus(@RequestParam Integer userId, @RequestParam Short userStatus) {
+    public Response updateUserStatus(@RequestParam Long userId, @RequestParam Short userStatus) {
         userService.updateUserStatus(userId, userStatus);
         return Response.success();
     }
@@ -41,7 +43,18 @@ public class UserController {
     }
 
     @GetMapping("/user-info")
-    public Response getUserInfo(@RequestParam Integer uid) {
+    public Response getUserInfo(@RequestParam Long uid) {
         return Response.success(userService.getUserInfo(uid));
+    }
+
+    @PutMapping("/change-username")
+    public Response changeUsername(@RequestParam String newUsername) {
+        return Response.success(userService.changeUsername(newUsername));
+    }
+
+    @PutMapping("/update-user-password")
+    public Response updateUserPassword(@RequestBody @Valid UserPasswordUpdateVO userPasswordUpdateVO) {
+        userService.updateUserPassword(userPasswordUpdateVO);
+        return Response.success();
     }
 }

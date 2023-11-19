@@ -19,6 +19,8 @@ public class LoginUser {
 
     private String avatarUrl;
 
+    private String email;
+
     private String userName;
 
     private String nickName;

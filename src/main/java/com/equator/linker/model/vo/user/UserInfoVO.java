@@ -12,6 +12,8 @@ public class UserInfoVO {
 
     private String userName;
 
+    private String nickName;
+
     private String phoneNumber;
 
     private String email;

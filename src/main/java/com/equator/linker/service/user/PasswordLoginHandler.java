@@ -36,6 +36,8 @@ public class PasswordLoginHandler implements LoginHandler {
         loginUser.setUid(tbUser.getId());
         loginUser.setNickName(tbUser.getUserName());
         loginUser.setUserName(tbUser.getUserName());
+        loginUser.setEmail(tbUser.getEmail());
+        loginUser.setRoleType(tbUser.getRoleType());
         return Triple.of(LoginStatus.SUCCESS, loginUser, tbUser);
     }
 }

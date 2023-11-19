@@ -1,5 +1,6 @@
 package com.equator.linker.model.vo.user;
 
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ public class UserLoginDataVO {
      * 用户手机或者邮箱
      */
     @NotNull
+    @Email(message = "邮箱格式不对")
     private String userIdentification;
 
     @NotNull

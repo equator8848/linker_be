@@ -4,6 +4,7 @@ package com.equator.linker.service;
 import com.equator.linker.model.vo.PageData;
 import com.equator.linker.model.vo.user.UserCreateVO;
 import com.equator.linker.model.vo.user.UserInfoVO;
+import com.equator.linker.model.vo.user.UserPasswordUpdateVO;
 import com.equator.linker.model.vo.user.UserUpdateVO;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,13 @@ public interface UserService {
 
     void updateUser(UserUpdateVO userUpdateVO);
 
-    void updateUserStatus(Integer userId, Short userStatus);
+    void updateUserStatus(Long userId, Short userStatus);
 
     PageData<UserInfoVO> getUserList(String search, Integer pageNum, Integer pageSize);
 
-    UserInfoVO getUserInfo(Integer uid);
+    UserInfoVO getUserInfo(Long uid);
+
+    UserInfoVO changeUsername(String newUsername);
+
+    void updateUserPassword(UserPasswordUpdateVO userPasswordUpdateVO);
 }

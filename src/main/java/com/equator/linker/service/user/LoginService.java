@@ -83,6 +83,8 @@ public class LoginService implements InitializingBean {
                 loginUser.setUid(tbUser.getId());
                 loginUser.setNickName(tbUser.getUserName());
                 loginUser.setUserName(tbUser.getUserName());
+                loginUser.setEmail(tbUser.getEmail());
+                loginUser.setRoleType(tbUser.getRoleType());
                 return Pair.of(loginUser, tbUser);
             }
             loginLogDaoService.appendLoginLog(userLoginVO.getUserIdentification(), LoginStatus.USER_NOT_FOUND, userLoginVO.getRemoteAddress());

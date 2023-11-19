@@ -28,11 +28,25 @@ public class ModelStatus {
     public static class DelFlag {
         public final static Short DELETED = 1;
         public final static Short NORMAL = 0;
+
+        public static String getStatusStr(short status) {
+            if (status == DELETED) {
+                return "删除";
+            }
+            return "正常";
+        }
     }
 
     public static class UserStatus {
         public final static Short DISABLE = 0;
         public final static Short NORMAL = 1;
+
+        public static String getUserStatusStr(short userStatus) {
+            if (userStatus == DISABLE) {
+                return "冻结";
+            }
+            return "激活";
+        }
 
     }
 

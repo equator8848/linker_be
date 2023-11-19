@@ -24,6 +24,7 @@ public class LoginLogServiceImpl implements LoginLogService {
         return loginLogList.stream().map(loginLog -> {
             LoginLogVO loginLogVO = new LoginLogVO();
             BeanUtils.copyProperties(loginLog, loginLogVO);
+            loginLogVO.setUserKey(loginLog.getLoginUserKey());
             return loginLogVO;
         }).collect(Collectors.toList());
     }
