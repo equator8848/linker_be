@@ -3,8 +3,6 @@ package com.equator.linker.service.impl;
 
 import com.equator.linker.common.util.IpNetUtil;
 import com.equator.linker.common.util.UserAuthUtil;
-import com.equator.linker.configuration.SecurityConfiguration;
-import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
 import com.equator.linker.model.vo.user.UserLoginDataVO;
@@ -27,13 +25,6 @@ import java.util.Date;
 @Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
-
-    @Autowired
-    private UserDaoService userDaoService;
-
-    @Autowired
-    private SecurityConfiguration securityConfiguration;
-
     @Autowired
     private LoginService loginService;
 

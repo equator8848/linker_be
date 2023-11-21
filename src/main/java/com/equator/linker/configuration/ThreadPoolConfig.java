@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 // @Configuration
 public class ThreadPoolConfig {
 
-    @Bean("adminTaskExecutor")
+    @Bean("linkerTaskExecutor")
     public Executor adminTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         // 设置线程池参数信息
@@ -21,7 +21,7 @@ public class ThreadPoolConfig {
         taskExecutor.setQueueCapacity(1024);
         // 空闲线程存活时间
         taskExecutor.setKeepAliveSeconds(60);
-        taskExecutor.setThreadNamePrefix("adminTaskExecutor");
+        taskExecutor.setThreadNamePrefix("linkerTaskExecutor");
         taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
         taskExecutor.setAwaitTerminationSeconds(60);
         // 修改拒绝策略为使用当前线程执行

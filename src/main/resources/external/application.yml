@@ -21,6 +21,11 @@ spring:
     timeout-per-shutdown-phase: 60
   main:
     banner-mode: console
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_linker_prod?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
 
 mybatis:
   type-aliases-package: com.equator.linker.model.po
@@ -33,7 +38,14 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-
 logging:
   file:
     path: ./logs
+
+
+linker:
+  security:
+    md5-salt: LYcuh0TA8q7w
+    des-key: 0pe.*VZk
+  base:
+    env: prod

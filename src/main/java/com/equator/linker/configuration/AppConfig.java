@@ -6,7 +6,6 @@ import com.equator.cache.guava.LogVersionCacheLoader;
 import com.equator.cache.guava.VersionCacheBuilder;
 import com.equator.cache.guava.VersionCacheElement;
 import com.equator.core.dynamic.config.ModelTransformer;
-import com.equator.core.model.exception.InnerException;
 import com.equator.linker.common.ThreadPoolService;
 import com.equator.linker.dao.mapper.TbInfAppSettingMapper;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
@@ -38,9 +37,6 @@ public class AppConfig {
     public void init() {
         DynamicAppConfiguration config = this.getConfig();
         log.info("load config {}", config);
-        if (config == null) {
-            throw new InnerException("配置加载失败，禁止启动程序");
-        }
     }
 
     private final LoadingCache<Integer, VersionCacheElement<Date, DynamicAppConfiguration>> dynamicConfigCache =

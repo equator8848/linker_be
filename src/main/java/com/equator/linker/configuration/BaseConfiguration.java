@@ -1,7 +1,7 @@
 package com.equator.linker.configuration;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "linker.base")
 public class BaseConfiguration {
 
     /**
      * 环境
      */
+    @Value("${linker.base.env}")
     private String env;
 
     public boolean isLocal() {
