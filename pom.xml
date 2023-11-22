@@ -112,6 +112,7 @@
     </dependencies>
 
     <build>
+        <finalName>linker</finalName>
         <plugins>
             <plugin>
                 <groupId>com.baomidou</groupId>
