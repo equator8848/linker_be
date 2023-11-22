@@ -32,5 +32,6 @@ public class TbInfAppSetting extends BaseEntityField {
     /**
      * 备注
      */
+    @TableField(value = "remark")
     private String remark;
 }

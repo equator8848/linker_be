@@ -20,11 +20,13 @@ public class TbProject extends BaseEntityField {
 	/**
 	 * 项目名称
 	 */
+	@TableField(value = "name")
 	private String name;
 
 	/**
 	 * 项目介绍
 	 */
+	@TableField(value = "intro")
 	private String intro;
 
 	/**

@@ -10,7 +10,7 @@ public class BaseEntityField {
     /**
      *
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.ASSIGN_ID, value = "id")
     private Long id;
 
 

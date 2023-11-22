@@ -58,7 +58,10 @@ public class FormatUtil {
         }
     }
 
-    public static String msTimePretty(long timeMs) {
+    public static String msTimePretty(Long timeMs) {
+        if (timeMs == null) {
+            return "-";
+        }
         return timePretty(timeMs / 1000);
     }
 

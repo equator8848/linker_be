@@ -15,11 +15,12 @@ import lombok.Data;
  */
 @Data
 @TableName("tb_user")
-public class TbUser extends BaseEntityField{
+public class TbUser extends BaseEntityField {
 
     /**
      *
      */
+    @TableField(value = "status")
     private Short status;
 
     /**
@@ -37,6 +38,7 @@ public class TbUser extends BaseEntityField{
     /**
      *
      */
+    @TableField(value = "email")
     private String email;
 
     /**

@@ -26,11 +26,13 @@ public class TbInstance extends BaseEntityField {
     /**
      * 实例名称
      */
+    @TableField(value = "name")
     private String name;
 
     /**
      * 实例介绍
      */
+    @TableField(value = "intro")
     private String intro;
 
     /**

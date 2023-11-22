@@ -16,7 +16,7 @@ public class DynamicAppConfiguration {
     /**
      * 是否允许用户自行注册
      */
-    @ModelTransformerField(defaultValue = "false")
+    @ModelTransformerField(defaultValue = "true")
     private Boolean allowRegister;
 
     /**
