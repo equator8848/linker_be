@@ -61,6 +61,8 @@ public class ProjectCreateRequest {
      */
     private String deployFolder;
 
+    private Integer routeMode;
+
     /**
      * 入口相对路径
      */

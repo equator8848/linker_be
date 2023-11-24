@@ -66,6 +66,12 @@ public class TbProject extends BaseEntityField {
     private String deployFolder;
 
     /**
+     * 路由模式
+     */
+    @TableField(value = "route_mode")
+    private Integer routeMode;
+
+    /**
      * 入口相对路径
      */
     @TableField(value = "access_entrance")

@@ -67,6 +67,11 @@ public class ProjectDetailsInfo {
     private String deployFolder;
 
     /**
+     * 路由模式
+     */
+    private Integer routeMode;
+
+    /**
      * 入口相对路径
      */
     private String accessEntrance;

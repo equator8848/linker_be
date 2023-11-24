@@ -31,7 +31,9 @@ pipeline {
                 sh 'pwd'
                 sh 'ls'
                 sh "curl -o default.conf $GET_NGINX_CONF_URL -H 'Accept: text/html'"
+                sh "cat default.conf"
                 sh "curl -o Dockerfile $GET_DOCKER_FILE_URL -H 'Accept: text/html'"
+                sh "cat Dockerfile"
                 sh 'ls'
                 sh 'docker build -t $DOCKER_CONTAINER_IMAGE_NAME .'
                 sh 'docker images'

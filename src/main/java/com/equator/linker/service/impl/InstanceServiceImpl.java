@@ -93,9 +93,18 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         tbInstance.setAccessPort(nextAccessPort);
-        tbInstance.setAccessLink(String.format("%s:%s%s",
+
+        String deployFolder = Optional.ofNullable(tbProject.getDeployFolder()).orElse("");
+        String accessEntrance = Optional.ofNullable(tbProject.getAccessEntrance()).orElse("");
+        if (StringUtils.isNotBlank(deployFolder)) {
+            if (!accessEntrance.startsWith("/")) {
+                accessEntrance = "/" + accessEntrance;
+            }
+        }
+        tbInstance.setAccessLink(String.format("%s:%s/%s%s",
                 dynamicAppConfiguration.getDeployAccessHost(), nextAccessPort,
-                Optional.ofNullable(tbProject.getAccessEntrance()).orElse("/")));
+                deployFolder,
+                accessEntrance));
         tbInstance.setAccessLevel(BaseConstant.AccessLevel.valueOf(instanceCreateRequest.getAccessLevel()).getCode());
 
         tbInstance.setPipelineTemplateId(dynamicAppConfiguration.getJenkinsPipelineTemplateId());
@@ -112,13 +121,29 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public void update(InstanceUpdateRequest instanceUpdateRequest) {
+
         Long instanceId = instanceUpdateRequest.getId();
         TbInstance tbInstance = instanceDaoService.getById(instanceId);
         PreCondition.isNotNull(tbInstance, "实例不存在");
         UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
 
+        TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
+        PreCondition.isNotNull(tbProject, "项目不存在");
+
         tbInstance.setName(instanceUpdateRequest.getName());
         tbInstance.setIntro(instanceUpdateRequest.getIntro());
+
+        String deployFolder = Optional.ofNullable(tbProject.getDeployFolder()).orElse("");
+        String accessEntrance = Optional.ofNullable(tbProject.getAccessEntrance()).orElse("");
+        if (StringUtils.isNotBlank(deployFolder)) {
+            if (!accessEntrance.startsWith("/")) {
+                accessEntrance = "/" + accessEntrance;
+            }
+        }
+        DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
+        tbInstance.setAccessLink(String.format("%s:%s/%s%s",
+                dynamicAppConfiguration.getDeployAccessHost(), tbInstance.getAccessPort(),
+                deployFolder, accessEntrance));
 
         if (StringUtils.isNotEmpty(instanceUpdateRequest.getScmBranch())) {
             tbInstance.setScmBranch(instanceUpdateRequest.getScmBranch());
@@ -237,6 +262,10 @@ public class InstanceServiceImpl implements InstanceService {
                 // 未构建过
                 createJob(jobsApi, tbProject, tbInstance, pipelineName);
                 tbInstance.setPipelineName(pipelineName);
+            } else {
+                // 更新流水线配置
+                String jobConfigXml = getJobConfigXml(tbProject, tbInstance);
+                jobsApi.config(null, pipelineName, jobConfigXml);
             }
             JobInfo jobInfo = jobsApi.jobInfo(null, pipelineName);
             int nextBuildNumber = jobInfo.nextBuildNumber();
@@ -252,6 +281,12 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     private void createJob(JobsApi jobsApi, TbProject tbProject, TbInstance tbInstance, String pipelineName) {
+        String jenkinsFileTemplate = getJobConfigXml(tbProject, tbInstance);
+        RequestStatus requestStatus = jobsApi.create(null, pipelineName, jenkinsFileTemplate);
+        PreCondition.isTrue(requestStatus.value(), "Jenkins流水线创建失败");
+    }
+
+    private String getJobConfigXml(TbProject tbProject, TbInstance tbInstance) {
         Long instanceId = tbInstance.getId();
         DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
 
@@ -295,8 +330,7 @@ public class InstanceServiceImpl implements InstanceService {
         jenkinsFileTemplate = jenkinsFileTemplate
                 .replaceAll("\\$JOB_DESCRIPTION", "由Linker系统自动化创建，请勿手动修改")
                 .replaceAll("\\$PIPELINE_SCRIPTS", pipelineScriptsTemplate);
-        RequestStatus requestStatus = jobsApi.create(null, pipelineName, jenkinsFileTemplate);
-        PreCondition.isTrue(requestStatus.value(), "Jenkins流水线创建失败");
+        return jenkinsFileTemplate;
     }
 
     @Override

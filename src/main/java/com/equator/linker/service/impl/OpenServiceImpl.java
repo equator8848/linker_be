@@ -32,11 +32,20 @@ public class OpenServiceImpl implements OpenService {
         DynamicAppConfiguration appConfigConfig = appConfig.getConfig();
         String getNginxConfString = SM4Util.decryptBySM4ECB(getNginxConfSecret, appConfigConfig.getSm4SecretKey());
         GetNginxConfRequest getNginxConfRequest = JsonUtil.fromJson(getNginxConfString, GetNginxConfRequest.class);
+
         TbInstance tbInstance = instanceDaoService.getById(getNginxConfRequest.getInstanceId());
         PreCondition.isNotNull(tbInstance, "无法获取实例信息");
+
+        TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
+        PreCondition.isNotNull(tbProject, "无法获取项目信息");
+
+
         String nginxConfTemplate = TemplateUtil.getNginxConfTemplate(tbInstance.getPipelineTemplateId());
         String nginxProxyPassConfig = TemplateUtil.getNginxProxyPassConfig(tbInstance);
-        return nginxConfTemplate.replaceAll("\\$PROXY_PASS_CONF", nginxProxyPassConfig);
+        String nginxRootConf = TemplateUtil.getNginxRootConf(tbProject);
+        return nginxConfTemplate
+                .replaceAll("\\$ROOT_CONF", nginxRootConf)
+                .replaceAll("\\$PROXY_PASS_CONF", nginxProxyPassConfig);
     }
 
     @Override

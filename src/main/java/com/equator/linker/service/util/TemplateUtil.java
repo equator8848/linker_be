@@ -5,6 +5,7 @@ import cn.hutool.core.io.resource.ClassPathResource;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.core.model.exception.VerifyException;
 import com.equator.core.util.json.JsonUtil;
+import com.equator.linker.model.constant.RouteMode;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.project.ProxyConfig;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +58,27 @@ public class TemplateUtil {
 
     public static String getNginxConfTemplate(String templateId) {
         return getTemplateAsString("template/nginx/", () -> getNginxConfFileName(templateId));
+    }
+
+    public static String getNginxRootConf(TbProject tbProject) {
+        Integer routeMode = Optional.ofNullable(tbProject.getRouteMode()).orElse(RouteMode.HASH.ordinal());
+        if (routeMode.equals(RouteMode.HASH.ordinal())) {
+            return """
+                    location / {
+                        root   /usr/share/nginx/html;
+                        index  index.html index.htm;
+                    }
+                    """;
+        } else {
+            String deployFolder = tbProject.getDeployFolder();
+            return """
+                    location / {
+                        root   /usr/share/nginx/html;
+                        try_files \\$uri \\$uri/ %s/index.html;
+                        index  index.html index.htm;
+                    }
+                    """.formatted(StringUtils.isBlank(deployFolder) ? "" : "/" + deployFolder);
+        }
     }
 
     public static String getNginxProxyPassConfig(TbInstance tbInstance) {
