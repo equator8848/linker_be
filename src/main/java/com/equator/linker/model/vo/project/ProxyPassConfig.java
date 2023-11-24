@@ -7,4 +7,6 @@ public class ProxyPassConfig {
     private String location;
 
     private String proxyPass;
+
+    private String rewriteConfig;
 }

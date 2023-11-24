@@ -1,5 +1,5 @@
 FROM nginx:1.25.3
 
-ADD $PACKAGE_OUTPUT_DIR /usr/share/nginx/html/
+ADD $PACKAGE_OUTPUT_DIR /usr/share/nginx/html/$DEPLOY_FOLDER
 
 ADD default.conf /etc/nginx/conf.d/

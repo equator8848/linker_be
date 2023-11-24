@@ -52,6 +52,18 @@ public class OpenServiceImpl implements OpenService {
         PreCondition.isNotNull(tbProject, "无法获取项目信息");
 
         String dockerfileTemplate = TemplateUtil.getDockerfileTemplate(tbInstance.getPipelineTemplateId());
-        return dockerfileTemplate.replaceAll("\\$PACKAGE_OUTPUT_DIR", tbProject.getPackageOutputDir());
+        return dockerfileTemplate
+                .replaceAll("\\$PACKAGE_OUTPUT_DIR", tbProject.getPackageOutputDir())
+                .replaceAll("\\$DEPLOY_FOLDER", removeLeadingSlash(tbProject.getDeployFolder()));
+    }
+
+    public String removeLeadingSlash(String input) {
+        if (input == null) {
+            return "";
+        }
+        if (input.startsWith("/")) {
+            return input.substring(1);
+        }
+        return input;
     }
 }

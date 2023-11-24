@@ -42,6 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
         tbProject.setPackageImage(projectCreateRequest.getPackageImage());
         tbProject.setPackageScript(projectCreateRequest.getPackageScript());
         tbProject.setPackageOutputDir(projectCreateRequest.getPackageOutputDir());
+        tbProject.setDeployFolder(projectCreateRequest.getDeployFolder());
         tbProject.setAccessEntrance(projectCreateRequest.getAccessEntrance());
         tbProject.setAccessLevel(BaseConstant.AccessLevel.valueOf(projectCreateRequest.getAccessLevel()).getCode());
         projectDaoService.save(tbProject);
@@ -69,6 +70,7 @@ public class ProjectServiceImpl implements ProjectService {
         tbProject.setPackageImage(projectUpdateRequest.getPackageImage());
         tbProject.setPackageScript(projectUpdateRequest.getPackageScript());
         tbProject.setPackageOutputDir(projectUpdateRequest.getPackageOutputDir());
+        tbProject.setDeployFolder(projectUpdateRequest.getDeployFolder());
         tbProject.setAccessEntrance(projectUpdateRequest.getAccessEntrance());
         tbProject.setAccessLevel(BaseConstant.AccessLevel.valueOf(projectUpdateRequest.getAccessLevel()).getCode());
         projectDaoService.updateById(tbProject);

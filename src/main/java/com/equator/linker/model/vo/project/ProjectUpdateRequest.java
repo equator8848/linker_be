@@ -60,6 +60,11 @@ public class ProjectUpdateRequest {
     private String packageOutputDir;
 
     /**
+     * 二级部署路径
+     */
+    private String deployFolder;
+
+    /**
      * 入口相对路径
      */
     @NotNull

@@ -2,6 +2,7 @@ package com.equator.linker.service.util;
 
 
 import cn.hutool.core.io.resource.ClassPathResource;
+import com.equator.core.model.exception.PreCondition;
 import com.equator.core.model.exception.VerifyException;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.linker.model.po.TbInstance;
@@ -10,6 +11,7 @@ import com.equator.linker.model.vo.project.ProxyConfig;
 import com.equator.linker.model.vo.project.ProxyPassConfig;
 import com.equator.linker.model.vo.project.ScmConfig;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,11 +63,31 @@ public class TemplateUtil {
         StringBuilder sb = new StringBuilder();
         List<ProxyPassConfig> proxyPassConfigs = proxyConfig.getProxyPassConfigs();
         for (ProxyPassConfig proxyPassConfig : proxyPassConfigs) {
-            sb.append("""
-                    location %s {
-                        proxy_pass %s;
-                    }
-                     """.formatted(proxyPassConfig.getLocation(), proxyPassConfig.getProxyPass()));
+            String location = proxyPassConfig.getLocation();
+            String rewriteConfig = proxyPassConfig.getRewriteConfig();
+            String proxyPass = proxyPassConfig.getProxyPass();
+            if (StringUtils.isBlank(rewriteConfig)) {
+                PreCondition.isTrue(!StringUtils.isBlank(proxyPass), "rewriteConfig与proxyPass不能同时为空");
+                sb.append("""
+                        location %s {
+                            proxy_pass %s;
+                        }
+                         """.formatted(location, proxyPass));
+            } else if (StringUtils.isBlank(proxyPass)) {
+                PreCondition.isTrue(!StringUtils.isBlank(rewriteConfig), "rewriteConfig与proxyPass不能同时为空");
+                sb.append("""
+                        location %s {
+                            rewrite %s;
+                        }
+                         """.formatted(location, rewriteConfig));
+            } else {
+                sb.append("""
+                        location %s {
+                            proxy_pass %s;
+                            rewrite %s;
+                        }
+                         """.formatted(location, proxyPass, rewriteConfig));
+            }
         }
         return sb.toString();
     }
