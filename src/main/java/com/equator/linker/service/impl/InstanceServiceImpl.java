@@ -16,12 +16,14 @@ import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.dao.service.InstanceDaoService;
+import com.equator.linker.dao.service.InstanceStarDaoService;
 import com.equator.linker.dao.service.InstanceUserRefDaoService;
 import com.equator.linker.dao.service.ProjectDaoService;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.JenkinsPipelineBuildResult;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbInstance;
+import com.equator.linker.model.po.TbInstanceStar;
 import com.equator.linker.model.po.TbInstanceUserRef;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.instance.*;
@@ -31,6 +33,7 @@ import com.equator.linker.service.InstanceService;
 import com.equator.linker.service.jenkins.JenkinsClientFactory;
 import com.equator.linker.service.util.TemplateUtil;
 import com.equator.linker.service.util.sm4.SM4Util;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -53,6 +57,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private InstanceDaoService instanceDaoService;
+
+    @Autowired
+    private InstanceStarDaoService instanceStarDaoService;
 
     @Autowired
     private InstanceUserRefDaoService instanceUserRefDaoService;
@@ -186,18 +193,28 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public List<InstanceDetailsInfo> list(InstanceListRequest instanceListRequest) {
         // 获取自己创建或加入的
-        Set<Long> targetInstanceIds = instanceUserRefDaoService.getInstanceIdByUserId(UserContextUtil.getUserId());
+        Long userId = UserContextUtil.getUserId();
+        Set<Long> targetInstanceIds = instanceUserRefDaoService.getInstanceIdByUserId(userId);
         // 公开的
         Set<Long> publicInstanceIds = instanceDaoService
                 .getInstanceIdsByAccessLevel(BaseConstant.AccessLevel.PUBLIC.getCode(), targetInstanceIds);
         targetInstanceIds.addAll(publicInstanceIds);
 
+        Long projectId = instanceListRequest.getProjectId();
+        Set<Long> starInstanceId = instanceStarDaoService.getStarInstanceIds(projectId, userId);
+        if (Boolean.TRUE.equals(instanceListRequest.getOnlyStar())) {
+            targetInstanceIds = Sets.intersection(targetInstanceIds, starInstanceId);
+        }
+
+        if (CollectionUtils.isEmpty(targetInstanceIds)) {
+            return Collections.emptyList();
+        }
+
         return instanceDaoService.list(Wrappers.<TbInstance>lambdaQuery()
                         .like(StringUtils.isNotEmpty(instanceListRequest.getSearchKeyword()),
                                 TbInstance::getName, instanceListRequest.getSearchKeyword())
-                        .eq(TbInstance::getProjectId, instanceListRequest.getProjectId())
-                        .in(!CollectionUtils.isEmpty(targetInstanceIds),
-                                TbInstance::getId, targetInstanceIds).orderByDesc(TbInstance::getId)).stream()
+                        .eq(TbInstance::getProjectId, projectId)
+                        .in(TbInstance::getId, targetInstanceIds).orderByDesc(TbInstance::getId)).stream()
                 .map(tbInstance -> {
                     InstanceDetailsInfo instanceDetailsInfo = new InstanceDetailsInfo();
                     BeanUtils.copyProperties(tbInstance, instanceDetailsInfo);
@@ -205,10 +222,12 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setAccessLevel(EnumUtil.getFieldBy(BaseConstant.AccessLevel::name,
                             BaseConstant.AccessLevel::getCode, tbInstance.getAccessLevel()));
 
-                    boolean isOwner = tbInstance.getCreateUserId().equals(UserContextUtil.getUserId());
+                    boolean isOwner = tbInstance.getCreateUserId().equals(userId);
                     instanceDetailsInfo.setIsOwner(isOwner);
 
                     instanceDetailsInfo.setAccessUrl(tbInstance.getAccessLink());
+
+                    instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
 
                     instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
                     return instanceDetailsInfo;
@@ -378,6 +397,22 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (Exception e) {
             log.error("getPipelineBuildResult error {}", instanceId, e);
             throw new InnerException("获取流水线构建状态失败，请联系管理员");
+        }
+    }
+
+    @Override
+    public void instanceStarAction(InstanceStarRequest instanceStarRequest) {
+        if (instanceStarRequest.getStarAction()) {
+            TbInstanceStar tbInstanceStar = new TbInstanceStar();
+            tbInstanceStar.setProjectId(instanceStarRequest.getProjectId());
+            tbInstanceStar.setInstanceId(instanceStarRequest.getInstanceId());
+            tbInstanceStar.setStarUserId(UserContextUtil.getUserId());
+            instanceStarDaoService.save(tbInstanceStar);
+        } else {
+            instanceStarDaoService.getBaseMapper()
+                    .unStarInstance(instanceStarRequest.getProjectId(),
+                            UserContextUtil.getUserId(),
+                            instanceStarRequest.getInstanceId());
         }
     }
 }

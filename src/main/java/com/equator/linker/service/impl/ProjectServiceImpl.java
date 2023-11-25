@@ -9,10 +9,14 @@ import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.dao.service.ProjectDaoService;
 import com.equator.linker.dao.service.ProjectUserRefDaoService;
 import com.equator.linker.model.constant.BaseConstant;
+import com.equator.linker.model.constant.ScmType;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.po.TbProjectUserRef;
 import com.equator.linker.model.vo.project.*;
 import com.equator.linker.service.ProjectService;
+import com.equator.linker.service.external.ScmService;
+import com.equator.linker.service.external.model.BranchInfo;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +36,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectUserRefDaoService projectUserRefDaoService;
+
+    private Map<ScmType, ScmService> scmTypeScmServiceMap;
+
+    @Autowired
+    public void setScmService(List<ScmService> scmServiceList) {
+        scmTypeScmServiceMap = scmServiceList.stream().collect(Collectors.toMap(ScmService::getScmType, Function.identity()));
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -134,4 +147,33 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return projectDetailsInfo;
     }
+
+    private static final List<ProjectBranchInfo> defaultProjectBranchInfoList = ImmutableList
+            .of(new ProjectBranchInfo("master", "fakeId1", "默认分支"),
+                    new ProjectBranchInfo("main", "fakeId2", "默认分支"),
+                    new ProjectBranchInfo("dev", "fakeId3", "默认分支"));
+
+    @Override
+    public List<ProjectBranchInfo> branches(Long projectId) {
+        TbProject tbProject = projectDaoService.getById(projectId);
+        PreCondition.isNotNull(tbProject, "项目不存在");
+        ScmConfig scmConfig = JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class);
+        ScmService scmService = scmTypeScmServiceMap.get(ScmType.valueOf(scmConfig.getScmType()));
+        if (scmService == null) {
+            return defaultProjectBranchInfoList;
+        }
+        List<BranchInfo> branchInfoList = scmService.getBranchInfo(scmConfig.getRepositoryUrl(), scmConfig.getAccessToken());
+        if (CollectionUtils.isEmpty(branchInfoList)) {
+            return defaultProjectBranchInfoList;
+        }
+        return branchInfoList.stream().map(branch -> {
+            ProjectBranchInfo projectBranchInfo = new ProjectBranchInfo();
+            projectBranchInfo.setName(branch.getName());
+            projectBranchInfo.setLatestCommitId(branch.getLatestCommitId());
+            projectBranchInfo.setLatestCommitTitle(branch.getLatestCommitTitle());
+            return projectBranchInfo;
+        }).collect(Collectors.toList());
+    }
+
+
 }

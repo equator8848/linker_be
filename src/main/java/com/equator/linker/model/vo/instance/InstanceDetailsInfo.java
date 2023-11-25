@@ -62,5 +62,15 @@ public class InstanceDetailsInfo {
      */
     private String accessUrl;
 
+    /**
+     * 是否构建中
+     */
+    private Boolean buildingFlag;
+
+    /**
+     * 是否已经收藏
+     */
+    private Boolean stared;
+
     private InstancePipelineBuildResult instancePipelineBuildResult;
 }

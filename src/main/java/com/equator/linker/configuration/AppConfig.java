@@ -6,7 +6,6 @@ import com.equator.cache.guava.LogVersionCacheLoader;
 import com.equator.cache.guava.VersionCacheBuilder;
 import com.equator.cache.guava.VersionCacheElement;
 import com.equator.core.dynamic.config.ModelTransformer;
-import com.equator.linker.common.ThreadPoolService;
 import com.equator.linker.dao.mapper.TbInfAppSettingMapper;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbInfAppSetting;
@@ -41,8 +40,7 @@ public class AppConfig {
 
     private final LoadingCache<Integer, VersionCacheElement<Date, DynamicAppConfiguration>> dynamicConfigCache =
             VersionCacheBuilder.newBuilder().refreshAfterWrite(10, TimeUnit.SECONDS).expireAfterWrite(6,
-                    TimeUnit.HOURS).maximumSize(2).build(new LogVersionCacheLoader<Integer, Date,
-                    DynamicAppConfiguration>() {
+                    TimeUnit.HOURS).maximumSize(2).build(new LogVersionCacheLoader<>() {
                 @Override
                 public Date loadVersion(Integer key, DynamicAppConfiguration data) {
                     return settingMapper.selectMaxUpdateTime();
@@ -70,7 +68,7 @@ public class AppConfig {
                 protected String getCacheName() {
                     return "dynamicConfigCache";
                 }
-            }, ThreadPoolService.getInstance());
+            });
 
     public DynamicAppConfiguration getConfig() {
         return dynamicConfigCache.getUnchecked(0).getData();

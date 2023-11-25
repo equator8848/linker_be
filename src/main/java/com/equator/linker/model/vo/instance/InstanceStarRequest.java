@@ -13,7 +13,7 @@ import lombok.Data;
  * @since 2023-11-05
  */
 @Data
-public class InstanceListRequest {
+public class InstanceStarRequest {
 
     /**
      * 项目ID
@@ -21,14 +21,15 @@ public class InstanceListRequest {
     @NotNull
     private Long projectId;
 
-    private String searchKeyword;
-
-    private Integer pageNum;
-
-    private Integer pageSize;
+    /**
+     * 实例ID
+     */
+    @NotNull
+    private Long instanceId;
 
     /**
-     * 只返回收藏的实例
+     * 是否是收藏
      */
-    private Boolean onlyStar;
+    @NotNull
+    private Boolean starAction;
 }

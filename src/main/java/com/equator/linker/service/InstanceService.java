@@ -16,4 +16,6 @@ public interface InstanceService {
     void buildPipeline(Long instanceId);
 
     InstancePipelineBuildResult getPipelineBuildResult(Long instanceId);
+
+    void instanceStarAction(InstanceStarRequest instanceStarRequest);
 }

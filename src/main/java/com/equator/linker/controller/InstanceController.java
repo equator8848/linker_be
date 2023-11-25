@@ -3,6 +3,7 @@ package com.equator.linker.controller;
 import com.equator.core.http.model.Response;
 import com.equator.linker.model.vo.instance.InstanceCreateRequest;
 import com.equator.linker.model.vo.instance.InstanceListRequest;
+import com.equator.linker.model.vo.instance.InstanceStarRequest;
 import com.equator.linker.model.vo.instance.InstanceUpdateRequest;
 import com.equator.linker.service.InstanceService;
 import jakarta.validation.Valid;
@@ -40,6 +41,12 @@ public class InstanceController {
     @PutMapping("/build-pipeline")
     public Response buildPipeline(@RequestParam Long instanceId) {
         instanceService.buildPipeline(instanceId);
+        return Response.success();
+    }
+
+    @PostMapping("/star")
+    public Response star(@RequestBody @Valid InstanceStarRequest instanceStarRequest) {
+        instanceService.instanceStarAction(instanceStarRequest);
         return Response.success();
     }
 }

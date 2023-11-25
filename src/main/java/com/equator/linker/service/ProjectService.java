@@ -1,9 +1,6 @@
 package com.equator.linker.service;
 
-import com.equator.linker.model.vo.project.ProjectCreateRequest;
-import com.equator.linker.model.vo.project.ProjectDetailsInfo;
-import com.equator.linker.model.vo.project.ProjectSimpleInfo;
-import com.equator.linker.model.vo.project.ProjectUpdateRequest;
+import com.equator.linker.model.vo.project.*;
 
 import java.util.List;
 
@@ -17,4 +14,6 @@ public interface ProjectService {
     List<ProjectSimpleInfo> all();
 
     ProjectDetailsInfo details(Long projectId);
+
+    List<ProjectBranchInfo> branches(Long projectId);
 }

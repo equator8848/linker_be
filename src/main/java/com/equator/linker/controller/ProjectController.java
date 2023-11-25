@@ -40,4 +40,9 @@ public class ProjectController {
     public Response details(@RequestParam Long projectId) {
         return Response.success(projectService.details(projectId));
     }
+
+    @GetMapping("/branches")
+    public Response branches(@RequestParam Long projectId) {
+        return Response.success(projectService.branches(projectId));
+    }
 }

@@ -12,8 +12,4 @@ java -jar target/linker-0.0.1-SNAPSHOT.jar --spring.config.location=C:/Data/code
 ## 系统打包
 ```shell
 docker build -t equator-linker:latest .
-
-docker run -d -p 18888:8888 --name my-linker-instance equator-linker:latest
-
-docker run -d -p 18888:8888 --name my-linker-instance equator-linker:latest -v /home/equator/application.yml:/etc/application.yml
 ```
