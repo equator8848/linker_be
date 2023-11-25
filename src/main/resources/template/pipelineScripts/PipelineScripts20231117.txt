@@ -36,6 +36,7 @@ pipeline {
                 sh "cat Dockerfile"
                 sh 'ls'
                 sh 'docker build -t $DOCKER_CONTAINER_IMAGE_NAME .'
+                sh 'docker image prune'
                 sh 'docker images'
             }
         }
