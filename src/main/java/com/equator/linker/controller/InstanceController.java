@@ -34,7 +34,7 @@ public class InstanceController {
     }
 
     @PostMapping("/list")
-    public Response create(@RequestBody @Valid InstanceListRequest instanceListRequest) {
+    public Response list(@RequestBody @Valid InstanceListRequest instanceListRequest) {
         return Response.success(instanceService.list(instanceListRequest));
     }
 
@@ -48,5 +48,10 @@ public class InstanceController {
     public Response star(@RequestBody @Valid InstanceStarRequest instanceStarRequest) {
         instanceService.instanceStarAction(instanceStarRequest);
         return Response.success();
+    }
+
+    @GetMapping("/pipeline-build-log")
+    public Response getPipelineLog(@RequestParam Long instanceId) {
+        return Response.success(instanceService.getPipelineLog(instanceId));
     }
 }

@@ -7,6 +7,7 @@ import com.cdancy.jenkins.rest.domain.common.IntegerResponse;
 import com.cdancy.jenkins.rest.domain.common.RequestStatus;
 import com.cdancy.jenkins.rest.domain.job.BuildInfo;
 import com.cdancy.jenkins.rest.domain.job.JobInfo;
+import com.cdancy.jenkins.rest.domain.job.ProgressiveText;
 import com.cdancy.jenkins.rest.features.JobsApi;
 import com.equator.core.model.exception.InnerException;
 import com.equator.core.model.exception.PreCondition;
@@ -303,6 +304,23 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (IOException e) {
             log.error("buildPipeline error {}", instanceId, e);
             throw new InnerException("实例构建触发失败，请联系管理员");
+        }
+    }
+
+    @Override
+    public PipelineBuildLog getPipelineLog(Long instanceId) {
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "找不到实例信息");
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            JobsApi jobsApi = jenkinsClient.api().jobsApi();
+            ProgressiveText progressiveText = jobsApi.progressiveText(null, tbInstance.getPipelineName(), tbInstance.getLatestBuildNumber());
+            PipelineBuildLog pipelineBuildLog = new PipelineBuildLog();
+            pipelineBuildLog.setHasMoreData(progressiveText.hasMoreData());
+            pipelineBuildLog.setText(progressiveText.text());
+            return pipelineBuildLog;
+        } catch (Exception e) {
+            log.error("getPipelineLog error {}", instanceId, e);
+            return null;
         }
     }
 
