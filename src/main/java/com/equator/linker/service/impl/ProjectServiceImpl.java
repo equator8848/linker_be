@@ -8,6 +8,7 @@ import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.dao.service.ProjectDaoService;
 import com.equator.linker.dao.service.ProjectUserRefDaoService;
+import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.ScmType;
 import com.equator.linker.model.po.TbProject;
@@ -38,6 +39,9 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectUserRefDaoService projectUserRefDaoService;
 
     private Map<ScmType, ScmService> scmTypeScmServiceMap;
+
+    @Autowired
+    private UserDaoService userDaoService;
 
     @Autowired
     public void setScmService(List<ScmService> scmServiceList) {
@@ -139,6 +143,9 @@ public class ProjectServiceImpl implements ProjectService {
         projectDetailsInfo.setAccessLevel(EnumUtil.getFieldBy(BaseConstant.AccessLevel::name, BaseConstant.AccessLevel::getCode, tbProject.getAccessLevel()));
         projectDetailsInfo.setScmConfig(JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class));
         projectDetailsInfo.setProxyConfig(JsonUtil.fromJson(tbProject.getProxyConfig(), ProxyConfig.class));
+
+        projectDetailsInfo.setCreateUserName(userDaoService.getUsernameFromCache(tbProject.getCreateUserId()));
+        projectDetailsInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbProject.getUpdateUserId()));
 
         boolean isOwner = tbProject.getCreateUserId().equals(UserContextUtil.getUserId());
         projectDetailsInfo.setIsOwner(isOwner);

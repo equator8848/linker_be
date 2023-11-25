@@ -163,4 +163,14 @@ public class TemplateUtil {
             return null;
         }
     }
+
+    public static String removeLeadingSlash(String input) {
+        if (input == null) {
+            return "";
+        }
+        if (input.startsWith("/")) {
+            return input.substring(1);
+        }
+        return input;
+    }
 }

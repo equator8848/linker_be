@@ -59,6 +59,14 @@ public class UserDaoService extends ServiceImpl<TbUserMapper, TbUser> implements
         return userIdInfoCache.getUnchecked(uid).getData();
     }
 
+    public String getUsernameFromCache(Long uid) {
+        TbUser tbUser = userIdInfoCache.getUnchecked(uid).getData();
+        if (tbUser == null) {
+            return "神秘用户";
+        }
+        return tbUser.getUserName();
+    }
+
     public TbUser getUserByIdentification(UserLoginDataVO userLoginVO) {
         String userIdentification = userLoginVO.getUserIdentification();
         if (BaseConstant.UserIdentificationType.PHONE.equals(userLoginVO.getUserIdentificationType())) {

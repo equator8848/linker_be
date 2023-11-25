@@ -16,6 +16,8 @@ import com.equator.linker.service.util.sm4.SM4Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.equator.linker.service.util.TemplateUtil.removeLeadingSlash;
+
 @Service
 public class OpenServiceImpl implements OpenService {
     @Autowired
@@ -66,13 +68,5 @@ public class OpenServiceImpl implements OpenService {
                 .replaceAll("\\$DEPLOY_FOLDER", removeLeadingSlash(tbProject.getDeployFolder()));
     }
 
-    public String removeLeadingSlash(String input) {
-        if (input == null) {
-            return "";
-        }
-        if (input.startsWith("/")) {
-            return input.substring(1);
-        }
-        return input;
-    }
+
 }

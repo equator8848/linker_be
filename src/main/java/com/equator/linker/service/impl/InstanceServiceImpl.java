@@ -15,10 +15,7 @@ import com.equator.linker.common.util.FormatUtil;
 import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.configuration.AppConfig;
-import com.equator.linker.dao.service.InstanceDaoService;
-import com.equator.linker.dao.service.InstanceStarDaoService;
-import com.equator.linker.dao.service.InstanceUserRefDaoService;
-import com.equator.linker.dao.service.ProjectDaoService;
+import com.equator.linker.dao.service.*;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.JenkinsPipelineBuildResult;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
@@ -69,6 +66,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private JenkinsClientFactory jenkinsClientFactory;
+
+    @Autowired
+    private UserDaoService userDaoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -145,6 +145,10 @@ public class InstanceServiceImpl implements InstanceService {
         if (StringUtils.isNotBlank(deployFolder)) {
             if (!accessEntrance.startsWith("/")) {
                 accessEntrance = "/" + accessEntrance;
+            }
+        } else {
+            if (StringUtils.isNotBlank(accessEntrance) && accessEntrance.startsWith("/")) {
+                accessEntrance = TemplateUtil.removeLeadingSlash(accessEntrance);
             }
         }
         DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
@@ -226,6 +230,9 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setIsOwner(isOwner);
 
                     instanceDetailsInfo.setAccessUrl(tbInstance.getAccessLink());
+
+                    instanceDetailsInfo.setCreateUserName(userDaoService.getUsernameFromCache(tbInstance.getCreateUserId()));
+                    instanceDetailsInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbInstance.getUpdateUserId()));
 
                     instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
 
