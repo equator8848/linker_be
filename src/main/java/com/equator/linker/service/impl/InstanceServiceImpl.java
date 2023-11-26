@@ -1,7 +1,9 @@
 package com.equator.linker.service.impl;
 
 import cn.hutool.core.util.EnumUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cdancy.jenkins.rest.JenkinsClient;
 import com.cdancy.jenkins.rest.domain.common.IntegerResponse;
 import com.cdancy.jenkins.rest.domain.common.RequestStatus;
@@ -24,6 +26,7 @@ import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbInstanceStar;
 import com.equator.linker.model.po.TbInstanceUserRef;
 import com.equator.linker.model.po.TbProject;
+import com.equator.linker.model.vo.PageData;
 import com.equator.linker.model.vo.instance.*;
 import com.equator.linker.model.vo.project.ProxyConfig;
 import com.equator.linker.model.vo.project.ScmConfig;
@@ -240,6 +243,28 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public PageData<InstanceSimpleInfo> all(InstanceListRequest instanceListRequest) {
+        String searchKeyword = instanceListRequest.getSearchKeyword();
+        LambdaQueryWrapper<TbInstance> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(TbInstance::getProjectId, instanceListRequest.getProjectId());
+        queryWrapper
+                .like(StringUtils.isNotBlank(searchKeyword), TbInstance::getName, searchKeyword)
+                .or()
+                .like(StringUtils.isNotBlank(searchKeyword), TbInstance::getIntro, searchKeyword);
+        Page<TbInstance> tbInstancePageData = instanceDaoService.page(new Page<>(instanceListRequest.getPageNum(), instanceListRequest.getPageSize()), queryWrapper);
+        return PageData.wrap(tbInstancePageData, tbInstancePageData.getRecords().stream().map(tbInstance -> {
+            InstanceSimpleInfo instanceSimpleInfo = new InstanceSimpleInfo();
+            BeanUtils.copyProperties(tbInstance, instanceSimpleInfo);
+            instanceSimpleInfo.setId(tbInstance.getId());
+            instanceSimpleInfo.setName(tbInstance.getName());
+            instanceSimpleInfo.setIntro(tbInstance.getIntro());
+            instanceSimpleInfo.setCreateUserName(userDaoService.getUsernameFromCache(tbInstance.getCreateUserId()));
+            instanceSimpleInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbInstance.getUpdateUserId()));
+            return instanceSimpleInfo;
+        }).collect(Collectors.toList()));
     }
 
     private InstancePipelineBuildResult getInstancePipelineBuildResult(TbInstance tbInstance) {

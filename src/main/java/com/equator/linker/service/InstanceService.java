@@ -1,5 +1,6 @@
 package com.equator.linker.service;
 
+import com.equator.linker.model.vo.PageData;
 import com.equator.linker.model.vo.instance.*;
 
 import java.util.List;
@@ -12,6 +13,8 @@ public interface InstanceService {
     void delete(Long instanceId);
 
     List<InstanceDetailsInfo> list(InstanceListRequest instanceListRequest);
+
+    PageData<InstanceSimpleInfo> all(InstanceListRequest instanceListRequest);
 
     void buildPipeline(Long instanceId);
 

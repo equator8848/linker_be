@@ -23,9 +23,9 @@ public class InstanceListRequest {
 
     private String searchKeyword;
 
-    private Integer pageNum;
+    private Integer pageNum = 1;
 
-    private Integer pageSize;
+    private Integer pageSize = 16;
 
     /**
      * 只返回收藏的实例

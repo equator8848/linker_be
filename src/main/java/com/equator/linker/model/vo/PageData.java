@@ -1,6 +1,8 @@
 package com.equator.linker.model.vo;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.equator.linker.configuration.KeepRawSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.util.List;
@@ -11,17 +13,20 @@ public class PageData<T> {
     /**
      * 当前页（前端参数）
      */
-    private long pageNum;
+    @JsonSerialize(using = KeepRawSerializer.class)
+    private Long pageNum;
 
     /**
      * 每页的数量（默认30）
      */
-    private long size;
+    @JsonSerialize(using = KeepRawSerializer.class)
+    private Long size;
 
     /**
      * 满足条件的总数据量
      */
-    private long total;
+    @JsonSerialize(using = KeepRawSerializer.class)
+    private Long total;
 
     /**
      * 是否有下一页

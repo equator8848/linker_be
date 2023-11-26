@@ -1,4 +1,4 @@
-package com.equator.linker.model.vo.project;
+package com.equator.linker.model.vo.instance;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,7 +15,7 @@ import java.util.Date;
  * @since 2023-11-05
  */
 @Data
-public class ProjectSimpleInfo {
+public class InstanceSimpleInfo {
     private Long id;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -30,17 +30,12 @@ public class ProjectSimpleInfo {
     private String updateUserName;
 
     /**
-     * 项目名称
+     * 实例名称
      */
     private String name;
 
     /**
-     * 项目介绍
+     * 实例介绍
      */
     private String intro;
-
-
-    private String accessLevel;
-
-
 }

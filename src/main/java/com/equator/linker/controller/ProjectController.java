@@ -1,7 +1,10 @@
 package com.equator.linker.controller;
 
 import com.equator.core.http.model.Response;
+import com.equator.linker.configuration.ApiPermission;
+import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.model.vo.project.ProjectCreateRequest;
+import com.equator.linker.model.vo.project.ProjectListRequest;
 import com.equator.linker.model.vo.project.ProjectUpdateRequest;
 import com.equator.linker.service.ProjectService;
 import jakarta.validation.Valid;
@@ -31,9 +34,15 @@ public class ProjectController {
         return Response.success();
     }
 
-    @GetMapping("/all")
-    public Response all() {
-        return Response.success(projectService.all());
+    @GetMapping("/list")
+    public Response list() {
+        return Response.success(projectService.list());
+    }
+
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
+    @PostMapping("/all")
+    public Response all(@RequestBody @Valid ProjectListRequest projectListRequest) {
+        return Response.success(projectService.all(projectListRequest));
     }
 
     @GetMapping("/details")

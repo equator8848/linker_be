@@ -1,6 +1,8 @@
 package com.equator.linker.controller;
 
 import com.equator.core.http.model.Response;
+import com.equator.linker.configuration.ApiPermission;
+import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.model.vo.instance.InstanceCreateRequest;
 import com.equator.linker.model.vo.instance.InstanceListRequest;
 import com.equator.linker.model.vo.instance.InstanceStarRequest;
@@ -36,6 +38,12 @@ public class InstanceController {
     @PostMapping("/list")
     public Response list(@RequestBody @Valid InstanceListRequest instanceListRequest) {
         return Response.success(instanceService.list(instanceListRequest));
+    }
+
+    @ApiPermission(requireRoleType = RoleType.SYSTEM_ADMIN)
+    @PostMapping("/all")
+    public Response all(@RequestBody @Valid InstanceListRequest instanceListRequest) {
+        return Response.success(instanceService.all(instanceListRequest));
     }
 
     @PutMapping("/build-pipeline")

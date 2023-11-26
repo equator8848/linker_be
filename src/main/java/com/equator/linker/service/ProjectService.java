@@ -1,5 +1,6 @@
 package com.equator.linker.service;
 
+import com.equator.linker.model.vo.PageData;
 import com.equator.linker.model.vo.project.*;
 
 import java.util.List;
@@ -11,7 +12,9 @@ public interface ProjectService {
 
     void delete(Long projectId);
 
-    List<ProjectSimpleInfo> all();
+    List<ProjectSimpleInfo> list();
+
+    PageData<ProjectSimpleInfo> all(ProjectListRequest projectListRequest);
 
     ProjectDetailsInfo details(Long projectId);
 

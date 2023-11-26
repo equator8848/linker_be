@@ -105,6 +105,7 @@ public class UserServiceImpl implements UserService {
             userInfoVO.setId(user.getId());
             userInfoVO.setUserName(user.getUserName());
             userInfoVO.setStatus(user.getStatus());
+            userInfoVO.setEmail(user.getEmail());
             return userInfoVO;
         }).collect(Collectors.toList()));
     }

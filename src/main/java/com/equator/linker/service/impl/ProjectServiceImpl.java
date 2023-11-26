@@ -1,7 +1,9 @@
 package com.equator.linker.service.impl;
 
 import cn.hutool.core.util.EnumUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.linker.common.util.UserAuthUtil;
@@ -13,11 +15,13 @@ import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.ScmType;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.po.TbProjectUserRef;
+import com.equator.linker.model.vo.PageData;
 import com.equator.linker.model.vo.project.*;
 import com.equator.linker.service.ProjectService;
 import com.equator.linker.service.external.ScmService;
 import com.equator.linker.service.external.model.BranchInfo;
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -114,7 +118,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSimpleInfo> all() {
+    public List<ProjectSimpleInfo> list() {
         // 获取自己创建或加入的
         Set<Long> targetProjectIds = projectUserRefDaoService.getProjectIdByUserId(UserContextUtil.getUserId());
         // 公开的
@@ -132,6 +136,27 @@ public class ProjectServiceImpl implements ProjectService {
                     projectSimpleInfo.setIntro(tbProject.getIntro());
                     return projectSimpleInfo;
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public PageData<ProjectSimpleInfo> all(ProjectListRequest projectListRequest) {
+        String searchKeyword = projectListRequest.getSearchKeyword();
+        LambdaQueryWrapper<TbProject> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper
+                .like(StringUtils.isNotBlank(searchKeyword), TbProject::getName, searchKeyword)
+                .or()
+                .like(StringUtils.isNotBlank(searchKeyword), TbProject::getIntro, searchKeyword);
+        Page<TbProject> tbProjectPageData = projectDaoService.page(new Page<>(projectListRequest.getPageNum(), projectListRequest.getPageSize()), queryWrapper);
+        return PageData.wrap(tbProjectPageData, tbProjectPageData.getRecords().stream().map(tbProject -> {
+            ProjectSimpleInfo projectSimpleInfo = new ProjectSimpleInfo();
+            BeanUtils.copyProperties(tbProject, projectSimpleInfo);
+            projectSimpleInfo.setId(tbProject.getId());
+            projectSimpleInfo.setName(tbProject.getName());
+            projectSimpleInfo.setIntro(tbProject.getIntro());
+            projectSimpleInfo.setCreateUserName(userDaoService.getUsernameFromCache(tbProject.getCreateUserId()));
+            projectSimpleInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbProject.getUpdateUserId()));
+            return projectSimpleInfo;
+        }).collect(Collectors.toList()));
     }
 
     @Override
