@@ -13,4 +13,6 @@ public class ProjectBranchInfo {
     private String latestCommitId;
 
     private String latestCommitTitle;
+
+    private String latestCommitTime;
 }

@@ -181,9 +181,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private static final List<ProjectBranchInfo> defaultProjectBranchInfoList = ImmutableList
-            .of(new ProjectBranchInfo("master", "fakeId1", "默认分支"),
-                    new ProjectBranchInfo("main", "fakeId2", "默认分支"),
-                    new ProjectBranchInfo("dev", "fakeId3", "默认分支"));
+            .of(new ProjectBranchInfo("master", "fakeId1", "默认分支", "now"),
+                    new ProjectBranchInfo("main", "fakeId2", "默认分支", "now"),
+                    new ProjectBranchInfo("dev", "fakeId3", "默认分支", "now"));
 
     @Override
     public List<ProjectBranchInfo> branches(Long projectId) {
@@ -203,6 +203,7 @@ public class ProjectServiceImpl implements ProjectService {
             projectBranchInfo.setName(branch.getName());
             projectBranchInfo.setLatestCommitId(branch.getLatestCommitId());
             projectBranchInfo.setLatestCommitTitle(branch.getLatestCommitTitle());
+            projectBranchInfo.setLatestCommitTime(branch.getLatestCommitDate());
             return projectBranchInfo;
         }).collect(Collectors.toList());
     }
