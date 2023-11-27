@@ -109,6 +109,8 @@ public class LoginService implements InitializingBean {
         if (userCount == 0) {
             // 第一个注册的用户，视为超级管理员
             tbUser.setRoleType(RoleType.SUPER_ADMIN);
+        } else {
+            tbUser.setRoleType(RoleType.USER);
         }
         tbUser.setStatus(ModelStatus.UserStatus.NORMAL);
         userDaoService.save(tbUser);
