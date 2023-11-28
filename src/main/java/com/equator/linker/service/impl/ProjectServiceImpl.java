@@ -67,6 +67,7 @@ public class ProjectServiceImpl implements ProjectService {
         tbProject.setRouteMode(projectCreateRequest.getRouteMode());
         tbProject.setAccessEntrance(projectCreateRequest.getAccessEntrance());
         tbProject.setAccessLevel(BaseConstant.AccessLevel.valueOf(projectCreateRequest.getAccessLevel()).getCode());
+        tbProject.setPipelineTemplateId(projectCreateRequest.getPipelineTemplateId());
         projectDaoService.save(tbProject);
 
         TbProjectUserRef projectUserRef = new TbProjectUserRef();
@@ -96,6 +97,7 @@ public class ProjectServiceImpl implements ProjectService {
         tbProject.setRouteMode(projectUpdateRequest.getRouteMode());
         tbProject.setAccessEntrance(projectUpdateRequest.getAccessEntrance());
         tbProject.setAccessLevel(BaseConstant.AccessLevel.valueOf(projectUpdateRequest.getAccessLevel()).getCode());
+        tbProject.setPipelineTemplateId(projectUpdateRequest.getPipelineTemplateId());
         projectDaoService.updateById(tbProject);
 
         if (BaseConstant.AccessLevel.PRIVATE.ordinal() == tbProject.getAccessLevel()) {

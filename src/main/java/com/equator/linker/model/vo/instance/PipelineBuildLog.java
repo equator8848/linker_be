@@ -7,4 +7,6 @@ public class PipelineBuildLog {
     private Boolean hasMoreData;
 
     private String text;
+
+    private String imageArchiveUrl;
 }

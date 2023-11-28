@@ -171,7 +171,7 @@ public class JenkinsTest extends SpringBaseTest {
     public void testJenkinsGetJobBuildInfo() {
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
-            BuildInfo buildInfo = jobsApi.buildInfo(null, "Pipeline_1725898110754353153", 3);
+            BuildInfo buildInfo = jobsApi.buildInfo(null, "Pipeline_1727915537415495682", 12);
             log.info("testJenkinsGetJobInfo {}", buildInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);

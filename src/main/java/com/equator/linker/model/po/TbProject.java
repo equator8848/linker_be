@@ -83,4 +83,10 @@ public class TbProject extends BaseEntityField {
     @TableField(value = "access_level")
     private Integer accessLevel;
 
+
+    /**
+     * 流水线模板ID
+     */
+    @TableField(value = "pipeline_template_id")
+    private String pipelineTemplateId;
 }

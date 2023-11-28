@@ -21,6 +21,7 @@ import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.dao.service.*;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.JenkinsPipelineBuildResult;
+import com.equator.linker.model.constant.SeparatorEnum;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbInstanceStar;
@@ -32,7 +33,9 @@ import com.equator.linker.model.vo.project.ProxyConfig;
 import com.equator.linker.model.vo.project.ScmConfig;
 import com.equator.linker.service.InstanceService;
 import com.equator.linker.service.jenkins.JenkinsClientFactory;
-import com.equator.linker.service.util.TemplateUtil;
+import com.equator.linker.service.template.TemplateBuilderServiceHolder;
+import com.equator.linker.service.template.TemplateUtil;
+import com.equator.linker.service.template.model.JenkinsFileTemplateBuildData;
 import com.equator.linker.service.util.sm4.SM4Util;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +52,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.equator.linker.model.constant.BaseConstant.DEFAULT_IMAGE_VERSION;
 
 @Slf4j
 @Service
@@ -73,6 +78,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private UserDaoService userDaoService;
+
+    @Autowired
+    private TemplateBuilderServiceHolder templateBuilderServiceHolder;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -108,8 +116,8 @@ public class InstanceServiceImpl implements InstanceService {
         String deployFolder = Optional.ofNullable(tbProject.getDeployFolder()).orElse("");
         String accessEntrance = Optional.ofNullable(tbProject.getAccessEntrance()).orElse("");
         if (StringUtils.isNotBlank(deployFolder)) {
-            if (!accessEntrance.startsWith("/")) {
-                accessEntrance = "/" + accessEntrance;
+            if (!accessEntrance.startsWith(SeparatorEnum.SLASH.getSeparator())) {
+                accessEntrance = SeparatorEnum.SLASH.getSeparator() + accessEntrance;
             }
         }
         tbInstance.setAccessLink(String.format("%s:%s/%s%s",
@@ -118,7 +126,15 @@ public class InstanceServiceImpl implements InstanceService {
                 accessEntrance));
         tbInstance.setAccessLevel(BaseConstant.AccessLevel.valueOf(instanceCreateRequest.getAccessLevel()).getCode());
 
-        tbInstance.setPipelineTemplateId(dynamicAppConfiguration.getJenkinsPipelineTemplateId());
+        tbInstance.setImageArchiveFlag(instanceCreateRequest.getImageArchiveFlag());
+        if (instanceCreateRequest.getImageArchiveFlag()) {
+            PreCondition.isTrue(StringUtils.isNotBlank(instanceCreateRequest.getImageRepositoryPrefix()), "生产环境打包时，镜像仓库前缀不能为空");
+        }
+        tbInstance.setImageRepositoryPrefix(instanceCreateRequest.getImageRepositoryPrefix());
+        tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceCreateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
+        tbInstance.setImageVersion(TemplateUtil.getStringOrDefault(instanceCreateRequest.getImageVersion(), DEFAULT_IMAGE_VERSION));
+
+        tbInstance.setPipelineTemplateId(tbProject.getPipelineTemplateId());
         tbInstance.setBuildingFlag(false);
         instanceDaoService.save(tbInstance);
 
@@ -147,11 +163,11 @@ public class InstanceServiceImpl implements InstanceService {
         String deployFolder = Optional.ofNullable(tbProject.getDeployFolder()).orElse("");
         String accessEntrance = Optional.ofNullable(tbProject.getAccessEntrance()).orElse("");
         if (StringUtils.isNotBlank(deployFolder)) {
-            if (!accessEntrance.startsWith("/")) {
-                accessEntrance = "/" + accessEntrance;
+            if (!accessEntrance.startsWith(SeparatorEnum.SLASH.getSeparator())) {
+                accessEntrance = SeparatorEnum.SLASH.getSeparator() + accessEntrance;
             }
         } else {
-            if (StringUtils.isNotBlank(accessEntrance) && accessEntrance.startsWith("/")) {
+            if (StringUtils.isNotBlank(accessEntrance) && accessEntrance.startsWith(SeparatorEnum.SLASH.getSeparator())) {
                 accessEntrance = TemplateUtil.removeLeadingSlash(accessEntrance);
             }
         }
@@ -170,6 +186,16 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         tbInstance.setAccessLevel(BaseConstant.AccessLevel.valueOf(instanceUpdateRequest.getAccessLevel()).getCode());
+        tbInstance.setPipelineTemplateId(tbProject.getPipelineTemplateId());
+
+        tbInstance.setImageArchiveFlag(instanceUpdateRequest.getImageArchiveFlag());
+        if (instanceUpdateRequest.getImageArchiveFlag()) {
+            PreCondition.isTrue(StringUtils.isNotBlank(instanceUpdateRequest.getImageRepositoryPrefix()), "生产环境打包时，镜像仓库前缀不能为空");
+        }
+        tbInstance.setImageRepositoryPrefix(instanceUpdateRequest.getImageRepositoryPrefix());
+        tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceUpdateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
+        tbInstance.setImageVersion(TemplateUtil.getStringOrDefault(instanceUpdateRequest.getImageVersion(), DEFAULT_IMAGE_VERSION));
+
         instanceDaoService.updateById(tbInstance);
 
         if (BaseConstant.AccessLevel.PRIVATE.ordinal() == tbInstance.getAccessLevel()) {
@@ -240,6 +266,10 @@ public class InstanceServiceImpl implements InstanceService {
 
                     instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
 
+                    if (Boolean.TRUE.equals(tbInstance.getImageArchiveFlag()) && Boolean.FALSE.equals(tbInstance.getBuildingFlag())) {
+                        instanceDetailsInfo.setImageArchiveUrl(templateBuilderServiceHolder.getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId()).getImageArchiveUrl(tbInstance));
+                    }
+
                     instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
@@ -277,6 +307,8 @@ public class InstanceServiceImpl implements InstanceService {
         instancePipelineBuildResult.setDuration(tbInstance.getLatestBuildDuration());
         instancePipelineBuildResult.setDurationStr(FormatUtil.msTimePretty(tbInstance.getLatestBuildDuration()));
         instancePipelineBuildResult.setSubmitTimeStr(buildSubmitTimeStr(tbInstance.getLatestSubmitTimestamp()));
+        DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
+        instancePipelineBuildResult.setCanReBuildFlag((System.currentTimeMillis() - tbInstance.getLatestSubmitTimestamp()) > dynamicAppConfiguration.getJenkinsPipelineTimeoutMs());
         instancePipelineBuildResult.setPipelineResultStr(buildPipelineResultStr(tbInstance.getLatestBuildResult()));
         instancePipelineBuildResult.setPipelineUrl(tbInstance.getLatestBuildPipelineUrl());
         return instancePipelineBuildResult;
@@ -342,6 +374,12 @@ public class InstanceServiceImpl implements InstanceService {
             PipelineBuildLog pipelineBuildLog = new PipelineBuildLog();
             pipelineBuildLog.setHasMoreData(progressiveText.hasMoreData());
             pipelineBuildLog.setText(progressiveText.text());
+
+            if (!pipelineBuildLog.getHasMoreData()) {
+                pipelineBuildLog.setImageArchiveUrl(templateBuilderServiceHolder
+                        .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
+                        .getImageArchiveUrl(tbInstance));
+            }
             return pipelineBuildLog;
         } catch (Exception e) {
             log.error("getPipelineLog error {}", instanceId, e);
@@ -372,34 +410,12 @@ public class InstanceServiceImpl implements InstanceService {
         String getDockerfileSecret = SM4Util.encryptBySM4ECB(JsonUtil.toJson(getDockerfileRequest), dynamicAppConfiguration.getSm4SecretKey());
         String GET_DOCKER_FILE_URL = linkerServerHostBaseUrl + "/api/v1/open-api/dockerfile?getDockerfileSecret=%s".formatted(getDockerfileSecret);
 
+        JenkinsFileTemplateBuildData buildData = new JenkinsFileTemplateBuildData();
+        buildData.setDockerFileUrl(GET_DOCKER_FILE_URL);
+        buildData.setNginxConfUrl(GET_NGINX_CONF_URL);
 
-        String pipelineScriptsTemplate = TemplateUtil.getPipelineScriptsTemplate(tbInstance.getPipelineTemplateId());
-        ScmConfig scmConfig = JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class);
-
-        String scmProjectNameFromUrl = TemplateUtil.getScmProjectNameFromUrl(scmConfig.getRepositoryUrl());
-
-        String scmUrlWithAccessToken = TemplateUtil.getScmUrlWithAccessToken(scmConfig);
-
-        String packageScripts = TemplateUtil.getPackageScripts(tbProject);
-
-        pipelineScriptsTemplate = pipelineScriptsTemplate
-                .replaceAll("\\$PACKAGE_IMAGE", tbProject.getPackageImage())
-                .replaceAll("\\$SCM_PROJECT_NAME", scmProjectNameFromUrl)
-                .replaceAll("\\$SCM_BRANCH", tbInstance.getScmBranch())
-                .replaceAll("\\$SCM_REPOSITORY_URL", scmUrlWithAccessToken)
-                .replaceAll("\\$PACKAGE_SCRIPTS", packageScripts)
-                .replaceAll("\\$PACKAGE_OUTPUT_DIR", tbProject.getPackageOutputDir())
-                .replaceAll("\\$GET_NGINX_CONF_URL", GET_NGINX_CONF_URL)
-                .replaceAll("\\$GET_DOCKER_FILE_URL", GET_DOCKER_FILE_URL)
-                .replaceAll("\\$DOCKER_CONTAINER_IMAGE_NAME", TemplateUtil.getDockerContainerImageName(instanceId))
-                .replaceAll("\\$DOCKER_CONTAINER_NAME", TemplateUtil.getDockerContainerName(instanceId))
-                .replaceAll("\\$INSTANCE_ACCESS_PORT", String.valueOf(tbInstance.getAccessPort()));
-
-        String jenkinsFileTemplate = TemplateUtil.getJenkinsFileTemplate(tbInstance.getPipelineTemplateId());
-        jenkinsFileTemplate = jenkinsFileTemplate
-                .replaceAll("\\$JOB_DESCRIPTION", "由Linker系统自动化创建，请勿手动修改")
-                .replaceAll("\\$PIPELINE_SCRIPTS", pipelineScriptsTemplate);
-        return jenkinsFileTemplate;
+        return templateBuilderServiceHolder.getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
+                .getJenkinsFileTemplate(tbProject, tbInstance, buildData);
     }
 
     @Override
@@ -413,6 +429,7 @@ public class InstanceServiceImpl implements InstanceService {
             BuildInfo buildInfo = jobsApi.buildInfo(null, tbInstance.getPipelineName(), tbInstance.getLatestBuildNumber());
             InstancePipelineBuildResult instancePipelineBuildResult = new InstancePipelineBuildResult();
             if (buildInfo == null) {
+                instancePipelineBuildResult.setCanReBuildFlag(true);
                 return instancePipelineBuildResult;
             }
             instancePipelineBuildResult.setId(buildInfo.id());
@@ -420,6 +437,8 @@ public class InstanceServiceImpl implements InstanceService {
             instancePipelineBuildResult.setPipelineResultStr(FormatUtil.msTimePretty(buildInfo.duration()));
 
             instancePipelineBuildResult.setSubmitTimeStr(buildSubmitTimeStr(buildInfo.timestamp()));
+            DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
+            instancePipelineBuildResult.setCanReBuildFlag((System.currentTimeMillis() - buildInfo.timestamp()) > dynamicAppConfiguration.getJenkinsPipelineTimeoutMs());
             String result = buildInfo.result();
 
             boolean building = buildInfo.building();

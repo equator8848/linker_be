@@ -76,5 +76,28 @@ public class InstanceDetailsInfo {
      */
     private Boolean stared;
 
+    /**
+     * 镜像仓库前缀
+     */
+    private String imageRepositoryPrefix;
+
+
+    /**
+     * 自定义镜像名称
+     */
+    private String imageName;
+
+    /**
+     * 自定义镜像版本
+     */
+    private String imageVersion;
+
+    /**
+     * 是否归档镜像
+     */
+    private Boolean imageArchiveFlag;
+
+    private String imageArchiveUrl;
+
     private InstancePipelineBuildResult instancePipelineBuildResult;
 }

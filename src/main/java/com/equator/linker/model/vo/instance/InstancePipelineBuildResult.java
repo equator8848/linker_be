@@ -12,6 +12,8 @@ public class InstancePipelineBuildResult {
 
     private String submitTimeStr;
 
+    private Boolean canReBuildFlag;
+
     private String pipelineResultStr;
 
     private String pipelineUrl;

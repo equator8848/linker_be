@@ -1,4 +1,4 @@
-package com.equator.linker.service.util;
+package com.equator.linker.service.template;
 
 
 import cn.hutool.core.io.resource.ClassPathResource;
@@ -6,6 +6,7 @@ import com.equator.core.model.exception.PreCondition;
 import com.equator.core.model.exception.VerifyException;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.linker.model.constant.RouteMode;
+import com.equator.linker.model.constant.SeparatorEnum;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.project.ProxyConfig;
@@ -24,6 +25,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TemplateUtil {
+    public static String getStringOrDefault(String str, String defaultVal) {
+        if (StringUtils.isBlank(str)) {
+            return defaultVal;
+        }
+        return str;
+    }
+
     public static String getPipelineName(Long instanceId) {
         return String.format("Pipeline_%s", instanceId);
     }
@@ -77,7 +85,7 @@ public class TemplateUtil {
                         try_files \\$uri \\$uri/ %s/index.html;
                         index  index.html index.htm;
                     }
-                    """.formatted(StringUtils.isBlank(deployFolder) ? "" : "/" + deployFolder);
+                    """.formatted(StringUtils.isBlank(deployFolder) ? "" : SeparatorEnum.SLASH.getSeparator() + deployFolder);
         }
     }
 
@@ -168,8 +176,18 @@ public class TemplateUtil {
         if (input == null) {
             return "";
         }
-        if (input.startsWith("/")) {
+        if (input.startsWith(SeparatorEnum.SLASH.getSeparator())) {
             return input.substring(1);
+        }
+        return input;
+    }
+
+    public static String removeEndSlash(String input) {
+        if (input == null) {
+            return "";
+        }
+        if (input.endsWith(SeparatorEnum.SLASH.getSeparator())) {
+            return input.substring(0, input.length() - 1);
         }
         return input;
     }

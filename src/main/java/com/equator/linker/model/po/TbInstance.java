@@ -65,6 +65,30 @@ public class TbInstance extends BaseEntityField {
     @TableField(value = "access_level")
     private Integer accessLevel;
 
+    /**
+     * 镜像仓库前缀
+     */
+    @TableField(value = "image_repository_prefix")
+    private String imageRepositoryPrefix;
+
+    /**
+     * 自定义镜像名称
+     */
+    @TableField(value = "image_name")
+    private String imageName;
+
+    /**
+     * 自定义镜像版本
+     */
+    @TableField(value = "image_version")
+    private String imageVersion;
+
+    /**
+     * 是否归档镜像
+     */
+    @TableField("image_archive_flag")
+    private Boolean imageArchiveFlag;
+
 
     /**
      * 流水线模板ID

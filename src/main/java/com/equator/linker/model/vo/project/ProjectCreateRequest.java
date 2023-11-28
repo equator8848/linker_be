@@ -75,4 +75,7 @@ public class ProjectCreateRequest {
     @NotNull
     private String accessLevel;
 
+    @NotNull
+    private String pipelineTemplateId;
+
 }

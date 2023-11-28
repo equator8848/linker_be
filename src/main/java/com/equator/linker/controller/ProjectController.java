@@ -7,6 +7,7 @@ import com.equator.linker.model.vo.project.ProjectCreateRequest;
 import com.equator.linker.model.vo.project.ProjectListRequest;
 import com.equator.linker.model.vo.project.ProjectUpdateRequest;
 import com.equator.linker.service.ProjectService;
+import com.equator.linker.service.ProjectTemplateService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ProjectTemplateService projectTemplateService;
 
     @PostMapping("/create")
     public Response create(@RequestBody @Valid ProjectCreateRequest projectCreateRequest) {
@@ -53,5 +57,10 @@ public class ProjectController {
     @GetMapping("/branches")
     public Response branches(@RequestParam Long projectId) {
         return Response.success(projectService.branches(projectId));
+    }
+
+    @GetMapping("/templates")
+    public Response getTemplates() {
+        return Response.success(projectTemplateService.all());
     }
 }

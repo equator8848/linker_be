@@ -56,10 +56,10 @@ public class DynamicAppConfiguration {
     private String jenkinsCredentials;
 
     /**
-     * 流水线模板
+     * Jenkins流水线构建超时时间
      */
-    @ModelTransformerField(defaultValue = "20231117")
-    private String jenkinsPipelineTemplateId;
+    @ModelTransformerField(defaultValue = "600000")
+    private Long jenkinsPipelineTimeoutMs;
 
     /**
      * DES密钥

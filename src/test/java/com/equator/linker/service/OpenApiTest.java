@@ -7,7 +7,7 @@ import com.equator.linker.dao.service.ProjectDaoService;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.instance.GetNginxConfRequest;
-import com.equator.linker.service.util.TemplateUtil;
+import com.equator.linker.service.template.TemplateUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -11,12 +11,10 @@ import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.instance.GetDockerfileRequest;
 import com.equator.linker.model.vo.instance.GetNginxConfRequest;
 import com.equator.linker.service.OpenService;
-import com.equator.linker.service.util.TemplateUtil;
+import com.equator.linker.service.template.TemplateBuilderServiceHolder;
 import com.equator.linker.service.util.sm4.SM4Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static com.equator.linker.service.util.TemplateUtil.removeLeadingSlash;
 
 @Service
 public class OpenServiceImpl implements OpenService {
@@ -28,6 +26,9 @@ public class OpenServiceImpl implements OpenService {
 
     @Autowired
     private ProjectDaoService projectDaoService;
+
+    @Autowired
+    private TemplateBuilderServiceHolder templateBuilderServiceHolder;
 
     @Override
     public String getNginxConf(String getNginxConfSecret) {
@@ -41,13 +42,9 @@ public class OpenServiceImpl implements OpenService {
         TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
         PreCondition.isNotNull(tbProject, "无法获取项目信息");
 
-
-        String nginxConfTemplate = TemplateUtil.getNginxConfTemplate(tbInstance.getPipelineTemplateId());
-        String nginxProxyPassConfig = TemplateUtil.getNginxProxyPassConfig(tbInstance);
-        String nginxRootConf = TemplateUtil.getNginxRootConf(tbProject);
-        return nginxConfTemplate
-                .replaceAll("\\$ROOT_CONF", nginxRootConf)
-                .replaceAll("\\$PROXY_PASS_CONF", nginxProxyPassConfig);
+        return templateBuilderServiceHolder
+                .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
+                .getNginxConf(tbProject, tbInstance);
     }
 
     @Override
@@ -62,10 +59,8 @@ public class OpenServiceImpl implements OpenService {
         TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
         PreCondition.isNotNull(tbProject, "无法获取项目信息");
 
-        String dockerfileTemplate = TemplateUtil.getDockerfileTemplate(tbInstance.getPipelineTemplateId());
-        return dockerfileTemplate
-                .replaceAll("\\$PACKAGE_OUTPUT_DIR", tbProject.getPackageOutputDir())
-                .replaceAll("\\$DEPLOY_FOLDER", removeLeadingSlash(tbProject.getDeployFolder()));
+        return templateBuilderServiceHolder.getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId()).getDockerfile(tbProject, tbInstance);
+
     }
 
 

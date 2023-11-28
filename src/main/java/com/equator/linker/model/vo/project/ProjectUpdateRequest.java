@@ -81,4 +81,6 @@ public class ProjectUpdateRequest {
     @NotNull
     private String accessLevel;
 
+    @NotNull
+    private String pipelineTemplateId;
 }

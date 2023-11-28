@@ -56,4 +56,9 @@ public class BaseConstant {
          */
         JOIN;
     }
+
+    /**
+     * 默认镜像版本
+     */
+    public static final String DEFAULT_IMAGE_VERSION = "latest";
 }

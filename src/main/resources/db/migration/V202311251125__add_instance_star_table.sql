@@ -18,7 +18,7 @@ SET NAMES utf8mb4;
 
 CREATE TABLE `tb_instance_star`
 (
-    `id`             bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id`             bigint UNSIGNED NOT NULL,
     `create_time`    datetime NOT NULL,
     `create_user_id` bigint   NOT NULL,
     `update_time`    datetime NOT NULL,
