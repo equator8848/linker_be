@@ -60,7 +60,8 @@ public class GitlabScmService implements ScmService {
                 .addHeader("PRIVATE-TOKEN", token)
                 .build();
         try {
-            List<GitlabBranchInfo> gitlabBranchInfos = JsonUtil.fromJson(HttpUtil.doRequestGetBody(request), new TypeReference<>() {
+            String body = HttpUtil.doRequestGetBody(request);
+            List<GitlabBranchInfo> gitlabBranchInfos = JsonUtil.fromJson(body, new TypeReference<>() {
             });
             return gitlabBranchInfos.stream().map(gitlabBranchInfo -> {
                 BranchInfo branchInfo = new BranchInfo();

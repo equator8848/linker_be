@@ -99,5 +99,9 @@ public class InstanceDetailsInfo {
 
     private String imageArchiveUrl;
 
+    private String pipelineTemplateId;
+
+    private String pipelineTemplateIntro;
+
     private InstancePipelineBuildResult instancePipelineBuildResult;
 }

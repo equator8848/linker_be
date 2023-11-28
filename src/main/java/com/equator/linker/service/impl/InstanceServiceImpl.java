@@ -82,6 +82,9 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     private TemplateBuilderServiceHolder templateBuilderServiceHolder;
 
+    @Autowired
+    private ProjectTemplateDaoService projectTemplateDaoService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long create(InstanceCreateRequest instanceCreateRequest) {
@@ -270,6 +273,9 @@ public class InstanceServiceImpl implements InstanceService {
                         instanceDetailsInfo.setImageArchiveUrl(templateBuilderServiceHolder.getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId()).getImageArchiveUrl(tbInstance));
                     }
 
+                    instanceDetailsInfo.setPipelineTemplateId(tbInstance.getPipelineTemplateId());
+                    instanceDetailsInfo.setPipelineTemplateIntro(projectTemplateDaoService.getIntroFromCache(tbInstance.getPipelineTemplateId()));
+
                     instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
@@ -308,7 +314,10 @@ public class InstanceServiceImpl implements InstanceService {
         instancePipelineBuildResult.setDurationStr(FormatUtil.msTimePretty(tbInstance.getLatestBuildDuration()));
         instancePipelineBuildResult.setSubmitTimeStr(buildSubmitTimeStr(tbInstance.getLatestSubmitTimestamp()));
         DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
-        instancePipelineBuildResult.setCanReBuildFlag((System.currentTimeMillis() - tbInstance.getLatestSubmitTimestamp()) > dynamicAppConfiguration.getJenkinsPipelineTimeoutMs());
+        if (tbInstance.getLatestSubmitTimestamp() != null) {
+            instancePipelineBuildResult.setCanReBuildFlag((System.currentTimeMillis() - tbInstance.getLatestSubmitTimestamp()) > dynamicAppConfiguration.getJenkinsPipelineTimeoutMs());
+
+        }
         instancePipelineBuildResult.setPipelineResultStr(buildPipelineResultStr(tbInstance.getLatestBuildResult()));
         instancePipelineBuildResult.setPipelineUrl(tbInstance.getLatestBuildPipelineUrl());
         return instancePipelineBuildResult;
