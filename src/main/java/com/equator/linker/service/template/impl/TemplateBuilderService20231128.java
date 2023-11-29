@@ -30,7 +30,7 @@ public class TemplateBuilderService20231128 extends AbstractTemplateBuilderServi
 
         String scmUrlWithAccessToken = TemplateUtil.getScmUrlWithAccessToken(scmConfig);
 
-        String packageScripts = TemplateUtil.getPackageScripts(tbProject);
+        String packageScripts = TemplateUtil.getPackageScripts(tbProject, tbInstance);
 
         String imageRepositoryPrefix = tbInstance.getImageRepositoryPrefix();
         if (StringUtils.isNotBlank(imageRepositoryPrefix)) {

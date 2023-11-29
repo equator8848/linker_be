@@ -123,8 +123,14 @@ public class TemplateUtil {
         return sb.toString();
     }
 
-    public static String getPackageScripts(TbProject tbProject) {
-        String[] packageScriptsArr = tbProject.getPackageScript().split("\n");
+    public static String getPackageScripts(TbProject tbProject, TbInstance tbInstance) {
+        String packageScript = null;
+        if (Boolean.TRUE.equals(tbInstance.getPackageScriptOverrideFlag()) && StringUtils.isNotBlank(tbInstance.getPackageScript())) {
+            packageScript = tbInstance.getPackageScript();
+        } else {
+            packageScript = tbProject.getPackageScript();
+        }
+        String[] packageScriptsArr = packageScript.split("\n");
         StringBuilder sb = new StringBuilder();
         for (String commandLine : packageScriptsArr) {
             sb.append("sh '%s'\n".formatted(commandLine));

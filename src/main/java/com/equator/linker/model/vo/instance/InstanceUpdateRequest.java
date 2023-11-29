@@ -35,6 +35,16 @@ public class InstanceUpdateRequest {
     private String scmBranch;
 
     /**
+     * 是否自定义打包脚本
+     */
+    private Boolean packageScriptOverrideFlag;
+
+    /**
+     * 打包脚本
+     */
+    private String packageScript;
+
+    /**
      * Nginx代理配置
      */
     private ProxyConfig proxyConfig;

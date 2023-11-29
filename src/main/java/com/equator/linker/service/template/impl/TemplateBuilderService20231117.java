@@ -26,7 +26,7 @@ public class TemplateBuilderService20231117 extends AbstractTemplateBuilderServi
 
         String scmUrlWithAccessToken = TemplateUtil.getScmUrlWithAccessToken(scmConfig);
 
-        String packageScripts = TemplateUtil.getPackageScripts(tbProject);
+        String packageScripts = TemplateUtil.getPackageScripts(tbProject, tbInstance);
 
         pipelineScriptsTemplate = pipelineScriptsTemplate
                 .replaceAll("\\$PACKAGE_IMAGE", tbProject.getPackageImage())

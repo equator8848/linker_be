@@ -106,6 +106,9 @@ public class InstanceServiceImpl implements InstanceService {
             tbInstance.setScmBranch(instanceCreateRequest.getScmBranch());
         }
 
+        tbInstance.setPackageScriptOverrideFlag(instanceCreateRequest.getPackageScriptOverrideFlag());
+        tbInstance.setPackageScript(instanceCreateRequest.getPackageScript());
+
         ProxyConfig requestProxyConfig = instanceCreateRequest.getProxyConfig();
         if (requestProxyConfig == null || CollectionUtils.isEmpty(requestProxyConfig.getProxyPassConfigs())) {
             ProxyConfig proxyConfig = JsonUtil.fromJson(tbProject.getProxyConfig(), ProxyConfig.class);
@@ -182,6 +185,9 @@ public class InstanceServiceImpl implements InstanceService {
         if (StringUtils.isNotEmpty(instanceUpdateRequest.getScmBranch())) {
             tbInstance.setScmBranch(instanceUpdateRequest.getScmBranch());
         }
+
+        tbInstance.setPackageScriptOverrideFlag(instanceUpdateRequest.getPackageScriptOverrideFlag());
+        tbInstance.setPackageScript(instanceUpdateRequest.getPackageScript());
 
         ProxyConfig requestProxyConfig = instanceUpdateRequest.getProxyConfig();
         if (requestProxyConfig != null && !CollectionUtils.isEmpty(requestProxyConfig.getProxyPassConfigs())) {

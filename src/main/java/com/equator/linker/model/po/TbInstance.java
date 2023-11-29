@@ -42,6 +42,18 @@ public class TbInstance extends BaseEntityField {
     private String scmBranch;
 
     /**
+     * 是否自定义打包脚本
+     */
+    @TableField(value = "package_script_override_flag")
+    private Boolean packageScriptOverrideFlag;
+
+    /**
+     * 打包脚本
+     */
+    @TableField(value = "package_script")
+    private String packageScript;
+
+    /**
      * Nginx代理配置
      */
     @TableField(value = "proxy_config")
