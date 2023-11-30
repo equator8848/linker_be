@@ -49,4 +49,16 @@ public class ModelStatus {
         }
 
     }
+
+    /**
+     * 镜像版本生成类型
+     */
+    public static class ImageVersionType {
+        public final static Integer CUSTOM = 0;
+
+        public final static Integer COMPARABLE_VERSION = 1;
+
+        public final static Integer TIMESTAMP = 2;
+    }
+
 }

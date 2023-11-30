@@ -102,6 +102,8 @@ public class InstanceDetailsInfo {
      */
     private String imageVersion;
 
+    private Integer imageVersionType;
+
     /**
      * 是否归档镜像
      */

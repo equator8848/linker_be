@@ -37,6 +37,8 @@ import com.equator.linker.service.template.TemplateBuilderServiceHolder;
 import com.equator.linker.service.template.TemplateUtil;
 import com.equator.linker.service.template.model.JenkinsFileTemplateBuildData;
 import com.equator.linker.service.util.sm4.SM4Util;
+import com.equator.linker.service.version.ImageVersionGenerator;
+import com.equator.linker.service.version.ImageVersionGeneratorHolder;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +54,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.equator.linker.model.constant.BaseConstant.DEFAULT_IMAGE_VERSION;
 
 @Slf4j
 @Service
@@ -84,6 +84,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private ProjectTemplateDaoService projectTemplateDaoService;
+
+    @Autowired
+    private ImageVersionGeneratorHolder imageVersionGeneratorHolder;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -136,9 +139,14 @@ public class InstanceServiceImpl implements InstanceService {
         if (instanceCreateRequest.getImageArchiveFlag()) {
             PreCondition.isTrue(StringUtils.isNotBlank(instanceCreateRequest.getImageRepositoryPrefix()), "生产环境打包时，镜像仓库前缀不能为空");
         }
+        // 镜像版本处理
+        tbInstance.setImageVersionType(instanceCreateRequest.getImageVersionType());
+        ImageVersionGenerator imageVersionGenerator = imageVersionGeneratorHolder.getImageVersionGenerator(instanceCreateRequest.getImageVersionType());
+        imageVersionGenerator.validate(instanceCreateRequest.getImageVersion());
+        tbInstance.setImageVersion(instanceCreateRequest.getImageVersion());
         tbInstance.setImageRepositoryPrefix(instanceCreateRequest.getImageRepositoryPrefix());
         tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceCreateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
-        tbInstance.setImageVersion(TemplateUtil.getStringOrDefault(instanceCreateRequest.getImageVersion(), DEFAULT_IMAGE_VERSION));
+
 
         tbInstance.setPipelineTemplateId(tbProject.getPipelineTemplateId());
         tbInstance.setBuildingFlag(false);
@@ -201,9 +209,13 @@ public class InstanceServiceImpl implements InstanceService {
         if (instanceUpdateRequest.getImageArchiveFlag()) {
             PreCondition.isTrue(StringUtils.isNotBlank(instanceUpdateRequest.getImageRepositoryPrefix()), "生产环境打包时，镜像仓库前缀不能为空");
         }
+
+        tbInstance.setImageVersionType(instanceUpdateRequest.getImageVersionType());
+        ImageVersionGenerator imageVersionGenerator = imageVersionGeneratorHolder.getImageVersionGenerator(instanceUpdateRequest.getImageVersionType());
+        imageVersionGenerator.validate(instanceUpdateRequest.getImageVersion());
+        tbInstance.setImageVersion(instanceUpdateRequest.getImageVersion());
         tbInstance.setImageRepositoryPrefix(instanceUpdateRequest.getImageRepositoryPrefix());
         tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceUpdateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
-        tbInstance.setImageVersion(TemplateUtil.getStringOrDefault(instanceUpdateRequest.getImageVersion(), DEFAULT_IMAGE_VERSION));
 
         instanceDaoService.updateById(tbInstance);
 
@@ -370,6 +382,7 @@ public class InstanceServiceImpl implements InstanceService {
             int nextBuildNumber = jobInfo.nextBuildNumber();
             tbInstance.setLatestBuildNumber(nextBuildNumber);
             tbInstance.setBuildingFlag(true);
+            tbInstance.setImageVersion(imageVersionGeneratorHolder.getImageVersionGenerator(tbInstance.getImageVersionType()).genNextVersion(tbInstance));
             instanceDaoService.updateById(tbInstance);
             IntegerResponse buildPipelineResult = jobsApi.build(null, pipelineName);
             log.info("buildPipeline, instanceId {}, buildPipelineResult {}", instanceId, buildPipelineResult);

@@ -89,6 +89,13 @@ public class TbInstance extends BaseEntityField {
     @TableField(value = "image_name")
     private String imageName;
 
+
+    /**
+     * 镜像版本生成类型
+     */
+    @TableField(value = "image_version_type")
+    private Integer imageVersionType;
+
     /**
      * 自定义镜像版本
      */

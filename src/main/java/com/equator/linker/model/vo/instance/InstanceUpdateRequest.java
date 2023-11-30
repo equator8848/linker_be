@@ -70,6 +70,11 @@ public class InstanceUpdateRequest {
     private String imageVersion;
 
     /**
+     * 镜像版本生成类型
+     */
+    private Integer imageVersionType;
+
+    /**
      * 是否归档镜像
      */
     @NotNull
