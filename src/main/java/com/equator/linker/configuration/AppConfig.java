@@ -2,9 +2,9 @@ package com.equator.linker.configuration;
 
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.equator.cache.guava.LogVersionCacheLoader;
+import com.equator.cache.common.LogVersionCacheLoader;
+import com.equator.cache.common.VersionCacheElement;
 import com.equator.cache.guava.VersionCacheBuilder;
-import com.equator.cache.guava.VersionCacheElement;
 import com.equator.core.dynamic.config.ModelTransformer;
 import com.equator.linker.dao.mapper.TbInfAppSettingMapper;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
@@ -65,7 +65,7 @@ public class AppConfig {
                 }
 
                 @Override
-                protected String getCacheName() {
+                public String getCacheName() {
                     return "dynamicConfigCache";
                 }
             });

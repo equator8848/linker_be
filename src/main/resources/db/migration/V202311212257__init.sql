@@ -32,7 +32,7 @@ CREATE TABLE `tb_inf_app_setting`  (
                                      `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
                                      PRIMARY KEY (`id`) USING BTREE,
                                      INDEX `idx_key`(`setting_key` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '动态配置' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_inf_login_log
@@ -48,7 +48,7 @@ CREATE TABLE `tb_inf_login_log`  (
                                    `login_status` smallint NOT NULL COMMENT '登录状态',
                                    `remote_address` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '登录IP地址',
                                    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_instance
@@ -78,7 +78,7 @@ CREATE TABLE `tb_instance`  (
                               `latest_build_duration` bigint NULL DEFAULT NULL COMMENT '最近一次构建耗时',
                               PRIMARY KEY (`id`) USING BTREE,
                               INDEX `idx_project_id`(`project_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '实例' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_instance_user_ref
@@ -95,7 +95,7 @@ CREATE TABLE `tb_instance_user_ref`  (
                                        `ref_type` smallint NOT NULL COMMENT '关联类型，1 自己创建、2 加入',
                                        PRIMARY KEY (`id`) USING BTREE,
                                        INDEX `idx_user_id`(`user_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci  COMMENT = '实例用户关联' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_project
@@ -118,7 +118,7 @@ CREATE TABLE `tb_project`  (
                              `access_level` smallint NOT NULL COMMENT '权限等级，1私有、2指定人可访问、4公开',
                              PRIMARY KEY (`id`) USING BTREE,
                              INDEX `idx_name`(`name` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '项目' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_project_user_ref
@@ -135,7 +135,7 @@ CREATE TABLE `tb_project_user_ref`  (
                                       `ref_type` smallint NOT NULL COMMENT '关联类型，1 自己创建、2 加入',
                                       PRIMARY KEY (`id`) USING BTREE,
                                       INDEX `idx_user_id`(`user_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '项目用户关联' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for tb_user
@@ -159,6 +159,6 @@ CREATE TABLE `tb_user`  (
                           PRIMARY KEY (`id`) USING BTREE,
                           INDEX `idx_phonenumber`(`phone_number` ASC) USING BTREE,
                           INDEX `idx_email`(`email` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

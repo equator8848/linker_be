@@ -3,11 +3,9 @@ package com.equator.linker.controller;
 import com.equator.core.http.model.Response;
 import com.equator.linker.configuration.ApiPermission;
 import com.equator.linker.model.constant.RoleType;
-import com.equator.linker.model.vo.instance.InstanceCreateRequest;
-import com.equator.linker.model.vo.instance.InstanceListRequest;
-import com.equator.linker.model.vo.instance.InstanceStarRequest;
-import com.equator.linker.model.vo.instance.InstanceUpdateRequest;
+import com.equator.linker.model.vo.instance.*;
 import com.equator.linker.service.InstanceService;
+import com.equator.linker.service.PublicEntranceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class InstanceController {
     @Autowired
     private InstanceService instanceService;
+
+    @Autowired
+    private PublicEntranceService publicEntranceService;
 
     @PostMapping("/create")
     public Response create(@RequestBody @Valid InstanceCreateRequest instanceCreateRequest) {
@@ -61,5 +62,16 @@ public class InstanceController {
     @GetMapping("/pipeline-build-log")
     public Response getPipelineLog(@RequestParam Long instanceId) {
         return Response.success(instanceService.getPipelineLog(instanceId));
+    }
+
+    @GetMapping("/public-entrance-details")
+    public Response getPublicEntranceDetails(@RequestParam Long instanceId) {
+        return Response.success(publicEntranceService.getDetails(instanceId));
+    }
+
+    @PostMapping("/update-public-entrance")
+    public Response updatePublicEntrance(@RequestBody @Valid PublicEntranceUpdateRequest publicEntranceUpdateRequest) {
+        publicEntranceService.update(publicEntranceUpdateRequest);
+        return Response.success();
     }
 }

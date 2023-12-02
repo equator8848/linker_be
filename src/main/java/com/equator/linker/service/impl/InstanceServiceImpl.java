@@ -88,6 +88,9 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     private ImageVersionGeneratorHolder imageVersionGeneratorHolder;
 
+    @Autowired
+    private PublicEntranceDaoService publicEntranceDaoService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long create(InstanceCreateRequest instanceCreateRequest) {
@@ -236,6 +239,7 @@ public class InstanceServiceImpl implements InstanceService {
         UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
         instanceUserRefDaoService.remove(Wrappers.<TbInstanceUserRef>lambdaQuery()
                 .eq(TbInstanceUserRef::getInstanceId, instanceId));
+        publicEntranceDaoService.deleteByInstanceId(instanceId);
 
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();

@@ -3,9 +3,9 @@ package com.equator.linker.dao.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.equator.cache.guava.LogVersionCacheLoader;
+import com.equator.cache.common.LogVersionCacheLoader;
+import com.equator.cache.common.VersionCacheElement;
 import com.equator.cache.guava.VersionCacheBuilder;
-import com.equator.cache.guava.VersionCacheElement;
 import com.equator.core.model.exception.PreCondition;
 import com.equator.linker.common.ThreadPoolService;
 import com.equator.linker.dao.mapper.TbUserMapper;
@@ -50,7 +50,7 @@ public class UserDaoService extends ServiceImpl<TbUserMapper, TbUser> implements
                 }
 
                 @Override
-                protected String getCacheName() {
+                public String getCacheName() {
                     return "userIdInfoCache";
                 }
             }, ThreadPoolService.getInstance());
