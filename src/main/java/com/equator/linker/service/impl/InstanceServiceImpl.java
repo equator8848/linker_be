@@ -269,6 +269,7 @@ public class InstanceServiceImpl implements InstanceService {
             return Collections.emptyList();
         }
 
+
         return instanceDaoService.list(Wrappers.<TbInstance>lambdaQuery()
                         .like(StringUtils.isNotEmpty(instanceListRequest.getSearchKeyword()),
                                 TbInstance::getName, instanceListRequest.getSearchKeyword())
@@ -292,7 +293,10 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
 
                     if (Boolean.TRUE.equals(tbInstance.getImageArchiveFlag()) && Boolean.FALSE.equals(tbInstance.getBuildingFlag())) {
-                        instanceDetailsInfo.setImageArchiveUrl(templateBuilderServiceHolder.getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId()).getImageArchiveUrl(tbInstance));
+                        String imageArchiveFileName = templateBuilderServiceHolder
+                                .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
+                                .getImageArchiveFileName(tbInstance);
+                        instanceDetailsInfo.setImageArchiveUrl(TemplateUtil.buildDownloadInstanceArtifactUrl(appConfig.getConfig(), tbInstance.getId(), imageArchiveFileName));
                     }
 
                     instanceDetailsInfo.setPipelineTemplateId(tbInstance.getPipelineTemplateId());
@@ -371,6 +375,9 @@ public class InstanceServiceImpl implements InstanceService {
 
 
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            // 先设置镜像版本
+            tbInstance.setImageVersion(imageVersionGeneratorHolder.getImageVersionGenerator(tbInstance.getImageVersionType()).genNextVersion(tbInstance));
+
             String pipelineName = TemplateUtil.getPipelineName(instanceId);
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
             if (tbInstance.getLatestBuildNumber() == null) {
@@ -386,7 +393,6 @@ public class InstanceServiceImpl implements InstanceService {
             int nextBuildNumber = jobInfo.nextBuildNumber();
             tbInstance.setLatestBuildNumber(nextBuildNumber);
             tbInstance.setBuildingFlag(true);
-            tbInstance.setImageVersion(imageVersionGeneratorHolder.getImageVersionGenerator(tbInstance.getImageVersionType()).genNextVersion(tbInstance));
             instanceDaoService.updateById(tbInstance);
             IntegerResponse buildPipelineResult = jobsApi.build(null, pipelineName);
             log.info("buildPipeline, instanceId {}, buildPipelineResult {}", instanceId, buildPipelineResult);

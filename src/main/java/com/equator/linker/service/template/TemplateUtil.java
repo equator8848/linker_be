@@ -7,6 +7,7 @@ import com.equator.core.model.exception.VerifyException;
 import com.equator.core.util.json.JsonUtil;
 import com.equator.linker.model.constant.RouteMode;
 import com.equator.linker.model.constant.SeparatorEnum;
+import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbProject;
 import com.equator.linker.model.vo.project.ProxyConfig;
@@ -15,6 +16,7 @@ import com.equator.linker.model.vo.project.ScmConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -196,5 +198,10 @@ public class TemplateUtil {
             return input.substring(0, input.length() - 1);
         }
         return input;
+    }
+
+    public static String buildDownloadInstanceArtifactUrl(DynamicAppConfiguration dynamicAppConfiguration, Long instanceId, @Nullable String fileName) {
+        return "%s/api/v1/anonymous/download-instance-latest-artifact/%s?fileName=%s"
+                .formatted(dynamicAppConfiguration.getLinkerServerHostBaseUrl(), instanceId, Optional.ofNullable(fileName).orElse("unknown"));
     }
 }

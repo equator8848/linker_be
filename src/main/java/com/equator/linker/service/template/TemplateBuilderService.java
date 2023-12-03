@@ -16,4 +16,6 @@ public interface TemplateBuilderService {
     String getJenkinsFileTemplate(TbProject tbProject, TbInstance tbInstance, JenkinsFileTemplateBuildData buildData);
 
     String getImageArchiveUrl(TbInstance tbInstance);
+
+    String getImageArchiveFileName(TbInstance tbInstance);
 }

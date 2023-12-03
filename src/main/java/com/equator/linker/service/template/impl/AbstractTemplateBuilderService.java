@@ -42,9 +42,14 @@ public abstract class AbstractTemplateBuilderService implements TemplateBuilderS
         // - http://172.16.8.2:28080/job/Pipeline_1727915537415495682/lastSuccessfulBuild/artifact/docker-container-img-1727915537415495682.tar
         // $DOCKER_CONTAINER_REPOSITORY_IMAGE_NAME-$DOCKER_CONTAINER_IMAGE_VERSION.tar.gz
         DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
-        return String.format("%s/job/%s/lastSuccessfulBuild/artifact/%s.tar.gz",
+        return String.format("%s/job/%s/lastSuccessfulBuild/artifact/%s",
                 TemplateUtil.removeEndSlash(dynamicAppConfiguration.getJenkinsEndpoint()),
                 tbInstance.getPipelineName(),
-                String.format("%s-%s", tbInstance.getImageName(), tbInstance.getImageVersion()));
+                getImageArchiveFileName(tbInstance));
+    }
+
+    @Override
+    public String getImageArchiveFileName(TbInstance tbInstance) {
+        return "%s.tar.gz".formatted(String.format("%s-%s", tbInstance.getImageName(), tbInstance.getImageVersion()));
     }
 }

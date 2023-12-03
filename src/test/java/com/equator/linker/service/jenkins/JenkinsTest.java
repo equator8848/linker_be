@@ -9,6 +9,7 @@ import com.cdancy.jenkins.rest.domain.system.SystemInfo;
 import com.cdancy.jenkins.rest.features.JobsApi;
 import com.equator.linker.SpringBaseTest;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Credentials;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -173,6 +174,17 @@ public class JenkinsTest extends SpringBaseTest {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
             BuildInfo buildInfo = jobsApi.buildInfo(null, "Pipeline_1727915537415495682", 12);
             log.info("testJenkinsGetJobInfo {}", buildInfo);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testJenkinsGetJobBuildFile() {
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            System.out.println(jenkinsClient.authType());
+            System.out.println(jenkinsClient.authValue());
+            System.out.println(Credentials.basic("api", "JnqgsAK5uN6UyKs7l2w8fKP9AhOcx49N"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
