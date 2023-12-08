@@ -1,6 +1,7 @@
 package com.equator.linker.service.util;
 
-import com.equator.core.model.exception.VerifyException;
+
+import com.equator.inf.core.model.exception.VerifyException;
 
 public class EnumUtil {
     public static Enum findEnumByVal(Enum[] enumArr, int val) {

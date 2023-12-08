@@ -1,6 +1,6 @@
 package com.equator.linker.service.template.impl;
 
-import com.equator.core.util.json.JsonUtil;
+import com.equator.inf.core.util.json.JsonUtil;
 import com.equator.linker.model.constant.SeparatorEnum;
 import com.equator.linker.model.po.TbInstance;
 import com.equator.linker.model.po.TbProject;

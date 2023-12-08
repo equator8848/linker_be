@@ -1,6 +1,6 @@
 package com.equator.linker.service.version;
 
-import com.equator.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.PreCondition;
 import com.equator.linker.model.constant.ModelStatus;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.equator.linker.service;
 
-import com.equator.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.PreCondition;
 import com.equator.linker.SpringBaseTest;
 import com.equator.linker.dao.service.InstanceDaoService;
 import com.equator.linker.dao.service.ProjectDaoService;

@@ -1,6 +1,6 @@
 package com.equator.linker.common.util;
 
-import com.equator.core.model.exception.VerifyException;
+import com.equator.inf.core.model.exception.VerifyException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.StringUtils;
 

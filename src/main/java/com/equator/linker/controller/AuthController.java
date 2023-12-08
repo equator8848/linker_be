@@ -1,7 +1,7 @@
 package com.equator.linker.controller;
 
 
-import com.equator.core.http.model.Response;
+import com.equator.inf.core.http.model.Response;
 import com.equator.linker.model.vo.user.UserLoginDataVO;
 import com.equator.linker.service.AuthService;
 import com.equator.linker.service.UserService;

@@ -1,7 +1,7 @@
 package com.equator.linker.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.equator.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.PreCondition;
 import com.equator.linker.dao.service.InstanceDaoService;
 import com.equator.linker.dao.service.ProjectDaoService;
 import com.equator.linker.dao.service.PublicEntranceDaoService;

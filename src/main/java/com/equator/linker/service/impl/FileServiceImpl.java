@@ -1,7 +1,7 @@
 package com.equator.linker.service.impl;
 
-import com.equator.core.http.HttpUtil;
-import com.equator.core.model.exception.PreCondition;
+import com.equator.inf.core.http.HttpUtil;
+import com.equator.inf.core.model.exception.PreCondition;
 import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.dao.service.InstanceDaoService;
 import com.equator.linker.model.constant.SeparatorEnum;

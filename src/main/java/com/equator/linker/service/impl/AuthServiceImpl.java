@@ -28,6 +28,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private UserAuthUtil userAuthUtil;
+
     @Override
     public UserLoginResponse login(UserLoginDataVO userLoginVO, HttpServletRequest request) {
         userLoginVO.setRemoteAddress(IpNetUtil.getRealIp(request));
@@ -36,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
         UserLoginResponse userLoginResponse = new UserLoginResponse();
         LoginUser loginUser = userPair.getKey();
         userLoginResponse.setLoginUser(loginUser);
-        Pair<String, Date> tokenWithExpiredTime = UserAuthUtil.buildTokenWithExpiredTime(loginUser);
+        Pair<String, Date> tokenWithExpiredTime = userAuthUtil.buildTokenWithExpiredTime(loginUser);
         userLoginResponse.setToken(tokenWithExpiredTime.getLeft());
         userLoginResponse.setTokenExpiredAt(tokenWithExpiredTime.getRight().getTime());
         return userLoginResponse;
@@ -44,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserLoginResponse getUserInfo(String token) {
-        Pair<LoginUser, Date> loginUserDatePair = UserAuthUtil.parseLoginUserFromJWT(token);
+        Pair<LoginUser, Date> loginUserDatePair = userAuthUtil.parseLoginUserFromJWT(token);
         UserLoginResponse userLoginResponse = new UserLoginResponse();
         userLoginResponse.setLoginUser(loginUserDatePair.getKey());
         userLoginResponse.setToken(token);

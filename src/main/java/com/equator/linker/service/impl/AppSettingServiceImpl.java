@@ -2,7 +2,7 @@ package com.equator.linker.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.equator.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.PreCondition;
 import com.equator.linker.dao.service.AppSettingDaoService;
 import com.equator.linker.model.po.TbInfAppSetting;
 import com.equator.linker.model.vo.PageData;

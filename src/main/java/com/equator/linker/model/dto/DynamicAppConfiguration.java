@@ -1,7 +1,7 @@
 package com.equator.linker.model.dto;
 
 
-import com.equator.core.dynamic.config.ModelTransformerField;
+import com.equator.inf.core.dynamic.config.ModelTransformerField;
 import lombok.Data;
 
 /**

@@ -2,10 +2,10 @@ package com.equator.linker.configuration;
 
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.equator.cache.common.LogVersionCacheLoader;
-import com.equator.cache.common.VersionCacheElement;
-import com.equator.cache.guava.VersionCacheBuilder;
-import com.equator.core.dynamic.config.ModelTransformer;
+import com.equator.inf.cache.common.LogVersionCacheLoader;
+import com.equator.inf.cache.common.VersionCacheElement;
+import com.equator.inf.cache.guava.VersionCacheBuilder;
+import com.equator.inf.core.dynamic.config.ModelTransformer;
 import com.equator.linker.dao.mapper.TbInfAppSettingMapper;
 import com.equator.linker.model.dto.DynamicAppConfiguration;
 import com.equator.linker.model.po.TbInfAppSetting;

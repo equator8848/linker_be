@@ -1,6 +1,6 @@
 package com.equator.linker.service.util;
 
-import com.equator.core.util.security.PasswordUtil;
+import com.equator.inf.core.util.security.PasswordUtil;
 
 public class PasswordValidator {
     public static boolean verifyPassword(String userInput, String passwordInDatabase) {

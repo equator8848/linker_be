@@ -37,3 +37,10 @@ mybatis-plus:
 logging:
   file:
     path: ./logs
+
+equator:
+  inf:
+    config:
+      auth:
+        jwt-token-expire-ms: 100
+        jwt-token-secret: xxx

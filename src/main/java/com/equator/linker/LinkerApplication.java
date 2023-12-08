@@ -7,7 +7,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@SpringBootApplication(scanBasePackages = {"com.equator.linker"})
+// @ComponentScan({"com.equator"})
+@SpringBootApplication
 @MapperScan({"com.equator.linker.dao.mapper"})
 public class LinkerApplication {
 

@@ -1,8 +1,9 @@
 package com.equator.linker.service.captcha;
 
-import com.equator.core.util.json.JsonUtil;
-import com.equator.core.util.security.DESUtil;
-import com.equator.core.util.security.IDUtil;
+
+import com.equator.inf.core.util.json.JsonUtil;
+import com.equator.inf.core.util.security.DESUtil;
+import com.equator.inf.core.util.security.IDUtil;
 import com.equator.linker.configuration.SecurityConfiguration;
 import com.wf.captcha.*;
 import com.wf.captcha.base.Captcha;

@@ -1,10 +1,10 @@
 package com.equator.linker.configuration.interceptor;
 
 
-import com.equator.core.http.model.Response;
-import com.equator.core.http.model.ResponseCode;
-import com.equator.core.model.exception.PreCondition;
-import com.equator.core.util.json.JsonUtil;
+import com.equator.inf.core.http.model.Response;
+import com.equator.inf.core.http.model.ResponseCode;
+import com.equator.inf.core.model.exception.PreCondition;
+import com.equator.inf.core.util.json.JsonUtil;
 import com.equator.linker.common.util.UserAuthUtil;
 import com.equator.linker.common.util.UserContextUtil;
 import com.equator.linker.configuration.ApiPermission;
@@ -30,6 +30,9 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private UserDaoService userDaoService;
 
+    @Autowired
+    private UserAuthUtil userAuthUtil;
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse res, Object handler) throws Exception {
@@ -44,7 +47,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
         LoginUser loginUser = null;
         try {
-            loginUser = UserAuthUtil.getLoginUserFromJWT(token);
+            loginUser = userAuthUtil.getLoginUserFromJWT(token);
         } catch (Exception e) {
             log.debug("JWT验证异常 {}", e.getMessage(), e);
             invalidToken(res);

@@ -1,8 +1,8 @@
 package com.equator.linker.service.external.gitlab;
 
-import com.equator.core.http.HttpUtil;
-import com.equator.core.model.exception.VerifyException;
-import com.equator.core.util.json.JsonUtil;
+import com.equator.inf.core.http.HttpUtil;
+import com.equator.inf.core.model.exception.VerifyException;
+import com.equator.inf.core.util.json.JsonUtil;
 import com.equator.linker.model.constant.ScmType;
 import com.equator.linker.service.external.ScmService;
 import com.equator.linker.service.external.gitlab.model.GitlabBranchInfo;

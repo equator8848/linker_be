@@ -1,7 +1,7 @@
 package com.equator.linker.controller;
 
 
-import com.equator.core.http.model.Response;
+import com.equator.inf.core.http.model.Response;
 import com.equator.linker.configuration.ApiPermission;
 import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.service.AppSettingService;

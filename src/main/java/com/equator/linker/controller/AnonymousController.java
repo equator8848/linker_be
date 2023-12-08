@@ -1,6 +1,6 @@
 package com.equator.linker.controller;
 
-import com.equator.core.http.model.Response;
+import com.equator.inf.core.http.model.Response;
 import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.service.FileService;
 import com.equator.linker.service.PublicEntranceService;

@@ -1,6 +1,6 @@
 package com.equator.linker.service.template;
 
-import com.equator.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.PreCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

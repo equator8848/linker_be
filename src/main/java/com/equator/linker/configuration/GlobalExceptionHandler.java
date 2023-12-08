@@ -1,10 +1,9 @@
 package com.equator.linker.configuration;
 
 
-
-import com.equator.core.http.model.Response;
-import com.equator.core.model.exception.ForbiddenException;
-import com.equator.core.model.exception.VerifyException;
+import com.equator.inf.core.http.model.Response;
+import com.equator.inf.core.model.exception.ForbiddenException;
+import com.equator.inf.core.model.exception.VerifyException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;

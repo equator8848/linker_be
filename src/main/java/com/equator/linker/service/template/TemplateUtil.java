@@ -2,9 +2,9 @@ package com.equator.linker.service.template;
 
 
 import cn.hutool.core.io.resource.ClassPathResource;
-import com.equator.core.model.exception.PreCondition;
-import com.equator.core.model.exception.VerifyException;
-import com.equator.core.util.json.JsonUtil;
+import com.equator.inf.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.VerifyException;
+import com.equator.inf.core.util.json.JsonUtil;
 import com.equator.linker.model.constant.RouteMode;
 import com.equator.linker.model.constant.SeparatorEnum;
 import com.equator.linker.model.dto.DynamicAppConfiguration;

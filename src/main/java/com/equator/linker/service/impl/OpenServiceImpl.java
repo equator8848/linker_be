@@ -1,7 +1,7 @@
 package com.equator.linker.service.impl;
 
-import com.equator.core.model.exception.PreCondition;
-import com.equator.core.util.json.JsonUtil;
+import com.equator.inf.core.model.exception.PreCondition;
+import com.equator.inf.core.util.json.JsonUtil;
 import com.equator.linker.configuration.AppConfig;
 import com.equator.linker.dao.service.InstanceDaoService;
 import com.equator.linker.dao.service.ProjectDaoService;

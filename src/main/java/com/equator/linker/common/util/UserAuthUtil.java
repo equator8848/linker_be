@@ -2,20 +2,23 @@ package com.equator.linker.common.util;
 
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.equator.core.model.exception.ForbiddenException;
-import com.equator.core.model.exception.PreCondition;
-import com.equator.core.util.json.JsonUtil;
-import com.equator.core.util.jwt.JwtUtil;
+import com.equator.inf.core.model.exception.ForbiddenException;
+import com.equator.inf.core.model.exception.PreCondition;
+import com.equator.inf.core.util.json.JsonUtil;
+import com.equator.inf.core.util.jwt.JwtUtil;
 import com.equator.linker.model.constant.RoleType;
 import com.equator.linker.model.vo.LoginUser;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 /**
  * 用户鉴权工具类
  */
+@Component
 public class UserAuthUtil {
     private final static String SYSTEM_KEY = "system";
 
@@ -23,18 +26,21 @@ public class UserAuthUtil {
 
     private final static String LOGIN_USER_KEY = "loginUser";
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     /**
      * 构建 JWT
      *
      * @param loginUser
      * @return
      */
-    public static String buildToken(LoginUser loginUser) {
-        return JwtUtil.code(ImmutableMap.of(SYSTEM_KEY, SYSTEM_VALUE, LOGIN_USER_KEY, JsonUtil.toJson(loginUser)));
+    public String buildToken(LoginUser loginUser) {
+        return jwtUtil.code(ImmutableMap.of(SYSTEM_KEY, SYSTEM_VALUE, LOGIN_USER_KEY, JsonUtil.toJson(loginUser)));
     }
 
-    public static Pair<String, Date> buildTokenWithExpiredTime(LoginUser loginUser) {
-        return JwtUtil.codeWithExpiredTime(ImmutableMap.of(SYSTEM_KEY, SYSTEM_VALUE, LOGIN_USER_KEY, JsonUtil.toJson(loginUser)));
+    public Pair<String, Date> buildTokenWithExpiredTime(LoginUser loginUser) {
+        return jwtUtil.codeWithExpiredTime(ImmutableMap.of(SYSTEM_KEY, SYSTEM_VALUE, LOGIN_USER_KEY, JsonUtil.toJson(loginUser)));
     }
 
     /**
@@ -43,8 +49,8 @@ public class UserAuthUtil {
      * @param token
      * @return
      */
-    public static LoginUser getLoginUserFromJWT(String token) {
-        DecodedJWT decodedJWT = JwtUtil.decode(token);
+    public LoginUser getLoginUserFromJWT(String token) {
+        DecodedJWT decodedJWT = jwtUtil.decode(token);
         String loginUserStr = decodedJWT.getClaim(LOGIN_USER_KEY).asString();
         PreCondition.isNotNull(loginUserStr);
         return JsonUtil.fromJson(loginUserStr, LoginUser.class);
@@ -56,8 +62,8 @@ public class UserAuthUtil {
      * @param token
      * @return
      */
-    public static Pair<LoginUser, Date> parseLoginUserFromJWT(String token) {
-        DecodedJWT decodedJWT = JwtUtil.decode(token);
+    public Pair<LoginUser, Date> parseLoginUserFromJWT(String token) {
+        DecodedJWT decodedJWT = jwtUtil.decode(token);
         String loginUserStr = decodedJWT.getClaim(LOGIN_USER_KEY).asString();
         PreCondition.isNotNull(loginUserStr);
         LoginUser loginUser = JsonUtil.fromJson(loginUserStr, LoginUser.class);

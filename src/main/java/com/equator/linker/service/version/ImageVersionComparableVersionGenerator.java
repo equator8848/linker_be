@@ -1,7 +1,7 @@
 package com.equator.linker.service.version;
 
-import com.equator.core.model.exception.PreCondition;
-import com.equator.core.model.exception.VerifyException;
+import com.equator.inf.core.model.exception.PreCondition;
+import com.equator.inf.core.model.exception.VerifyException;
 import com.equator.linker.model.constant.ModelStatus;
 import com.equator.linker.model.po.TbInstance;
 import org.apache.commons.lang3.StringUtils;
