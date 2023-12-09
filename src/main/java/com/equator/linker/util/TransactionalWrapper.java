@@ -1,4 +1,4 @@
-package com.equator.linker.common;
+package com.equator.linker.util;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

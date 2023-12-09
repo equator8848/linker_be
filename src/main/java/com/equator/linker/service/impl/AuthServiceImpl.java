@@ -1,8 +1,8 @@
 package com.equator.linker.service.impl;
 
 
-import com.equator.linker.common.util.IpNetUtil;
-import com.equator.linker.common.util.UserAuthUtil;
+import com.equator.linker.util.IpNetUtil;
+import com.equator.linker.util.UserAuthUtil;
 import com.equator.linker.model.po.TbUser;
 import com.equator.linker.model.vo.LoginUser;
 import com.equator.linker.model.vo.user.UserLoginDataVO;

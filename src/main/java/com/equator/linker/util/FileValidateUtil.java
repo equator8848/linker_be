@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 /**
  * 文件校验相关工具，如MD5、SHA1

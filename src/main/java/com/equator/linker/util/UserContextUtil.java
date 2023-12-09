@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 
 import com.equator.linker.model.vo.LoginUser;

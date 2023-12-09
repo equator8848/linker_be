@@ -1,4 +1,4 @@
-package com.equator.linker.common;
+package com.equator.linker.util;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;

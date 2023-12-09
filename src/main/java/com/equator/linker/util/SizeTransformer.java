@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 public class SizeTransformer {
     /**

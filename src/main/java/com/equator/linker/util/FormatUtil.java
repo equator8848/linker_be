@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

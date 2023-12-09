@@ -7,7 +7,7 @@ import com.equator.inf.cache.common.LogVersionCacheLoader;
 import com.equator.inf.cache.common.VersionCacheElement;
 import com.equator.inf.cache.guava.VersionCacheBuilder;
 import com.equator.inf.core.model.exception.PreCondition;
-import com.equator.linker.common.ThreadPoolService;
+import com.equator.linker.util.ThreadPoolService;
 import com.equator.linker.dao.mapper.TbUserMapper;
 import com.equator.linker.model.constant.BaseConstant;
 import com.equator.linker.model.constant.ModelStatus;

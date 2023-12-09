@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.equator.inf.cache.common.LogVersionCacheLoader;
 import com.equator.inf.cache.common.VersionCacheElement;
 import com.equator.inf.cache.guava.VersionCacheBuilder;
-import com.equator.linker.common.ThreadPoolService;
+import com.equator.linker.util.ThreadPoolService;
 import com.equator.linker.dao.mapper.TbProjectTemplateMapper;
 import com.equator.linker.model.po.TbProjectTemplate;
 import com.google.common.cache.LoadingCache;

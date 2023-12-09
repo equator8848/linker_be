@@ -1,7 +1,7 @@
 package com.equator.linker.configuration;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.equator.linker.common.util.UserContextUtil;
+import com.equator.linker.util.UserContextUtil;
 import com.equator.linker.model.constant.ModelStatus;
 import com.equator.linker.model.vo.LoginUser;
 import lombok.extern.slf4j.Slf4j;

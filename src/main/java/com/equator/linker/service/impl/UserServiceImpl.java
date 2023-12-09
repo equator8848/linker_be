@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.equator.inf.core.model.exception.PreCondition;
 import com.equator.inf.core.model.exception.VerifyException;
 import com.equator.inf.core.util.security.PasswordUtil;
-import com.equator.linker.common.util.UserContextUtil;
+import com.equator.linker.util.UserContextUtil;
 import com.equator.linker.dao.service.UserDaoService;
 import com.equator.linker.model.constant.ModelStatus;
 import com.equator.linker.model.po.TbUser;

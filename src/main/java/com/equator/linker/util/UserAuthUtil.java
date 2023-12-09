@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 
 import com.auth0.jwt.interfaces.DecodedJWT;

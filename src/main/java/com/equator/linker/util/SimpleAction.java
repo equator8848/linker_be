@@ -1,4 +1,4 @@
-package com.equator.linker.common;
+package com.equator.linker.util;
 
 public interface SimpleAction {
     void action();

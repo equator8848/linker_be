@@ -1,4 +1,4 @@
-package com.equator.linker.common;
+package com.equator.linker.util;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

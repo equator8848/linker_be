@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 import com.equator.inf.core.model.exception.VerifyException;
 import org.apache.commons.lang3.tuple.Pair;

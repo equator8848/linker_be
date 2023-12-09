@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;

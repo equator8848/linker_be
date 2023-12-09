@@ -1,4 +1,4 @@
-package com.equator.linker.common.util;
+package com.equator.linker.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
