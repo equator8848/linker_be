@@ -1,7 +1,7 @@
 package xyz.equator8848.linker.model.vo.user;
 
-import xyz.equator8848.linker.model.vo.LoginUser;
 import lombok.Data;
+import xyz.equator8848.inf.auth.model.bo.LoginUser;
 
 /**
  * @Author: Equator

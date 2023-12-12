@@ -1,12 +1,12 @@
 package xyz.equator8848.linker.service;
 
 
-import xyz.equator8848.linker.model.vo.PageData;
+import org.springframework.stereotype.Service;
+import xyz.equator8848.inf.core.model.page.PageData;
 import xyz.equator8848.linker.model.vo.user.UserCreateVO;
 import xyz.equator8848.linker.model.vo.user.UserInfoVO;
 import xyz.equator8848.linker.model.vo.user.UserPasswordUpdateVO;
 import xyz.equator8848.linker.model.vo.user.UserUpdateVO;
-import org.springframework.stereotype.Service;
 
 
 /**

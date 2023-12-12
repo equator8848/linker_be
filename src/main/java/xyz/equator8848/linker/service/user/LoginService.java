@@ -1,14 +1,12 @@
 package xyz.equator8848.linker.service.user;
 
 
-import xyz.equator8848.linker.dao.service.LoginLogDaoService;
-import xyz.equator8848.linker.dao.service.UserDaoService;
-import xyz.equator8848.linker.model.constant.BaseConstant;
-import xyz.equator8848.linker.model.constant.ModelStatus;
-import xyz.equator8848.linker.model.constant.RoleType;
-import xyz.equator8848.linker.model.dto.DynamicAppConfiguration;
-import xyz.equator8848.linker.model.po.TbUser;
-import xyz.equator8848.linker.model.vo.user.UserLoginDataVO;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import xyz.equator8848.inf.auth.model.bo.LoginUser;
 import xyz.equator8848.inf.core.model.exception.InnerException;
 import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.model.exception.VerifyException;
@@ -18,13 +16,15 @@ import xyz.equator8848.inf.core.util.security.IDUtil;
 import xyz.equator8848.inf.core.util.security.PasswordUtil;
 import xyz.equator8848.linker.configuration.AppConfig;
 import xyz.equator8848.linker.configuration.SecurityConfiguration;
-import xyz.equator8848.linker.model.vo.LoginUser;
+import xyz.equator8848.linker.dao.service.LoginLogDaoService;
+import xyz.equator8848.linker.dao.service.UserDaoService;
+import xyz.equator8848.linker.model.constant.BaseConstant;
+import xyz.equator8848.linker.model.constant.ModelStatus;
+import xyz.equator8848.linker.model.constant.RoleType;
+import xyz.equator8848.linker.model.dto.DynamicAppConfiguration;
+import xyz.equator8848.linker.model.po.TbUser;
+import xyz.equator8848.linker.model.vo.user.UserLoginDataVO;
 import xyz.equator8848.linker.service.captcha.CaptchaSecret;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.HashSet;

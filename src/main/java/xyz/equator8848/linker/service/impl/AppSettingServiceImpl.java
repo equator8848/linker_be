@@ -2,15 +2,15 @@ package xyz.equator8848.linker.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import xyz.equator8848.linker.dao.service.AppSettingDaoService;
-import xyz.equator8848.linker.model.po.TbInfAppSetting;
-import xyz.equator8848.linker.model.vo.PageData;
-import xyz.equator8848.linker.model.vo.system.AppSettingVO;
-import xyz.equator8848.linker.service.AppSettingService;
-import xyz.equator8848.inf.core.model.exception.PreCondition;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.equator8848.inf.core.model.exception.PreCondition;
+import xyz.equator8848.inf.core.model.page.PageData;
+import xyz.equator8848.linker.dao.service.AppSettingDaoService;
+import xyz.equator8848.linker.model.po.TbInfAppSetting;
+import xyz.equator8848.linker.model.vo.system.AppSettingVO;
+import xyz.equator8848.linker.service.AppSettingService;
 
 import java.util.stream.Collectors;
 

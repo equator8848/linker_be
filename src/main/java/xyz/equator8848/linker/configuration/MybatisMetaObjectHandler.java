@@ -1,13 +1,13 @@
 package xyz.equator8848.linker.configuration;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import xyz.equator8848.linker.model.constant.ModelStatus;
-import xyz.equator8848.linker.model.vo.LoginUser;
-import xyz.equator8848.linker.util.UserContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Configuration;
+import xyz.equator8848.inf.auth.model.bo.LoginUser;
+import xyz.equator8848.inf.auth.util.UserContextUtil;
+import xyz.equator8848.linker.model.constant.ModelStatus;
 
 import java.util.Date;
 import java.util.Objects;

@@ -84,6 +84,11 @@
             <artifactId>cache</artifactId>
             <version>${equator-inf.version}</version>
         </dependency>
+        <dependency>
+            <groupId>xyz.equator8848</groupId>
+            <artifactId>auth</artifactId>
+            <version>${equator-inf.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.github.cdancy</groupId>

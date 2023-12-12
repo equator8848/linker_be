@@ -1,14 +1,14 @@
 package xyz.equator8848.linker.service.user;
 
 
+import org.apache.commons.lang3.tuple.Triple;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import xyz.equator8848.inf.auth.model.bo.LoginUser;
 import xyz.equator8848.linker.dao.service.UserDaoService;
 import xyz.equator8848.linker.model.constant.ModelStatus;
 import xyz.equator8848.linker.model.po.TbUser;
 import xyz.equator8848.linker.model.vo.user.UserLoginDataVO;
-import xyz.equator8848.linker.model.vo.LoginUser;
-import org.apache.commons.lang3.tuple.Triple;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PasswordLoginHandler implements LoginHandler {

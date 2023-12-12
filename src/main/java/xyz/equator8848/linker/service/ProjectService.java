@@ -1,6 +1,6 @@
 package xyz.equator8848.linker.service;
 
-import xyz.equator8848.linker.model.vo.PageData;
+import xyz.equator8848.inf.core.model.page.PageData;
 import xyz.equator8848.linker.model.vo.project.*;
 
 import java.util.List;
