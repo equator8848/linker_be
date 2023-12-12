@@ -28,7 +28,7 @@ spring:
     password: 123456
 
 mybatis:
-  type-aliases-package: com.equator.linker.model.po
+  type-aliases-package: xyz.equator8848.linker.model.po
   configuration:
     map-underscore-to-camel-case: true
 mybatis-plus:

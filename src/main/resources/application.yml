@@ -21,9 +21,9 @@ spring:
     timeout-per-shutdown-phase: 60
   main:
     banner-mode: console
-
+    allow-bean-definition-overriding: true
 mybatis:
-  type-aliases-package: com.equator.linker.model.po
+  type-aliases-package: xyz.equator8848.linker.model.po
   configuration:
     map-underscore-to-camel-case: true
 mybatis-plus:
@@ -37,10 +37,3 @@ mybatis-plus:
 logging:
   file:
     path: ./logs
-
-equator:
-  inf:
-    config:
-      auth:
-        jwt-token-expire-ms: 100
-        jwt-token-secret: xxx

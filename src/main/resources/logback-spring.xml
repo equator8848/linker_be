@@ -72,7 +72,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.equator" level="${logging.level}" additivity="true">
+    <logger name="xyz.equator8848" level="${logging.level}" additivity="true">
         <appender-ref ref="DEBUG"/>
         <appender-ref ref="INFO"/>
         <appender-ref ref="ERROR"/>

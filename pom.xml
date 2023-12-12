@@ -3,9 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.equator</groupId>
-        <artifactId>common-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.0.2</version>
+        <relativePath/>
     </parent>
     <groupId>com.equator</groupId>
     <artifactId>linker</artifactId>
@@ -74,12 +75,12 @@
         </dependency>
 
         <dependency>
-            <groupId>com.equator</groupId>
+            <groupId>xyz.equator8848</groupId>
             <artifactId>core</artifactId>
             <version>${equator-inf.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.equator</groupId>
+            <groupId>xyz.equator8848</groupId>
             <artifactId>cache</artifactId>
             <version>${equator-inf.version}</version>
         </dependency>
@@ -108,6 +109,11 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${bcprov.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 
@@ -153,7 +159,7 @@
                     </strategy>
                     <packageInfo>
                         <!--项目的包结构-->
-                        <parent>com.equator.linker.generate</parent>
+                        <parent>xyz.equator8848.linker.generate</parent>
                         <entity>entity</entity>
                         <service>service.interfaces</service>
                         <!--serviceImpl包名(默认service.impl)-->
@@ -214,7 +220,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.0.2</version>
                 <configuration>
-                    <mainClass>com.equator.linker.LinkerApplication</mainClass>
+                    <mainClass>xyz.equator8848.linker.LinkerApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

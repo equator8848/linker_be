@@ -14,4 +14,4 @@ linker:
 logging:
   level:
     root: info
-    com.equator.linker.dao: debug
+    xyz.equator8848.linker.dao: debug
