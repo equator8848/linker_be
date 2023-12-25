@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_linker?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+linker:
+  security:
+    md5-salt: LYcuh0TA8q7w
+    des-key: 0pe.*VZk
+  base:
+    env: local
+
+logging:
+  level:
+    root: info
+    xyz.equator8848.linker.dao: debug

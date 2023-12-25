@@ -1,0 +1,39 @@
+server:
+  servlet:
+    context-path: /linker-server
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  port: 8888
+  shutdown: graceful
+spring:
+  application:
+    name: Linker
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
+  mvc:
+    converters:
+      preferred-json-mapper: jackson
+  lifecycle:
+    timeout-per-shutdown-phase: 60
+  main:
+    banner-mode: console
+    allow-bean-definition-overriding: true
+mybatis:
+  type-aliases-package: xyz.equator8848.linker.model.po
+  configuration:
+    map-underscore-to-camel-case: true
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: del_flag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
+logging:
+  file:
+    path: ./logs

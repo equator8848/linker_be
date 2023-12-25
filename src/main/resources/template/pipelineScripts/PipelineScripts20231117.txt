@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clean') {
+            steps {
+                script {
+                    echo "cleanWs >>>"
+                    cleanWs()
+                }
+            }
+        }
+        stage('Package') {
+            agent {
+                docker {
+                    image '$PACKAGE_IMAGE'
+                }
+            }
+            steps {
+                sh 'git --version'
+                sh 'rm -rf $SCM_PROJECT_NAME'
+                sh 'git clone -b $SCM_BRANCH $SCM_REPOSITORY_URL'
+                dir('$SCM_PROJECT_NAME') {
+                    $PACKAGE_SCRIPTS
+                    stash(name:'PackageOutput', includes: '$PACKAGE_OUTPUT_DIR/**')
+                }
+            }
+        }
+        stage('BuildImage') {
+            steps {
+                unstash("PackageOutput")
+                sh 'pwd'
+                sh 'ls'
+                sh "curl -o default.conf $GET_NGINX_CONF_URL -H 'Accept: text/html'"
+                sh "cat default.conf"
+                sh "curl -o Dockerfile $GET_DOCKER_FILE_URL -H 'Accept: text/html'"
+                sh "cat Dockerfile"
+                sh 'ls'
+                sh 'docker build -t $DOCKER_CONTAINER_IMAGE_NAME .'
+                sh 'docker image prune'
+                sh 'docker images'
+            }
+        }
+        stage('RunContainer') {
+            steps {
+                sh 'docker rm -vf $DOCKER_CONTAINER_NAME'
+                sh 'docker run -d -p $INSTANCE_ACCESS_PORT:80 --restart always --name $DOCKER_CONTAINER_NAME $DOCKER_CONTAINER_IMAGE_NAME'
+            }
+        }
+    }
+}

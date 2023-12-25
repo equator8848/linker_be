@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.0.2</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.equator</groupId>
+    <artifactId>linker</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>linker</name>
+    <description>linker 前后端联调平台</description>
+    <properties>
+        <java.version>17</java.version>
+        <commons-lang3.version>3.10</commons-lang3.version>
+        <commons-net.version>3.8.0</commons-net.version>
+        <commons-io.version>2.8.0</commons-io.version>
+
+        <equator-inf.version>1.0.0-SNAPSHOT</equator-inf.version>
+
+        <easy-captcha.version>1.6.2</easy-captcha.version>
+
+        <jenkins-rest.version>1.0.2</jenkins-rest.version>
+        <junit.version>4.12</junit.version>
+        <hutool.version>5.8.22</hutool.version>
+
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${commons-net.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.whvcse</groupId>
+            <artifactId>easy-captcha</artifactId>
+            <version>${easy-captcha.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xyz.equator8848</groupId>
+            <artifactId>core</artifactId>
+            <version>${equator-inf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.equator8848</groupId>
+            <artifactId>security</artifactId>
+            <version>${equator-inf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.equator8848</groupId>
+            <artifactId>cache</artifactId>
+            <version>${equator-inf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.equator8848</groupId>
+            <artifactId>auth</artifactId>
+            <version>${equator-inf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.cdancy</groupId>
+            <artifactId>jenkins-rest</artifactId>
+            <version>${jenkins-rest.version}</version>
+            <classifier>all</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>${junit.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>sonatypeSnapshotsRepository</id>
+            <name>OSS Snapshots Repository</name>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <finalName>linker-${version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatisplus-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <!-- 输出目录(默认java.io.tmpdir) -->
+                    <outputDir>C:\Data\code\linker\src\main\java</outputDir>
+                    <!-- 是否覆盖同名文件(默认false) -->
+                    <fileOverride>true</fileOverride>
+                    <!-- mapper.xml 中添加二级缓存配置(默认true) -->
+                    <enableCache>false</enableCache>
+                    <!-- 开发者名称 -->
+                    <author>equator</author>
+                    <!-- 是否开启 ActiveRecord 模式(默认true) -->
+                    <activeRecord>false</activeRecord>
+                    <!-- 数据源配置，( **必配** ) -->
+                    <dataSource>
+                        <driverName>com.mysql.cj.jdbc.Driver</driverName>
+                        <url>jdbc:mysql://localhost:3306/db_linker?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;useSSL=false&amp;serverTimezone=GMT%2B8&amp;allowPublicKeyRetrieval=true&amp;useSSL=false</url>
+                        <username>root</username>
+                        <password>123456</password>
+                    </dataSource>
+                    <strategy>
+                        <superMapperClass>com.baomidou.mybatisplus.core.mapper.BaseMapper</superMapperClass>
+                        <superServiceClass>com.baomidou.mybatisplus.extension.service.IService</superServiceClass>
+                        <superServiceImplClass>com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+                        </superServiceImplClass>
+                        <naming>underline_to_camel</naming>
+                        <!-- 表前缀 -->
+                        <tablePrefix>tb_</tablePrefix>
+                        <!--Entity中的ID生成策略（默认 id_worker）-->
+                        <idGenType>id_worker</idGenType>
+                        <!-- 要生成的表名 include 与 exclude 二选一配置-->
+                        <exclude>
+                            <property>tb_init</property>
+                        </exclude>
+                    </strategy>
+                    <packageInfo>
+                        <!--项目的包结构-->
+                        <parent>xyz.equator8848.linker.generate</parent>
+                        <entity>entity</entity>
+                        <service>service.interfaces</service>
+                        <!--serviceImpl包名(默认service.impl)-->
+                        <serviceImpl>service.impl</serviceImpl>
+                        <mapper>mapper</mapper>
+                        <xml>xml</xml>
+                    </packageInfo>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.16</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerVersion>${java.version}</compilerVersion>
+                    <compilerArgs>--enable-preview</compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.6.0</version>
+                <executions>
+                    <!--以下配置说明执行mvn的package命令时候，会执行proguard-->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--输入jar-->
+                    <injar>${project.build.finalName}.jar</injar>
+                    <!--输出jar-->
+                    <outjar>${project.build.finalName}.jar</outjar>
+                    <!--是否混淆-->
+                    <obfuscate>true</obfuscate>
+                    <!--配置文件-->
+                    <proguardInclude>${project.basedir}/proguard.cfg</proguardInclude>
+                    <!--对输入jar继续过滤-->
+                    <inLibsFilter>!META-INF/**</inLibsFilter>
+                    <!--输出路径配置-->
+                    <outputDirectory>${project.basedir}/target</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <mainClass>xyz.equator8848.linker.LinkerApplication</mainClass>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

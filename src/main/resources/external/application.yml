@@ -1,0 +1,51 @@
+server:
+  servlet:
+    context-path: /linker-server
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  port: 8888
+  shutdown: graceful
+spring:
+  application:
+    name: Linker
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
+  mvc:
+    converters:
+      preferred-json-mapper: jackson
+  lifecycle:
+    timeout-per-shutdown-phase: 60
+  main:
+    banner-mode: console
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_linker_prod?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+
+mybatis:
+  type-aliases-package: xyz.equator8848.linker.model.po
+  configuration:
+    map-underscore-to-camel-case: true
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: del_flag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  file:
+    path: ./logs
+
+
+linker:
+  security:
+    md5-salt: LYcuh0TA8q7w
+    des-key: 0pe.*VZk
+  base:
+    env: prod
