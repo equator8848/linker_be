@@ -21,11 +21,12 @@ spring:
     timeout-per-shutdown-phase: 60
   main:
     banner-mode: console
+    allow-bean-definition-overriding: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_linker_prod?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: 123456
+    url: jdbc:mysql://localhost:3060/db_linker_prod?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useSSL=false
+    username: linker
+    password: ujdcwk7gigJ7nO9w
 
 mybatis:
   type-aliases-package: xyz.equator8848.linker.model.po

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.equator</groupId>
     <artifactId>linker</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>linker</name>
     <description>linker 前后端联调平台</description>
     <properties>
@@ -134,7 +134,7 @@
     </repositories>
 
     <build>
-        <finalName>linker-${version}</finalName>
+        <finalName>linker</finalName>
         <plugins>
             <plugin>
                 <groupId>com.baomidou</groupId>
