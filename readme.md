@@ -9,7 +9,7 @@
 
 ## docker部署
 > 需要文件
-- [Dockerfile](config/Dockerfile) 
+- [Dockerfile](config_sample/Dockerfile) 
 - [application.yml](src%2Fmain%2Fresources%2Fexternal%2Fapplication.yml)
 - [linker.jar](target%2Flinker.jar)
 ```shell
