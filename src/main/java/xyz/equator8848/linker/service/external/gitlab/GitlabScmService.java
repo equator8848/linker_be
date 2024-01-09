@@ -40,7 +40,7 @@ public class GitlabScmService implements ScmService {
         }
     }
 
-    private static final Pattern PROJECT_PATH_PATTERN = Pattern.compile("http[s]?://[^/]+/([^/.]+/[^/.]+)(?:\\.git)?");
+    private static final Pattern PROJECT_PATH_PATTERN = Pattern.compile("http[s]?://[^/]+/([^/.]+(?:/[^/.]+)?(?:/[^/.]+)?)(?:\\.git)?");
 
     @Override
     public String getProjectPathFromRepositoryUrl(String repositoryUrl) {
