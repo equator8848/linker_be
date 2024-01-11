@@ -35,3 +35,10 @@ curl http://ip:8888/linker-server/api/v1/anonymous/ping
 
 - 1.0.0 一个比较完善的版本
 - 1.0.1 修复部分SCM仓库无法获取commit列表问题
+- 1.0.2 增加定制化模板（ID为：20240111），模板列表从数据库获取改成从代码动态获取。
+
+# 备忘录
+
+1. 设置环境变量启动docker测试，如：docker run --rm -p 28181:80 -e gatewayServer1=192.168.0.10:19206 -e
+   gatewayServer2=192.168.0.10:19206 --name nginx-test training-center:1.1.24
+2. 20240111模板用到了envsubst命令进行环境变量的替换

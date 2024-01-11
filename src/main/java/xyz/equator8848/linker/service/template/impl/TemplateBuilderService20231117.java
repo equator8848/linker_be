@@ -1,18 +1,23 @@
 package xyz.equator8848.linker.service.template.impl;
 
+import org.springframework.stereotype.Service;
+import xyz.equator8848.inf.core.util.json.JsonUtil;
 import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.model.vo.project.ScmConfig;
 import xyz.equator8848.linker.service.template.TemplateUtil;
 import xyz.equator8848.linker.service.template.model.JenkinsFileTemplateBuildData;
-import xyz.equator8848.inf.core.util.json.JsonUtil;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TemplateBuilderService20231117 extends AbstractTemplateBuilderService {
     @Override
     public String templateId() {
         return "20231117";
+    }
+
+    @Override
+    public String getIntro() {
+        return "基础联调流水线模板";
     }
 
     @Override

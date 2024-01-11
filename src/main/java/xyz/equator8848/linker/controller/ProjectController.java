@@ -66,6 +66,6 @@ public class ProjectController {
 
     @GetMapping("/templates")
     public Response getTemplates() {
-        return Response.success(projectTemplateService.all());
+        return Response.success(projectTemplateService.allFromCode());
     }
 }

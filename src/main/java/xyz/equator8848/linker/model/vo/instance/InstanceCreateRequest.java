@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 
+import javax.annotation.Nullable;
+
 /**
  * <p>
  *
@@ -100,5 +102,8 @@ public class InstanceCreateRequest {
      */
     @NotNull
     private Boolean imageArchiveFlag;
+
+    @Nullable
+    private String pipelineTemplateId;
 
 }

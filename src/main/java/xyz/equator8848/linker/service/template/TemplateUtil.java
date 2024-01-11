@@ -2,6 +2,11 @@ package xyz.equator8848.linker.service.template;
 
 
 import cn.hutool.core.io.resource.ClassPathResource;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import xyz.equator8848.inf.core.model.exception.PreCondition;
+import xyz.equator8848.inf.core.model.exception.VerifyException;
+import xyz.equator8848.inf.core.util.json.JsonUtil;
 import xyz.equator8848.linker.model.constant.RouteMode;
 import xyz.equator8848.linker.model.constant.SeparatorEnum;
 import xyz.equator8848.linker.model.dto.DynamicAppConfiguration;
@@ -10,11 +15,6 @@ import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 import xyz.equator8848.linker.model.vo.project.ProxyPassConfig;
 import xyz.equator8848.linker.model.vo.project.ScmConfig;
-import xyz.equator8848.inf.core.model.exception.PreCondition;
-import xyz.equator8848.inf.core.model.exception.VerifyException;
-import xyz.equator8848.inf.core.util.json.JsonUtil;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -53,6 +53,16 @@ public class TemplateUtil {
             return tbInstance.getDeployFolder();
         }
         return tbProject.getDeployFolder();
+    }
+
+    public static String getDeployFolderWithoutSlashOrBlank(TbProject tbProject, TbInstance tbInstance) {
+        String deployFolder = getDeployFolder(tbProject, tbInstance);
+        return StringUtils.isBlank(deployFolder) ? "" : removeAroundSlash(deployFolder);
+    }
+
+    public static String getDeployFolderStartWithSlashOrBlank(TbProject tbProject, TbInstance tbInstance) {
+        String deployFolder = getDeployFolder(tbProject, tbInstance);
+        return StringUtils.isBlank(deployFolder) ? "" : SeparatorEnum.SLASH.getSeparator() + deployFolder;
     }
 
     public static String getAccessEntrance(TbProject tbProject, TbInstance tbInstance) {
@@ -108,19 +118,22 @@ public class TemplateUtil {
                     }
                     """;
         } else {
-            String deployFolder = getDeployFolder(tbProject, tbInstance);
             return """
                     location / {
                         root   /usr/share/nginx/html;
                         try_files \\$uri \\$uri/ %s/index.html;
                         index  index.html index.htm;
                     }
-                    """.formatted(StringUtils.isBlank(deployFolder) ? "" : SeparatorEnum.SLASH.getSeparator() + deployFolder);
+                    """.formatted(getDeployFolderStartWithSlashOrBlank(tbProject, tbInstance));
         }
     }
 
     public static String getNginxProxyPassConfig(TbInstance tbInstance) {
-        ProxyConfig proxyConfig = JsonUtil.fromJson(tbInstance.getProxyConfig(), ProxyConfig.class);
+        String instanceProxyConfig = tbInstance.getProxyConfig();
+        if (StringUtils.isBlank(instanceProxyConfig)) {
+            return "";
+        }
+        ProxyConfig proxyConfig = JsonUtil.fromJson(instanceProxyConfig, ProxyConfig.class);
         StringBuilder sb = new StringBuilder();
         List<ProxyPassConfig> proxyPassConfigs = proxyConfig.getProxyPassConfigs();
         for (ProxyPassConfig proxyPassConfig : proxyPassConfigs) {
@@ -219,6 +232,19 @@ public class TemplateUtil {
         }
         if (input.endsWith(SeparatorEnum.SLASH.getSeparator())) {
             return input.substring(0, input.length() - 1);
+        }
+        return input;
+    }
+
+    public static String removeAroundSlash(String input) {
+        if (StringUtils.isBlank(input)) {
+            return "";
+        }
+        if (input.startsWith(SeparatorEnum.SLASH.getSeparator())) {
+            input = input.substring(1);
+        }
+        if (input.endsWith(SeparatorEnum.SLASH.getSeparator())) {
+            input = input.substring(0, input.length() - 1);
         }
         return input;
     }

@@ -41,6 +41,7 @@ import xyz.equator8848.linker.model.vo.instance.*;
 import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 import xyz.equator8848.linker.model.vo.project.ScmConfig;
 import xyz.equator8848.linker.service.InstanceService;
+import xyz.equator8848.linker.service.ProjectTemplateService;
 import xyz.equator8848.linker.service.jenkins.JenkinsClientFactory;
 import xyz.equator8848.linker.service.template.TemplateBuilderServiceHolder;
 import xyz.equator8848.linker.service.template.TemplateUtil;
@@ -83,7 +84,7 @@ public class InstanceServiceImpl implements InstanceService {
     private TemplateBuilderServiceHolder templateBuilderServiceHolder;
 
     @Autowired
-    private ProjectTemplateDaoService projectTemplateDaoService;
+    private ProjectTemplateService projectTemplateService;
 
     @Autowired
     private ImageVersionGeneratorHolder imageVersionGeneratorHolder;
@@ -152,7 +153,7 @@ public class InstanceServiceImpl implements InstanceService {
         tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceCreateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
 
 
-        tbInstance.setPipelineTemplateId(tbProject.getPipelineTemplateId());
+        tbInstance.setPipelineTemplateId(Optional.ofNullable(instanceCreateRequest.getPipelineTemplateId()).orElse(tbProject.getPipelineTemplateId()));
         tbInstance.setBuildingFlag(false);
         instanceDaoService.save(tbInstance);
 
@@ -211,7 +212,8 @@ public class InstanceServiceImpl implements InstanceService {
         }
 
         tbInstance.setAccessLevel(BaseConstant.AccessLevel.valueOf(instanceUpdateRequest.getAccessLevel()).getCode());
-        tbInstance.setPipelineTemplateId(tbProject.getPipelineTemplateId());
+
+        tbInstance.setPipelineTemplateId(Optional.ofNullable(instanceUpdateRequest.getPipelineTemplateId()).orElse(tbProject.getPipelineTemplateId()));
 
         tbInstance.setImageArchiveFlag(instanceUpdateRequest.getImageArchiveFlag());
         if (instanceUpdateRequest.getImageArchiveFlag()) {
@@ -305,7 +307,7 @@ public class InstanceServiceImpl implements InstanceService {
                     }
 
                     instanceDetailsInfo.setPipelineTemplateId(tbInstance.getPipelineTemplateId());
-                    instanceDetailsInfo.setPipelineTemplateIntro(projectTemplateDaoService.getIntroFromCache(tbInstance.getPipelineTemplateId()));
+                    instanceDetailsInfo.setPipelineTemplateIntro(projectTemplateService.getIntroFromCache(tbInstance.getPipelineTemplateId()));
 
                     instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
                     return instanceDetailsInfo;

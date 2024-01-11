@@ -24,31 +24,4 @@ import java.util.concurrent.TimeUnit;
 public class ProjectTemplateDaoService extends ServiceImpl<TbProjectTemplateMapper, TbProjectTemplate> implements IService<TbProjectTemplate> {
     @Autowired
     private TbProjectTemplateMapper tbProjectTemplateMapper;
-
-    private final LoadingCache<String, VersionCacheElement<Date, TbProjectTemplate>> projectTemplateIdInfoCache =
-            VersionCacheBuilder.newBuilder().refreshAfterWrite(1, TimeUnit.MINUTES).expireAfterWrite(6,
-                    TimeUnit.HOURS).maximumSize(512).build(new LogVersionCacheLoader<>() {
-                @Override
-                public Date loadVersion(String key, TbProjectTemplate data) {
-                    return tbProjectTemplateMapper.selectMaxUpdateTime(key);
-                }
-
-                @Override
-                public TbProjectTemplate loadData(String key) throws Exception {
-                    return getOne(Wrappers.<TbProjectTemplate>lambdaQuery().eq(TbProjectTemplate::getTemplateVersionId, key));
-                }
-
-                @Override
-                public String getCacheName() {
-                    return "projectTemplateIdInfoCache";
-                }
-            }, ThreadPoolService.getInstance());
-
-    public String getIntroFromCache(String templateId) {
-        TbProjectTemplate projectTemplate = projectTemplateIdInfoCache.getUnchecked(templateId).getData();
-        if (projectTemplate == null) {
-            return "神秘模板";
-        }
-        return projectTemplate.getIntro();
-    }
 }

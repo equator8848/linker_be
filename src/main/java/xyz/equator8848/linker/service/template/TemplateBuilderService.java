@@ -5,7 +5,13 @@ import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.service.template.model.JenkinsFileTemplateBuildData;
 
 public interface TemplateBuilderService {
+    default Long getId() {
+        return Long.parseLong(templateId());
+    }
+
     String templateId();
+
+    String getIntro();
 
     String getNginxProxyPassConfig(TbProject tbProject, TbInstance tbInstance);
 

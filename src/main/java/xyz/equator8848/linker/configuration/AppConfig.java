@@ -43,7 +43,7 @@ public class AppConfig {
                     TimeUnit.HOURS).maximumSize(2).build(new LogVersionCacheLoader<>() {
                 @Override
                 public Date loadVersion(Integer key, DynamicAppConfiguration data) {
-                    return settingMapper.selectMaxUpdateTime();
+                    return Optional.ofNullable(settingMapper.selectMaxUpdateTime()).orElse(new Date());
                 }
 
                 @Override

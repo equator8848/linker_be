@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Mapper
 public interface TbInstanceMapper extends BaseMapper<TbInstance> {
-    @Select("SELECT IFNULL(MAX(access_port),#{minAccessPort})+1 FROM tb_instance WHERE del_flag=0 FOR UPDATE")
+    @Select("SELECT IFNULL(MAX(access_port),#{minAccessPort})+1 FROM tb_instance FOR UPDATE")
     Integer getNextAccessPort(@Param("minAccessPort") Integer minAccessPort);
 
     @Select("SELECT del_flag AS status, COUNT(id) AS countNum FROM tb_instance GROUP BY del_flag")
