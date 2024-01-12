@@ -127,6 +127,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoVO changeUsername(String newUsername) {
+        PreCondition.isTrue(StringUtils.isNotBlank(newUsername), "新名字不能为空");
         TbUser tbUser = userDaoService.getById(UserContextUtil.getUserId());
         PreCondition.isNotNull(tbUser, "无法获取当前用户数据");
         tbUser.setUserName(newUsername);
