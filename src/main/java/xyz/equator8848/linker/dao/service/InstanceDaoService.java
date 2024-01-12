@@ -38,12 +38,18 @@ public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance
                 }
             }, ThreadPoolService.getInstance());
 
-    public TbInstance getInstanceByIdFromCache(Long instanceId){
+    public TbInstance getInstanceByIdFromCache(Long instanceId) {
         return instanceCache.getUnchecked(instanceId).getData();
     }
 
     public Set<Long> getInstanceIdsByAccessLevel(Integer accessLevel, Set<Long> ignoreInstanceIds) {
         return list(Wrappers.<TbInstance>lambdaQuery().eq(TbInstance::getAccessLevel, accessLevel)
+                .notIn(!CollectionUtils.isEmpty(ignoreInstanceIds), TbInstance::getId, ignoreInstanceIds)).stream().map(TbInstance::getId)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Long> getInstanceIdsByGteAccessLevel(Integer accessLevel, Set<Long> ignoreInstanceIds) {
+        return list(Wrappers.<TbInstance>lambdaQuery().ge(TbInstance::getAccessLevel, accessLevel)
                 .notIn(!CollectionUtils.isEmpty(ignoreInstanceIds), TbInstance::getId, ignoreInstanceIds)).stream().map(TbInstance::getId)
                 .collect(Collectors.toSet());
     }

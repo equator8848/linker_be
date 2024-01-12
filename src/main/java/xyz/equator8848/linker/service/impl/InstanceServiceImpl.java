@@ -175,7 +175,12 @@ public class InstanceServiceImpl implements InstanceService {
         TbInstance tbInstance = instanceDaoService.getById(instanceId);
         BeanUtils.copyProperties(instanceUpdateRequest, tbInstance);
         PreCondition.isNotNull(tbInstance, "实例不存在");
-        UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
+
+        if (BaseConstant.AccessLevel.PUBLIC_WRITE.getCode() != tbInstance.getAccessLevel()) {
+            // 非公开编辑的实例，进行权限校验
+            UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
+        }
+
 
         TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
         PreCondition.isNotNull(tbProject, "项目不存在");
@@ -263,7 +268,7 @@ public class InstanceServiceImpl implements InstanceService {
         Set<Long> targetInstanceIds = instanceUserRefDaoService.getInstanceIdByUserId(userId);
         // 公开的
         Set<Long> publicInstanceIds = instanceDaoService
-                .getInstanceIdsByAccessLevel(BaseConstant.AccessLevel.PUBLIC.getCode(), targetInstanceIds);
+                .getInstanceIdsByGteAccessLevel(BaseConstant.AccessLevel.PUBLIC.getCode(), targetInstanceIds);
         targetInstanceIds.addAll(publicInstanceIds);
 
         Long projectId = instanceListRequest.getProjectId();
@@ -291,6 +296,12 @@ public class InstanceServiceImpl implements InstanceService {
 
                     boolean isOwner = tbInstance.getCreateUserId().equals(userId);
                     instanceDetailsInfo.setIsOwner(isOwner);
+
+                    if (isOwner) {
+                        instanceDetailsInfo.setEditable(true);
+                    } else {
+                        instanceDetailsInfo.setEditable(BaseConstant.AccessLevel.PUBLIC_WRITE.getCode() == tbInstance.getAccessLevel());
+                    }
 
                     instanceDetailsInfo.setAccessUrl(tbInstance.getAccessLink());
 

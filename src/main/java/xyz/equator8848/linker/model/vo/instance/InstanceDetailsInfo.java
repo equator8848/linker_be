@@ -1,9 +1,9 @@
 package xyz.equator8848.linker.model.vo.instance;
 
 
-import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 
 import java.util.Date;
 
@@ -88,6 +88,11 @@ public class InstanceDetailsInfo {
 
 
     private Boolean isOwner;
+
+    /**
+     * 是否可编辑
+     */
+    private Boolean editable;
 
     /**
      * 访问地址

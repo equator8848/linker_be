@@ -29,11 +29,25 @@ public class BaseConstant {
     }
 
     public enum AccessLevel {
+        /**
+         * 私有
+         */
         PRIVATE(1),
 
+        /**
+         * 邀请访问
+         */
         PROTECTED(2),
 
-        PUBLIC(4);
+        /**
+         * 公开访问
+         */
+        PUBLIC(4),
+
+        /**
+         * 公开编辑
+         */
+        PUBLIC_WRITE(8);
 
         private int code;
 
