@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import xyz.equator8848.inf.auth.util.UserAuthUtil;
 import xyz.equator8848.inf.auth.util.UserContextUtil;
 import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.model.page.PageData;
@@ -27,6 +26,7 @@ import xyz.equator8848.linker.model.vo.project.*;
 import xyz.equator8848.linker.service.ProjectService;
 import xyz.equator8848.linker.service.external.ScmService;
 import xyz.equator8848.linker.service.external.model.BranchInfo;
+import xyz.equator8848.linker.service.util.ResourcePermissionValidateUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +46,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private UserDaoService userDaoService;
+    private boolean isOwner;
 
     @Autowired
     public void setScmService(List<ScmService> scmServiceList) {
@@ -84,7 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
         Long projectId = projectUpdateRequest.getId();
         TbProject tbProject = projectDaoService.getById(projectId);
         PreCondition.isNotNull(tbProject, "项目不存在");
-        UserAuthUtil.checkPermission(tbProject.getCreateUserId());
+        ResourcePermissionValidateUtil.permissionCheck(tbProject.getCreateUserId());
 
         tbProject.setName(projectUpdateRequest.getName());
         tbProject.setIntro(projectUpdateRequest.getIntro());
@@ -114,7 +115,7 @@ public class ProjectServiceImpl implements ProjectService {
         TbProject tbProject = projectDaoService.getById(projectId);
         PreCondition.isNotNull(tbProject, "项目不存在");
         projectDaoService.removeById(projectId);
-        UserAuthUtil.checkPermission(tbProject.getCreateUserId());
+        ResourcePermissionValidateUtil.permissionCheck(tbProject.getCreateUserId());
         projectUserRefDaoService.remove(Wrappers.<TbProjectUserRef>lambdaQuery()
                 .eq(TbProjectUserRef::getProjectId, projectId));
     }
@@ -168,13 +169,14 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectDetailsInfo projectDetailsInfo = new ProjectDetailsInfo();
         BeanUtils.copyProperties(tbProject, projectDetailsInfo);
         projectDetailsInfo.setAccessLevel(EnumUtil.getFieldBy(BaseConstant.AccessLevel::name, BaseConstant.AccessLevel::getCode, tbProject.getAccessLevel()));
+        projectDetailsInfo.setAccessLevelCn(EnumUtil.getFieldBy(BaseConstant.AccessLevel::getCnName, BaseConstant.AccessLevel::getCode, tbProject.getAccessLevel()));
         projectDetailsInfo.setScmConfig(JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class));
         projectDetailsInfo.setProxyConfig(JsonUtil.fromJson(tbProject.getProxyConfig(), ProxyConfig.class));
 
         projectDetailsInfo.setCreateUserName(userDaoService.getUsernameFromCache(tbProject.getCreateUserId()));
         projectDetailsInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbProject.getUpdateUserId()));
 
-        boolean isOwner = tbProject.getCreateUserId().equals(UserContextUtil.getUserId());
+        isOwner = ResourcePermissionValidateUtil.isAdmin(tbProject.getCreateUserId());
         projectDetailsInfo.setIsOwner(isOwner);
         if (!isOwner) {
             projectDetailsInfo.getScmConfig().setAccessToken("保密");

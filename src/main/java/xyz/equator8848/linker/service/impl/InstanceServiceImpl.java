@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import xyz.equator8848.inf.auth.util.UserAuthUtil;
 import xyz.equator8848.inf.auth.util.UserContextUtil;
 import xyz.equator8848.inf.core.model.exception.InnerException;
 import xyz.equator8848.inf.core.model.exception.PreCondition;
@@ -46,6 +45,7 @@ import xyz.equator8848.linker.service.jenkins.JenkinsClientFactory;
 import xyz.equator8848.linker.service.template.TemplateBuilderServiceHolder;
 import xyz.equator8848.linker.service.template.TemplateUtil;
 import xyz.equator8848.linker.service.template.model.JenkinsFileTemplateBuildData;
+import xyz.equator8848.linker.service.util.ResourcePermissionValidateUtil;
 import xyz.equator8848.linker.service.version.ImageVersionGenerator;
 import xyz.equator8848.linker.service.version.ImageVersionGeneratorHolder;
 
@@ -178,7 +178,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         if (BaseConstant.AccessLevel.PUBLIC_WRITE.getCode() != tbInstance.getAccessLevel()) {
             // 非公开编辑的实例，进行权限校验
-            UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
+            ResourcePermissionValidateUtil.permissionCheck(tbInstance.getCreateUserId());
         }
 
 
@@ -248,7 +248,7 @@ public class InstanceServiceImpl implements InstanceService {
         TbInstance tbInstance = instanceDaoService.getById(instanceId);
         PreCondition.isNotNull(tbInstance, "实例不存在");
         instanceDaoService.removeById(instanceId);
-        UserAuthUtil.checkPermission(tbInstance.getCreateUserId());
+        ResourcePermissionValidateUtil.permissionCheck(tbInstance.getCreateUserId());
         instanceUserRefDaoService.remove(Wrappers.<TbInstanceUserRef>lambdaQuery()
                 .eq(TbInstanceUserRef::getInstanceId, instanceId));
         publicEntranceDaoService.deleteByInstanceId(instanceId);
@@ -294,7 +294,11 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setAccessLevel(EnumUtil.getFieldBy(BaseConstant.AccessLevel::name,
                             BaseConstant.AccessLevel::getCode, tbInstance.getAccessLevel()));
 
-                    boolean isOwner = tbInstance.getCreateUserId().equals(userId);
+                    instanceDetailsInfo.setAccessLevelCn(EnumUtil.getFieldBy(BaseConstant.AccessLevel::getCnName,
+                            BaseConstant.AccessLevel::getCode, tbInstance.getAccessLevel()));
+
+
+                    boolean isOwner = ResourcePermissionValidateUtil.isAdmin(tbInstance.getCreateUserId());
                     instanceDetailsInfo.setIsOwner(isOwner);
 
                     if (isOwner) {
@@ -310,17 +314,21 @@ public class InstanceServiceImpl implements InstanceService {
 
                     instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
 
+
+                    InstancePipelineBuildResult instancePipelineBuildResult = getInstancePipelineBuildResult(tbInstance);
                     if (Boolean.TRUE.equals(tbInstance.getImageArchiveFlag()) && Boolean.FALSE.equals(tbInstance.getBuildingFlag())) {
-                        String imageArchiveFileName = templateBuilderServiceHolder
-                                .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
-                                .getImageArchiveFileName(tbInstance);
-                        instanceDetailsInfo.setImageArchiveUrl(TemplateUtil.buildDownloadInstanceArtifactUrl(appConfig.getConfig(), tbInstance.getId(), imageArchiveFileName));
+                        if (instancePipelineBuildResult.getDuration() != null) {
+                            String imageArchiveFileName = templateBuilderServiceHolder
+                                    .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
+                                    .getImageArchiveFileName(tbInstance);
+                            instanceDetailsInfo.setImageArchiveUrl(TemplateUtil.buildDownloadInstanceArtifactUrl(appConfig.getConfig(), tbInstance.getId(), imageArchiveFileName));
+                        }
                     }
 
                     instanceDetailsInfo.setPipelineTemplateId(tbInstance.getPipelineTemplateId());
                     instanceDetailsInfo.setPipelineTemplateIntro(projectTemplateService.getIntroFromCache(tbInstance.getPipelineTemplateId()));
 
-                    instanceDetailsInfo.setInstancePipelineBuildResult(getInstancePipelineBuildResult(tbInstance));
+                    instanceDetailsInfo.setInstancePipelineBuildResult(instancePipelineBuildResult);
                     return instanceDetailsInfo;
                 }).collect(Collectors.toList());
     }

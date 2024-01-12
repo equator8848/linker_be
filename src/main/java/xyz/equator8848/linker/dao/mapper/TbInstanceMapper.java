@@ -25,4 +25,7 @@ public interface TbInstanceMapper extends BaseMapper<TbInstance> {
 
     @Select("SELECT del_flag AS status, COUNT(id) AS countNum FROM tb_instance GROUP BY del_flag")
     List<CountGroupResult> countInstanceDelStatus();
+
+    @Select("SELECT SUM(IFNULL(latest_build_number,0)) FROM tb_instance")
+    Long getBuildCount();
 }

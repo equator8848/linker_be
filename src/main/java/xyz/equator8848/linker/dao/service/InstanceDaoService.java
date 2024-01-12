@@ -12,6 +12,7 @@ import xyz.equator8848.inf.cache.guava.SimpleCacheBuilder;
 import xyz.equator8848.inf.core.thread.ThreadPoolService;
 import xyz.equator8848.linker.dao.mapper.TbInstanceMapper;
 import xyz.equator8848.linker.model.po.TbInstance;
+import xyz.equator8848.linker.model.vo.dashboard.BuildStatisticalResult;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -52,5 +53,30 @@ public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance
         return list(Wrappers.<TbInstance>lambdaQuery().ge(TbInstance::getAccessLevel, accessLevel)
                 .notIn(!CollectionUtils.isEmpty(ignoreInstanceIds), TbInstance::getId, ignoreInstanceIds)).stream().map(TbInstance::getId)
                 .collect(Collectors.toSet());
+    }
+
+    private final LoadingCache<String, SimpleCacheElement<BuildStatisticalResult>> buildStaticalResultCache =
+            SimpleCacheBuilder.newBuilder().refreshAfterWrite(1, TimeUnit.HOURS).expireAfterWrite(6,
+                    TimeUnit.HOURS).maximumSize(2).build(new LogSimpleCacheLoader<>() {
+
+                @Override
+                public BuildStatisticalResult loadData(String key) throws Exception {
+                    return buildBuildStatisticalResult();
+                }
+
+                @Override
+                public String getCacheName() {
+                    return "buildStaticalResultCache";
+                }
+            }, ThreadPoolService.getInstance());
+
+    private BuildStatisticalResult buildBuildStatisticalResult() {
+        BuildStatisticalResult buildStatisticalResult = new BuildStatisticalResult();
+        buildStatisticalResult.setInstanceBuildTimes(baseMapper.getBuildCount());
+        return buildStatisticalResult;
+    }
+
+    public BuildStatisticalResult getBuildStatisticalResult() {
+        return buildStaticalResultCache.getUnchecked("").getData();
     }
 }

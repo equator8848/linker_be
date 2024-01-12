@@ -85,6 +85,8 @@ public class ProjectDetailsInfo {
      */
     private String accessLevel;
 
+    private String accessLevelCn;
+
     private String pipelineTemplateId;
 
     private Boolean isOwner;

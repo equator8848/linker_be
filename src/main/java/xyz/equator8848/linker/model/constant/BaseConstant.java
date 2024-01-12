@@ -32,31 +32,38 @@ public class BaseConstant {
         /**
          * 私有
          */
-        PRIVATE(1),
+        PRIVATE(1, "私有"),
 
         /**
          * 邀请访问
          */
-        PROTECTED(2),
+        PROTECTED(2, "邀请访问"),
 
         /**
          * 公开访问
          */
-        PUBLIC(4),
+        PUBLIC(4, "公开访问"),
 
         /**
          * 公开编辑
          */
-        PUBLIC_WRITE(8);
+        PUBLIC_WRITE(8, "公开编辑");
 
         private int code;
 
-        AccessLevel(int code) {
+        private String cnName;
+
+        AccessLevel(int code, String cnName) {
             this.code = code;
+            this.cnName = cnName;
         }
 
         public int getCode() {
             return code;
+        }
+
+        public String getCnName() {
+            return cnName;
         }
     }
 

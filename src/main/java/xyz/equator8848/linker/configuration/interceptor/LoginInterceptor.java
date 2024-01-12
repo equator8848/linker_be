@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import xyz.equator8848.inf.auth.annotation.SimpleRBACApi;
 import xyz.equator8848.inf.auth.model.bo.LoginUser;
+import xyz.equator8848.inf.auth.model.constant.RoleType;
 import xyz.equator8848.inf.auth.util.UserAuthUtil;
 import xyz.equator8848.inf.auth.util.UserContextUtil;
 import xyz.equator8848.inf.core.http.model.Response;
@@ -18,7 +19,6 @@ import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.util.json.JsonUtil;
 import xyz.equator8848.linker.dao.service.UserDaoService;
 import xyz.equator8848.linker.model.constant.ModelStatus;
-import xyz.equator8848.linker.model.constant.RoleType;
 import xyz.equator8848.linker.model.po.TbUser;
 
 import java.io.IOException;

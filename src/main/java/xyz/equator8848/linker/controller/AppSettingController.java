@@ -4,8 +4,8 @@ package xyz.equator8848.linker.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.equator8848.inf.auth.annotation.SimpleRBACApi;
+import xyz.equator8848.inf.auth.model.constant.RoleType;
 import xyz.equator8848.inf.core.http.model.Response;
-import xyz.equator8848.linker.model.constant.RoleType;
 import xyz.equator8848.linker.service.AppSettingService;
 
 @SimpleRBACApi(requireRoleType = RoleType.SYSTEM_ADMIN)

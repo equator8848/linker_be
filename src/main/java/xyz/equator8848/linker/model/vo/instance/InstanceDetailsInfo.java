@@ -86,6 +86,8 @@ public class InstanceDetailsInfo {
 
     private String accessLevel;
 
+    private String accessLevelCn;
+
 
     private Boolean isOwner;
 
