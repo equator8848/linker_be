@@ -18,7 +18,7 @@ public class TemplateBuilderService20240111 extends AbstractTemplateBuilderServi
 
     @Override
     public String getIntro() {
-        return "【beta】【定制化模板】生产环境打包模板，仅打包，不启动容器，配置一个静态资源访问路径，将其余请求都转发到网关（把 / 转发到 http://gateway_server）；需要配置容器环境变量gatewayServer1、gatewayServer2；";
+        return "【定制化模板】动态生产环境打包模板，除了本站静态资源外，其余请求都转发到网关";
     }
 
 
