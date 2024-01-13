@@ -34,7 +34,7 @@ public class JenkinsTest extends SpringBaseTest {
     public void testJenkinsGetJobConfig() {
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
-            String config = jobsApi.config(null, "JenkinsPipeline1");
+            String config = jobsApi.config(null, "RemoveDockerContainer");
             log.info("testJenkinsGetJobConfig {}", config);
         } catch (IOException e) {
             throw new RuntimeException(e);

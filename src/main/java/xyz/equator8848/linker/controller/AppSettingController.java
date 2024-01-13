@@ -8,7 +8,7 @@ import xyz.equator8848.inf.auth.model.constant.RoleType;
 import xyz.equator8848.inf.core.http.model.Response;
 import xyz.equator8848.linker.service.AppSettingService;
 
-@SimpleRBACApi(requireRoleType = RoleType.SYSTEM_ADMIN)
+@SimpleRBACApi(requireRoleType = RoleType.SUPER_ADMIN)
 @RestController
 @RequestMapping("/api/v1/app-settings")
 public class AppSettingController {

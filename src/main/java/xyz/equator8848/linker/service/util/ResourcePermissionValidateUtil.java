@@ -4,6 +4,8 @@ import xyz.equator8848.inf.auth.model.bo.LoginUser;
 import xyz.equator8848.inf.auth.model.constant.RoleType;
 import xyz.equator8848.inf.auth.util.UserAuthUtil;
 import xyz.equator8848.inf.auth.util.UserContextUtil;
+import xyz.equator8848.inf.core.util.spring.BeanManagerUtil;
+import xyz.equator8848.linker.configuration.AppConfig;
 
 public class ResourcePermissionValidateUtil {
     /**
@@ -19,7 +21,10 @@ public class ResourcePermissionValidateUtil {
             return;
         }
         if (userRoleType >= RoleType.SYSTEM_ADMIN) {
-            return;
+            AppConfig appConfig = BeanManagerUtil.getBean(AppConfig.class);
+            if (appConfig.getConfig().getSystemAdminManageAllData()) {
+                return;
+            }
         }
         UserAuthUtil.checkPermission(resourceUid);
     }
@@ -37,7 +42,10 @@ public class ResourcePermissionValidateUtil {
             return currentLoginUser.getUid().equals(resourceUid);
         }
         if (userRoleType >= RoleType.SYSTEM_ADMIN) {
-            return true;
+            AppConfig appConfig = BeanManagerUtil.getBean(AppConfig.class);
+            if (appConfig.getConfig().getSystemAdminManageAllData()) {
+                return true;
+            }
         }
         return currentLoginUser.getUid().equals(resourceUid);
     }

@@ -36,6 +36,7 @@ curl http://ip:8888/linker-server/api/v1/anonymous/ping
 - 1.0.0 一个比较完善的版本
 - 1.0.1 修复部分SCM仓库无法获取commit列表问题
 - 1.0.2 增加定制化模板（ID为：20240111），模板列表从数据库获取改成从代码动态获取、支持配置公开编辑权限配置
+- 1.0.3 增加开关配置systemAdminManageAllData，允许管理员管理全部数据；增加删除实例关联docker容器逻辑
 
 # 备忘录
 

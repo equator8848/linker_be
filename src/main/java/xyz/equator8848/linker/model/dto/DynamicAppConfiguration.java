@@ -72,4 +72,10 @@ public class DynamicAppConfiguration {
      */
     @ModelTransformerField(defaultValue = "6a0150d920232858462c94bdd0a967a6")
     private String sm4SecretKey;
+
+    /**
+     * 是否允许系统管理员管理全部数据
+     */
+    @ModelTransformerField(defaultValue = "false")
+    private Boolean systemAdminManageAllData;
 }

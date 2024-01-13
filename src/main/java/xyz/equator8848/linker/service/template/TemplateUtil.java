@@ -100,6 +100,10 @@ public class TemplateUtil {
         return getTemplateAsString("template/jenkins/", () -> getJenkinsFileTemplateFileName(templateId));
     }
 
+    public static String getJenkinsFileTemplateByName(String templateName) {
+        return getTemplateAsString("template/jenkins/", () -> "%s.xml".formatted(templateName));
+    }
+
     private static String getNginxConfFileName(String templateId) {
         return String.format("NginxConf%s.conf".formatted(templateId));
     }

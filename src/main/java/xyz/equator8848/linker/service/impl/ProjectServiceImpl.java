@@ -15,11 +15,13 @@ import xyz.equator8848.inf.auth.util.UserContextUtil;
 import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.model.page.PageData;
 import xyz.equator8848.inf.core.util.json.JsonUtil;
+import xyz.equator8848.linker.dao.service.InstanceDaoService;
 import xyz.equator8848.linker.dao.service.ProjectDaoService;
 import xyz.equator8848.linker.dao.service.ProjectUserRefDaoService;
 import xyz.equator8848.linker.dao.service.UserDaoService;
 import xyz.equator8848.linker.model.constant.BaseConstant;
 import xyz.equator8848.linker.model.constant.ScmType;
+import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.model.po.TbProjectUserRef;
 import xyz.equator8848.linker.model.vo.project.*;
@@ -38,6 +40,9 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectDaoService projectDaoService;
+
+    @Autowired
+    private InstanceDaoService instanceDaoService;
 
     @Autowired
     private ProjectUserRefDaoService projectUserRefDaoService;
@@ -114,6 +119,11 @@ public class ProjectServiceImpl implements ProjectService {
     public void delete(Long projectId) {
         TbProject tbProject = projectDaoService.getById(projectId);
         PreCondition.isNotNull(tbProject, "项目不存在");
+
+        List<TbInstance> instances = instanceDaoService.list(Wrappers.<TbInstance>lambdaQuery()
+                .eq(TbInstance::getProjectId, projectId));
+        PreCondition.isTrue(CollectionUtils.isEmpty(instances), "该项目存在未删除的实例，无法删除");
+
         projectDaoService.removeById(projectId);
         ResourcePermissionValidateUtil.permissionCheck(tbProject.getCreateUserId());
         projectUserRefDaoService.remove(Wrappers.<TbProjectUserRef>lambdaQuery()

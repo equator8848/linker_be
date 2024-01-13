@@ -42,6 +42,7 @@ import xyz.equator8848.linker.model.vo.project.ScmConfig;
 import xyz.equator8848.linker.service.InstanceService;
 import xyz.equator8848.linker.service.ProjectTemplateService;
 import xyz.equator8848.linker.service.jenkins.JenkinsClientFactory;
+import xyz.equator8848.linker.service.jenkins.RemoveDockerContainerService;
 import xyz.equator8848.linker.service.template.TemplateBuilderServiceHolder;
 import xyz.equator8848.linker.service.template.TemplateUtil;
 import xyz.equator8848.linker.service.template.model.JenkinsFileTemplateBuildData;
@@ -91,6 +92,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private PublicEntranceDaoService publicEntranceDaoService;
+
+    @Autowired
+    private RemoveDockerContainerService removeDockerContainerService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -254,8 +258,11 @@ public class InstanceServiceImpl implements InstanceService {
         publicEntranceDaoService.deleteByInstanceId(instanceId);
 
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            // 删除流水线配置
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
             jobsApi.delete(null, tbInstance.getPipelineName());
+            // 触发一个流水线，删除关联的容器实例
+            removeDockerContainerService.removeDockerContainer(TemplateUtil.getDockerContainerName(tbInstance.getId()));
         } catch (Exception e) {
             log.error("delete instance pipeline failed {}", instanceId, e);
         }
@@ -281,12 +288,15 @@ public class InstanceServiceImpl implements InstanceService {
             return Collections.emptyList();
         }
 
+        boolean fuzzySearch = StringUtils.isNotEmpty(instanceListRequest.getSearchKeyword());
 
         return instanceDaoService.list(Wrappers.<TbInstance>lambdaQuery()
-                        .like(StringUtils.isNotEmpty(instanceListRequest.getSearchKeyword()),
-                                TbInstance::getName, instanceListRequest.getSearchKeyword())
                         .eq(TbInstance::getProjectId, projectId)
-                        .in(TbInstance::getId, targetInstanceIds).orderByDesc(TbInstance::getId)).stream()
+                        .in(TbInstance::getId, targetInstanceIds)
+                        .and(fuzzySearch, wp -> wp.like(fuzzySearch, TbInstance::getName, instanceListRequest.getSearchKeyword())
+                                .or()
+                                .like(fuzzySearch, TbInstance::getIntro, instanceListRequest.getSearchKeyword())
+                        ).orderByDesc(TbInstance::getId)).stream()
                 .map(tbInstance -> {
                     InstanceDetailsInfo instanceDetailsInfo = new InstanceDetailsInfo();
                     BeanUtils.copyProperties(tbInstance, instanceDetailsInfo);

@@ -68,6 +68,11 @@ public class UserServiceImpl implements UserService {
             String password = PasswordUtil.generateSha512CryptPassword(userUpdateVO.getUserPassword());
             tbUser.setUserPassword(password);
         }
+        // 不能调整自己的角色
+        if (!tbUser.getRoleType().equals(userUpdateVO.getRoleType())) {
+            PreCondition.isFalse(UserContextUtil.getUserId().equals(userUpdateVO.getId()), "不能修改自己的角色");
+        }
+
         tbUser.setUserName(userUpdateVO.getUserName());
         tbUser.setPhoneNumber(userUpdateVO.getPhoneNumber());
         tbUser.setEmail(userUpdateVO.getEmail());
