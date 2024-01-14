@@ -205,6 +205,32 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public ProjectBranchResult branchesWithTips(ProjectBranchesRequest projectBranchesRequest) {
+        ScmService scmService = scmTypeScmServiceMap.get(ScmType.valueOf(projectBranchesRequest.getScmType()));
+        List<BranchInfo> branchInfoList = scmService.getBranchInfo(projectBranchesRequest.getRepositoryUrl(), projectBranchesRequest.getAccessToken());
+        ProjectBranchResult projectBranchResult = new ProjectBranchResult();
+        if (CollectionUtils.isEmpty(branchInfoList)) {
+            projectBranchResult.setIsDefaultData(true);
+            projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
+            return projectBranchResult;
+        }
+        projectBranchResult.setIsDefaultData(false);
+        projectBranchResult.setProjectBranchInfos(buildProjectBranchInfo(branchInfoList));
+        return projectBranchResult;
+    }
+
+    private List<ProjectBranchInfo> buildProjectBranchInfo(List<BranchInfo> branchInfoList) {
+        return branchInfoList.stream().map(branch -> {
+            ProjectBranchInfo projectBranchInfo = new ProjectBranchInfo();
+            projectBranchInfo.setName(branch.getName());
+            projectBranchInfo.setLatestCommitId(branch.getLatestCommitId());
+            projectBranchInfo.setLatestCommitTitle(branch.getLatestCommitTitle());
+            projectBranchInfo.setLatestCommitTime(branch.getLatestCommitDate());
+            return projectBranchInfo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public ProjectBranchResult branchesWithTips(Long projectId) {
         TbProject tbProject = projectDaoService.getById(projectId);
         PreCondition.isNotNull(tbProject, "项目不存在");
@@ -223,14 +249,7 @@ public class ProjectServiceImpl implements ProjectService {
             return projectBranchResult;
         }
         projectBranchResult.setIsDefaultData(false);
-        projectBranchResult.setProjectBranchInfos(branchInfoList.stream().map(branch -> {
-            ProjectBranchInfo projectBranchInfo = new ProjectBranchInfo();
-            projectBranchInfo.setName(branch.getName());
-            projectBranchInfo.setLatestCommitId(branch.getLatestCommitId());
-            projectBranchInfo.setLatestCommitTitle(branch.getLatestCommitTitle());
-            projectBranchInfo.setLatestCommitTime(branch.getLatestCommitDate());
-            return projectBranchInfo;
-        }).collect(Collectors.toList()));
+        projectBranchResult.setProjectBranchInfos(buildProjectBranchInfo(branchInfoList));
         return projectBranchResult;
     }
 

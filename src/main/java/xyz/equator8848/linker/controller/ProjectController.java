@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import xyz.equator8848.inf.auth.annotation.SimpleRBACApi;
 import xyz.equator8848.inf.auth.model.constant.RoleType;
 import xyz.equator8848.inf.core.http.model.Response;
+import xyz.equator8848.linker.model.vo.project.ProjectBranchesRequest;
 import xyz.equator8848.linker.model.vo.project.ProjectCreateRequest;
 import xyz.equator8848.linker.model.vo.project.ProjectListRequest;
 import xyz.equator8848.linker.model.vo.project.ProjectUpdateRequest;
@@ -55,6 +56,7 @@ public class ProjectController {
     }
 
     @GetMapping("/branches")
+    @Deprecated
     public Response branches(@RequestParam Long projectId) {
         return Response.success(projectService.branches(projectId));
     }
@@ -62,6 +64,11 @@ public class ProjectController {
     @GetMapping("/branches-with-tips")
     public Response branchesWithTips(@RequestParam Long projectId) {
         return Response.success(projectService.branchesWithTips(projectId));
+    }
+
+    @PostMapping("/peek-branches-with-tips")
+    public Response branchesWithTips(@Valid @RequestBody ProjectBranchesRequest projectBranchesRequest) {
+        return Response.success(projectService.branchesWithTips(projectBranchesRequest));
     }
 
     @GetMapping("/templates")

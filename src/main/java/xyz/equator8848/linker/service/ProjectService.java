@@ -20,5 +20,7 @@ public interface ProjectService {
 
     List<ProjectBranchInfo> branches(Long projectId);
 
+    ProjectBranchResult branchesWithTips(ProjectBranchesRequest projectBranchesRequest);
+
     ProjectBranchResult branchesWithTips(Long projectId);
 }
