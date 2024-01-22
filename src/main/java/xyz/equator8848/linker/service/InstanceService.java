@@ -18,6 +18,8 @@ public interface InstanceService {
 
     void buildPipeline(Long instanceId);
 
+    void stopPipeline(Long instanceId);
+
     PipelineBuildLog getPipelineLog(Long instanceId);
 
     InstancePipelineBuildResult getPipelineBuildResult(Long instanceId);

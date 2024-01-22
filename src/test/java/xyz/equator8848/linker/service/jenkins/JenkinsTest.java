@@ -7,11 +7,11 @@ import com.cdancy.jenkins.rest.domain.job.BuildInfo;
 import com.cdancy.jenkins.rest.domain.job.JobInfo;
 import com.cdancy.jenkins.rest.domain.system.SystemInfo;
 import com.cdancy.jenkins.rest.features.JobsApi;
-import xyz.equator8848.linker.SpringBaseTest;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import xyz.equator8848.linker.SpringBaseTest;
 
 import java.io.IOException;
 
@@ -147,6 +147,17 @@ public class JenkinsTest extends SpringBaseTest {
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
             RequestStatus result = jobsApi.delete(null, "JenkinsPipeline1");
+            log.info("testJenkinsDeleteJob {}", result);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testJenkinsStopJob() {
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            JobsApi jobsApi = jenkinsClient.api().jobsApi();
+            RequestStatus result = jobsApi.stop(null, "JenkinsPipeline1", 1);
             log.info("testJenkinsDeleteJob {}", result);
         } catch (IOException e) {
             throw new RuntimeException(e);

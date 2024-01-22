@@ -439,6 +439,30 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void stopPipeline(Long instanceId) {
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "找不到实例信息");
+
+        if (BaseConstant.AccessLevel.PUBLIC_WRITE.getCode() != tbInstance.getAccessLevel()) {
+            // 非公开编辑的实例，进行权限校验
+            ResourcePermissionValidateUtil.permissionCheck(tbInstance.getCreateUserId());
+        }
+
+        try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
+            JobsApi jobsApi = jenkinsClient.api().jobsApi();
+            RequestStatus result = jobsApi.stop(null, tbInstance.getName(), tbInstance.getLatestBuildNumber());
+            log.info("stopPipeline {} {}", instanceId, result);
+
+            tbInstance.setBuildingFlag(false);
+
+            instanceDaoService.updateById(tbInstance);
+        } catch (IOException e) {
+            log.info("stopPipeline error {}", instanceId, e);
+        }
+    }
+
+    @Override
     public PipelineBuildLog getPipelineLog(Long instanceId) {
         TbInstance tbInstance = instanceDaoService.getById(instanceId);
         PreCondition.isNotNull(tbInstance, "找不到实例信息");

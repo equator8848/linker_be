@@ -53,6 +53,12 @@ public class InstanceController {
         return Response.success();
     }
 
+    @PutMapping("/stop-pipeline")
+    public Response stopPipeline(@RequestParam Long instanceId) {
+        instanceService.stopPipeline(instanceId);
+        return Response.success();
+    }
+
     @PostMapping("/star")
     public Response star(@RequestBody @Valid InstanceStarRequest instanceStarRequest) {
         instanceService.instanceStarAction(instanceStarRequest);
