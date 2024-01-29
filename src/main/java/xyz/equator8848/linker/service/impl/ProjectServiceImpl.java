@@ -30,9 +30,7 @@ import xyz.equator8848.linker.service.external.ScmService;
 import xyz.equator8848.linker.service.external.model.BranchInfo;
 import xyz.equator8848.linker.service.util.ResourcePermissionValidateUtil;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -211,6 +209,11 @@ public class ProjectServiceImpl implements ProjectService {
                 projectBranchesRequest.getAccessToken(), projectBranchesRequest.getSearchKeyword());
         ProjectBranchResult projectBranchResult = new ProjectBranchResult();
         if (CollectionUtils.isEmpty(branchInfoList)) {
+            if (StringUtils.isNotBlank(projectBranchesRequest.getSearchKeyword())) {
+                projectBranchResult.setIsDefaultData(false);
+                projectBranchResult.setProjectBranchInfos(Collections.emptyList());
+                return projectBranchResult;
+            }
             projectBranchResult.setIsDefaultData(true);
             projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
             return projectBranchResult;
@@ -247,7 +250,10 @@ public class ProjectServiceImpl implements ProjectService {
         List<BranchInfo> branchInfoList = scmService.getBranchInfo(scmConfig.getRepositoryUrl(),
                 scmConfig.getAccessToken(), searchKeyword);
         if (CollectionUtils.isEmpty(branchInfoList)) {
-            projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
+            if (StringUtils.isNotBlank(searchKeyword)) {
+                projectBranchResult.setIsDefaultData(false);
+                projectBranchResult.setProjectBranchInfos(Collections.emptyList());
+            }
             return projectBranchResult;
         }
         projectBranchResult.setIsDefaultData(false);
