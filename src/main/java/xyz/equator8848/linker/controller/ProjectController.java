@@ -62,8 +62,8 @@ public class ProjectController {
     }
 
     @GetMapping("/branches-with-tips")
-    public Response branchesWithTips(@RequestParam Long projectId) {
-        return Response.success(projectService.branchesWithTips(projectId));
+    public Response branchesWithTips(@RequestParam Long projectId, @RequestParam(required = false) String searchKeyword) {
+        return Response.success(projectService.branchesWithTips(projectId, searchKeyword));
     }
 
     @PostMapping("/peek-branches-with-tips")

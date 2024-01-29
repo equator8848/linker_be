@@ -1,21 +1,22 @@
 package xyz.equator8848.linker.service.external.gitlab;
 
-import xyz.equator8848.linker.model.constant.ScmType;
-import xyz.equator8848.inf.core.http.HttpUtil;
-import xyz.equator8848.inf.core.model.exception.VerifyException;
-import xyz.equator8848.inf.core.util.json.JsonUtil;
-import xyz.equator8848.linker.service.external.ScmService;
-import xyz.equator8848.linker.service.external.gitlab.model.GitlabBranchInfo;
-import xyz.equator8848.linker.service.external.model.BranchInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import org.springframework.stereotype.Service;
+import xyz.equator8848.inf.core.http.HttpUtil;
+import xyz.equator8848.inf.core.model.exception.VerifyException;
+import xyz.equator8848.inf.core.util.json.JsonUtil;
+import xyz.equator8848.linker.model.constant.ScmType;
+import xyz.equator8848.linker.service.external.ScmService;
+import xyz.equator8848.linker.service.external.gitlab.model.GitlabBranchInfo;
+import xyz.equator8848.linker.service.external.model.BranchInfo;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,10 +54,12 @@ public class GitlabScmService implements ScmService {
     }
 
     @Override
-    public List<BranchInfo> getBranchInfo(String repositoryUrl, String token) {
+    public List<BranchInfo> getBranchInfo(String repositoryUrl, String token, String searchKeyword) {
         Request request = new Request.Builder()
-                .url("%s/api/v4/projects/%s/repository/branches".formatted(getApiHostFromRepositoryUrl(repositoryUrl),
-                        getProjectPathFromRepositoryUrl(repositoryUrl)))
+                .url("%s/api/v4/projects/%s/repository/branches?search=%s"
+                        .formatted(getApiHostFromRepositoryUrl(repositoryUrl),
+                                getProjectPathFromRepositoryUrl(repositoryUrl),
+                                Optional.ofNullable(searchKeyword).orElse("")))
                 .addHeader("PRIVATE-TOKEN", token)
                 .build();
         try {

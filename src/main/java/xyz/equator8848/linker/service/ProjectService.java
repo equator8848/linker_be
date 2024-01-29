@@ -22,5 +22,5 @@ public interface ProjectService {
 
     ProjectBranchResult branchesWithTips(ProjectBranchesRequest projectBranchesRequest);
 
-    ProjectBranchResult branchesWithTips(Long projectId);
+    ProjectBranchResult branchesWithTips(Long projectId, String searchKeyword);
 }

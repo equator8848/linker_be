@@ -201,13 +201,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectBranchInfo> branches(Long projectId) {
-        return branchesWithTips(projectId).getProjectBranchInfos();
+        return branchesWithTips(projectId, null).getProjectBranchInfos();
     }
 
     @Override
     public ProjectBranchResult branchesWithTips(ProjectBranchesRequest projectBranchesRequest) {
         ScmService scmService = scmTypeScmServiceMap.get(ScmType.valueOf(projectBranchesRequest.getScmType()));
-        List<BranchInfo> branchInfoList = scmService.getBranchInfo(projectBranchesRequest.getRepositoryUrl(), projectBranchesRequest.getAccessToken());
+        List<BranchInfo> branchInfoList = scmService.getBranchInfo(projectBranchesRequest.getRepositoryUrl(),
+                projectBranchesRequest.getAccessToken(), projectBranchesRequest.getSearchKeyword());
         ProjectBranchResult projectBranchResult = new ProjectBranchResult();
         if (CollectionUtils.isEmpty(branchInfoList)) {
             projectBranchResult.setIsDefaultData(true);
@@ -231,7 +232,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectBranchResult branchesWithTips(Long projectId) {
+    public ProjectBranchResult branchesWithTips(Long projectId, String searchKeyword) {
         TbProject tbProject = projectDaoService.getById(projectId);
         PreCondition.isNotNull(tbProject, "项目不存在");
 
@@ -243,7 +244,8 @@ public class ProjectServiceImpl implements ProjectService {
             projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
             return projectBranchResult;
         }
-        List<BranchInfo> branchInfoList = scmService.getBranchInfo(scmConfig.getRepositoryUrl(), scmConfig.getAccessToken());
+        List<BranchInfo> branchInfoList = scmService.getBranchInfo(scmConfig.getRepositoryUrl(),
+                scmConfig.getAccessToken(), searchKeyword);
         if (CollectionUtils.isEmpty(branchInfoList)) {
             projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
             return projectBranchResult;

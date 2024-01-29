@@ -12,5 +12,5 @@ public interface ScmService {
 
     String getProjectPathFromRepositoryUrl(String repositoryUrl);
 
-    List<BranchInfo> getBranchInfo(String repositoryUrl, String token);
+    List<BranchInfo> getBranchInfo(String repositoryUrl, String token, String searchKeyword);
 }

@@ -13,4 +13,6 @@ public class ProjectBranchesRequest {
 
     @NotNull
     private String accessToken;
+
+    private String searchKeyword;
 }
