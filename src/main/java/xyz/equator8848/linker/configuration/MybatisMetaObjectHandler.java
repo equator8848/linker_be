@@ -48,7 +48,7 @@ public class MybatisMetaObjectHandler implements MetaObjectHandler {
         if (metaObject.hasSetter(FieldConstant.updateTime)) {
             metaObject.setValue(FieldConstant.updateTime, now);
         }
-        if (metaObject.hasSetter(FieldConstant.updateBy) && metaObject.getValue(FieldConstant.updateBy) == null) {
+        if (metaObject.hasSetter(FieldConstant.updateBy)) {
             metaObject.setValue(FieldConstant.updateBy, getUserId());
         }
     }
