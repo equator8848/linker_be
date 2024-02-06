@@ -10,6 +10,7 @@ import xyz.equator8848.linker.model.vo.project.ProjectBranchesRequest;
 import xyz.equator8848.linker.model.vo.project.ProjectCreateRequest;
 import xyz.equator8848.linker.model.vo.project.ProjectListRequest;
 import xyz.equator8848.linker.model.vo.project.ProjectUpdateRequest;
+import xyz.equator8848.linker.service.ProjectBranchService;
 import xyz.equator8848.linker.service.ProjectService;
 import xyz.equator8848.linker.service.ProjectTemplateService;
 
@@ -21,6 +22,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectTemplateService projectTemplateService;
+
+    @Autowired
+    private ProjectBranchService projectBranchService;
 
     @PostMapping("/create")
     public Response create(@RequestBody @Valid ProjectCreateRequest projectCreateRequest) {
@@ -58,17 +62,17 @@ public class ProjectController {
     @GetMapping("/branches")
     @Deprecated
     public Response branches(@RequestParam Long projectId) {
-        return Response.success(projectService.branches(projectId));
+        return Response.success(projectBranchService.branches(projectId));
     }
 
     @GetMapping("/branches-with-tips")
     public Response branchesWithTips(@RequestParam Long projectId, @RequestParam(required = false) String searchKeyword) {
-        return Response.success(projectService.branchesWithTips(projectId, searchKeyword));
+        return Response.success(projectBranchService.branchesWithTips(projectId, searchKeyword));
     }
 
     @PostMapping("/peek-branches-with-tips")
     public Response branchesWithTips(@Valid @RequestBody ProjectBranchesRequest projectBranchesRequest) {
-        return Response.success(projectService.branchesWithTips(projectBranchesRequest));
+        return Response.success(projectBranchService.branchesWithTips(projectBranchesRequest));
     }
 
     @GetMapping("/templates")

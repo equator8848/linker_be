@@ -181,4 +181,11 @@ public class TbInstance extends BaseEntityField {
      */
     @TableField(value = "latest_build_duration")
     private Long latestBuildDuration;
+
+
+    /**
+     * 最近一次构建的commit
+     */
+    @TableField(value = "last_build_commit")
+    private String lastBuildCommit;
 }

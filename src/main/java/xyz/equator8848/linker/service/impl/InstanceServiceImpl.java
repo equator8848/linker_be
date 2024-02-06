@@ -40,6 +40,7 @@ import xyz.equator8848.linker.model.vo.instance.*;
 import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 import xyz.equator8848.linker.model.vo.project.ScmConfig;
 import xyz.equator8848.linker.service.InstanceService;
+import xyz.equator8848.linker.service.ProjectBranchService;
 import xyz.equator8848.linker.service.ProjectTemplateService;
 import xyz.equator8848.linker.service.jenkins.JenkinsClientFactory;
 import xyz.equator8848.linker.service.jenkins.RemoveDockerContainerService;
@@ -95,6 +96,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private RemoveDockerContainerService removeDockerContainerService;
+
+    @Autowired
+    private ProjectBranchService projectBranchService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -279,6 +283,9 @@ public class InstanceServiceImpl implements InstanceService {
         targetInstanceIds.addAll(publicInstanceIds);
 
         Long projectId = instanceListRequest.getProjectId();
+        TbProject tbProject = projectDaoService.getById(projectId);
+        PreCondition.isNotNull(tbProject, "项目不存在");
+
         Set<Long> starInstanceId = instanceStarDaoService.getStarInstanceIds(projectId, userId);
         if (Boolean.TRUE.equals(instanceListRequest.getOnlyStar())) {
             targetInstanceIds = Sets.intersection(targetInstanceIds, starInstanceId);
@@ -323,6 +330,14 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbInstance.getUpdateUserId()));
 
                     instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
+
+                    // 判断代码是否有变化
+                    String latestCommitId = projectBranchService.getLatestCommitId(tbProject, tbInstance);
+                    if (latestCommitId != null) {
+                        instanceDetailsInfo.setCommitIsChange(!latestCommitId.equals(tbInstance.getLastBuildCommit()));
+                    } else {
+                        instanceDetailsInfo.setCommitIsChange(false);
+                    }
 
 
                     InstancePipelineBuildResult instancePipelineBuildResult = getInstancePipelineBuildResult(tbInstance);
@@ -429,6 +444,9 @@ public class InstanceServiceImpl implements InstanceService {
             int nextBuildNumber = jobInfo.nextBuildNumber();
             tbInstance.setLatestBuildNumber(nextBuildNumber);
             tbInstance.setBuildingFlag(true);
+
+            tbInstance.setLastBuildCommit(projectBranchService.getLatestCommitId(tbProject, tbInstance));
+
             instanceDaoService.updateById(tbInstance);
             IntegerResponse buildPipelineResult = jobsApi.build(null, pipelineName);
             log.info("buildPipeline, instanceId {}, buildPipelineResult {}", instanceId, buildPipelineResult);

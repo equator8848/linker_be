@@ -4,7 +4,6 @@ import cn.hutool.core.util.EnumUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +19,15 @@ import xyz.equator8848.linker.dao.service.ProjectDaoService;
 import xyz.equator8848.linker.dao.service.ProjectUserRefDaoService;
 import xyz.equator8848.linker.dao.service.UserDaoService;
 import xyz.equator8848.linker.model.constant.BaseConstant;
-import xyz.equator8848.linker.model.constant.ScmType;
 import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.model.po.TbProjectUserRef;
 import xyz.equator8848.linker.model.vo.project.*;
 import xyz.equator8848.linker.service.ProjectService;
-import xyz.equator8848.linker.service.external.ScmService;
-import xyz.equator8848.linker.service.external.model.BranchInfo;
 import xyz.equator8848.linker.service.util.ResourcePermissionValidateUtil;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,16 +41,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectUserRefDaoService projectUserRefDaoService;
 
-    private Map<ScmType, ScmService> scmTypeScmServiceMap;
-
     @Autowired
     private UserDaoService userDaoService;
-    private boolean isOwner;
-
-    @Autowired
-    public void setScmService(List<ScmService> scmServiceList) {
-        scmTypeScmServiceMap = scmServiceList.stream().collect(Collectors.toMap(ScmService::getScmType, Function.identity()));
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -184,82 +172,11 @@ public class ProjectServiceImpl implements ProjectService {
         projectDetailsInfo.setCreateUserName(userDaoService.getUsernameFromCache(tbProject.getCreateUserId()));
         projectDetailsInfo.setUpdateUserName(userDaoService.getUsernameFromCache(tbProject.getUpdateUserId()));
 
-        isOwner = ResourcePermissionValidateUtil.isAdmin(tbProject.getCreateUserId());
+        boolean isOwner = ResourcePermissionValidateUtil.isAdmin(tbProject.getCreateUserId());
         projectDetailsInfo.setIsOwner(isOwner);
         if (!isOwner) {
             projectDetailsInfo.getScmConfig().setAccessToken("保密");
         }
         return projectDetailsInfo;
     }
-
-    private static final List<ProjectBranchInfo> defaultProjectBranchInfoList = ImmutableList
-            .of(new ProjectBranchInfo("master", "fakeId1", "默认分支", "now"),
-                    new ProjectBranchInfo("main", "fakeId2", "默认分支", "now"),
-                    new ProjectBranchInfo("dev", "fakeId3", "默认分支", "now"));
-
-    @Override
-    public List<ProjectBranchInfo> branches(Long projectId) {
-        return branchesWithTips(projectId, null).getProjectBranchInfos();
-    }
-
-    @Override
-    public ProjectBranchResult branchesWithTips(ProjectBranchesRequest projectBranchesRequest) {
-        ScmService scmService = scmTypeScmServiceMap.get(ScmType.valueOf(projectBranchesRequest.getScmType()));
-        List<BranchInfo> branchInfoList = scmService.getBranchInfo(projectBranchesRequest.getRepositoryUrl(),
-                projectBranchesRequest.getAccessToken(), projectBranchesRequest.getSearchKeyword());
-        ProjectBranchResult projectBranchResult = new ProjectBranchResult();
-        if (CollectionUtils.isEmpty(branchInfoList)) {
-            if (StringUtils.isNotBlank(projectBranchesRequest.getSearchKeyword())) {
-                projectBranchResult.setIsDefaultData(false);
-                projectBranchResult.setProjectBranchInfos(Collections.emptyList());
-                return projectBranchResult;
-            }
-            projectBranchResult.setIsDefaultData(true);
-            projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
-            return projectBranchResult;
-        }
-        projectBranchResult.setIsDefaultData(false);
-        projectBranchResult.setProjectBranchInfos(buildProjectBranchInfo(branchInfoList));
-        return projectBranchResult;
-    }
-
-    private List<ProjectBranchInfo> buildProjectBranchInfo(List<BranchInfo> branchInfoList) {
-        return branchInfoList.stream().map(branch -> {
-            ProjectBranchInfo projectBranchInfo = new ProjectBranchInfo();
-            projectBranchInfo.setName(branch.getName());
-            projectBranchInfo.setLatestCommitId(branch.getLatestCommitId());
-            projectBranchInfo.setLatestCommitTitle(branch.getLatestCommitTitle());
-            projectBranchInfo.setLatestCommitTime(branch.getLatestCommitDate());
-            return projectBranchInfo;
-        }).collect(Collectors.toList());
-    }
-
-    @Override
-    public ProjectBranchResult branchesWithTips(Long projectId, String searchKeyword) {
-        TbProject tbProject = projectDaoService.getById(projectId);
-        PreCondition.isNotNull(tbProject, "项目不存在");
-
-        ProjectBranchResult projectBranchResult = new ProjectBranchResult();
-        projectBranchResult.setIsDefaultData(true);
-        ScmConfig scmConfig = JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class);
-        ScmService scmService = scmTypeScmServiceMap.get(ScmType.valueOf(scmConfig.getScmType()));
-        if (scmService == null) {
-            projectBranchResult.setProjectBranchInfos(defaultProjectBranchInfoList);
-            return projectBranchResult;
-        }
-        List<BranchInfo> branchInfoList = scmService.getBranchInfo(scmConfig.getRepositoryUrl(),
-                scmConfig.getAccessToken(), searchKeyword);
-        if (CollectionUtils.isEmpty(branchInfoList)) {
-            if (StringUtils.isNotBlank(searchKeyword)) {
-                projectBranchResult.setIsDefaultData(false);
-                projectBranchResult.setProjectBranchInfos(Collections.emptyList());
-            }
-            return projectBranchResult;
-        }
-        projectBranchResult.setIsDefaultData(false);
-        projectBranchResult.setProjectBranchInfos(buildProjectBranchInfo(branchInfoList));
-        return projectBranchResult;
-    }
-
-
 }

@@ -141,4 +141,9 @@ public class InstanceDetailsInfo {
     private String pipelineTemplateIntro;
 
     private InstancePipelineBuildResult instancePipelineBuildResult;
+
+    /**
+     * 通过对比commit判断代码是否更新
+     */
+    private Boolean commitIsChange;
 }

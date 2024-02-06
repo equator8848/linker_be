@@ -17,10 +17,4 @@ public interface ProjectService {
     PageData<ProjectSimpleInfo> all(ProjectListRequest projectListRequest);
 
     ProjectDetailsInfo details(Long projectId);
-
-    List<ProjectBranchInfo> branches(Long projectId);
-
-    ProjectBranchResult branchesWithTips(ProjectBranchesRequest projectBranchesRequest);
-
-    ProjectBranchResult branchesWithTips(Long projectId, String searchKeyword);
 }
