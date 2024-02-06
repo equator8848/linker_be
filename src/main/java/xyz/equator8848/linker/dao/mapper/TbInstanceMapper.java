@@ -27,5 +27,8 @@ public interface TbInstanceMapper extends BaseMapper<TbInstance> {
     List<CountGroupResult> countInstanceDelStatus();
 
     @Select("SELECT SUM(IFNULL(latest_build_number,0)) FROM tb_instance")
-    Long getBuildCount();
+    Long getGlobalBuildCount();
+
+    @Select("SELECT SUM(IFNULL(latest_build_number,0)) FROM tb_instance WHERE project_id = #{projectId}")
+    Long getProjectBuildCount(@Param("projectId") Long projectId);
 }

@@ -14,6 +14,8 @@ import xyz.equator8848.linker.dao.mapper.TbInstanceMapper;
 import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.vo.dashboard.BuildStatisticalResult;
 
+import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -55,13 +57,13 @@ public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance
                 .collect(Collectors.toSet());
     }
 
-    private final LoadingCache<String, SimpleCacheElement<BuildStatisticalResult>> buildStaticalResultCache =
-            SimpleCacheBuilder.newBuilder().refreshAfterWrite(1, TimeUnit.HOURS).expireAfterWrite(6,
+    private final LoadingCache<Long, SimpleCacheElement<BuildStatisticalResult>> buildStaticalResultCache =
+            SimpleCacheBuilder.newBuilder().refreshAfterWrite(10, TimeUnit.MINUTES).expireAfterWrite(6,
                     TimeUnit.HOURS).maximumSize(2).build(new LogSimpleCacheLoader<>() {
 
                 @Override
-                public BuildStatisticalResult loadData(String key) throws Exception {
-                    return buildBuildStatisticalResult();
+                public BuildStatisticalResult loadData(Long projectId) throws Exception {
+                    return buildBuildStatisticalResult(projectId);
                 }
 
                 @Override
@@ -70,13 +72,16 @@ public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance
                 }
             }, ThreadPoolService.getInstance());
 
-    private BuildStatisticalResult buildBuildStatisticalResult() {
+    private BuildStatisticalResult buildBuildStatisticalResult(Long projectId) {
         BuildStatisticalResult buildStatisticalResult = new BuildStatisticalResult();
-        buildStatisticalResult.setInstanceBuildTimes(baseMapper.getBuildCount());
+        buildStatisticalResult.setInstanceBuildTimes(Optional.ofNullable(baseMapper.getGlobalBuildCount()).orElse(0L));
+        if (Long.MIN_VALUE != projectId) {
+            buildStatisticalResult.setProjectInstanceBuildTimes(Optional.ofNullable(baseMapper.getProjectBuildCount(projectId)).orElse(0L));
+        }
         return buildStatisticalResult;
     }
 
-    public BuildStatisticalResult getBuildStatisticalResult() {
-        return buildStaticalResultCache.getUnchecked("").getData();
+    public BuildStatisticalResult getBuildStatisticalResult(@Nullable Long projectId) {
+        return buildStaticalResultCache.getUnchecked(Optional.ofNullable(projectId).orElse(Long.MIN_VALUE)).getData();
     }
 }

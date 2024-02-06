@@ -43,8 +43,8 @@ public class AnonymousController {
     }
 
     @GetMapping("/build-statistical-result")
-    public Response<BuildStatisticalResult> getBuildStatisticalResult() {
-        return Response.success(instanceDaoService.getBuildStatisticalResult());
+    public Response<BuildStatisticalResult> getBuildStatisticalResult(@RequestParam(required = false) Long projectId) {
+        return Response.success(instanceDaoService.getBuildStatisticalResult(projectId));
     }
 
 }
