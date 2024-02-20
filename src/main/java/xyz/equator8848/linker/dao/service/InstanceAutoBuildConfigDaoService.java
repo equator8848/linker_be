@@ -24,6 +24,6 @@ public class InstanceAutoBuildConfigDaoService extends ServiceImpl<TbInstanceAut
     public List<TbInstanceAutoBuildConfig> getActivateAutoBuildInstanceList(Long timestamp) {
         return list(Wrappers.<TbInstanceAutoBuildConfig>lambdaQuery()
                 .eq(TbInstanceAutoBuildConfig::getEnabledSwitch, true)
-                .ge(TbInstanceAutoBuildConfig::getNextCheckTimestamp, timestamp));
+                .lt(TbInstanceAutoBuildConfig::getNextCheckTimestamp, timestamp));
     }
 }

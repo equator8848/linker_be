@@ -50,34 +50,38 @@ public class InstanceAutoBuildScheduleService {
         Instant now = Instant.now();
         Long nowTimestamp = now.toEpochMilli();
         List<TbInstanceAutoBuildConfig> activateAutoBuildInstanceList = instanceAutoBuildConfigDaoService.getActivateAutoBuildInstanceList(nowTimestamp);
+        log.info("nowTimestamp {}, instanceAutoBuildCheck get activateAutoBuildInstanceList {}", nowTimestamp, activateAutoBuildInstanceList);
         for (TbInstanceAutoBuildConfig instanceAutoBuildConfig : activateAutoBuildInstanceList) {
+            Long instanceId = instanceAutoBuildConfig.getInstanceId();
+
             instanceAutoBuildConfig.setLastCheckTimestamp(nowTimestamp);
-            instanceAutoBuildConfig.setNextCheckTimestamp(now.plus(instanceAutoBuildConfig.getCheckInterval(), ChronoUnit.MINUTES).toEpochMilli());
+            instanceAutoBuildConfig.setNextCheckTimestamp(Instant.ofEpochMilli(instanceAutoBuildConfig.getNextCheckTimestamp())
+                    .plus(instanceAutoBuildConfig.getCheckInterval(), ChronoUnit.MINUTES).toEpochMilli());
+            log.info("instanceAutoBuildConfig set NextCheckTimestamp {} {}", instanceId, instanceAutoBuildConfig);
             instanceAutoBuildConfig.setLastCheckResult(ModelStatus.InstanceAutoBuildCheckResult.DO_NOT_THING);
             // 判断代码是否有变化
-            Long instanceId = instanceAutoBuildConfig.getInstanceId();
-            TbInstance instanceByIdFromCache = instanceDaoService.getInstanceByIdFromCache(instanceId);
-            if (instanceByIdFromCache == null) {
+
+            TbInstance instanceByIdFromDb = instanceDaoService.getById(instanceId);
+            if (instanceByIdFromDb == null) {
                 instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
                 continue;
             }
 
-            TbProject projectByIdFromCache = projectDaoService.getProjectByIdFromCache(instanceByIdFromCache.getProjectId());
+            TbProject projectByIdFromCache = projectDaoService.getProjectByIdFromCache(instanceByIdFromDb.getProjectId());
             if (projectByIdFromCache == null) {
                 instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
                 continue;
             }
 
-            String latestCommitId = projectBranchService.getLatestCommitId(projectByIdFromCache, instanceByIdFromCache);
+            String latestCommitId = projectBranchService.getLatestCommitId(projectByIdFromCache, instanceByIdFromDb);
             if (latestCommitId == null) {
                 instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
                 continue;
             }
 
-            boolean isCodeChange = !latestCommitId.equals(instanceByIdFromCache.getLastBuildCommit());
+            boolean isCodeChange = !latestCommitId.equals(instanceByIdFromDb.getLastBuildCommit());
 
             if (isCodeChange) {
-                TbInstance instanceByIdFromDb = instanceDaoService.getById(instanceId);
                 if (instanceByIdFromDb.getBuildingFlag()) {
                     log.info("instanceAutoBuildCheck skip instance because it is building, id:{},latestCommitId:{}", instanceId, latestCommitId);
                     instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
