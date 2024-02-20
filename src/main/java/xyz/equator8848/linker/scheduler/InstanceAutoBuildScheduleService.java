@@ -80,13 +80,15 @@ public class InstanceAutoBuildScheduleService {
                 TbInstance instanceByIdFromDb = instanceDaoService.getById(instanceId);
                 if (instanceByIdFromDb.getBuildingFlag()) {
                     log.info("instanceAutoBuildCheck skip instance because it is building, id:{},latestCommitId:{}", instanceId, latestCommitId);
+                    instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
                     continue;
                 }
                 instanceService.buildPipeline(instanceId);
                 log.info("instanceAutoBuildCheck auto build instance, id:{},latestCommitId:{}", instanceId, latestCommitId);
                 instanceAutoBuildConfig.setLastCheckResult(ModelStatus.InstanceAutoBuildCheckResult.AUTO_BUILD);
-                instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
             }
+
+            instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
         }
     }
 }
