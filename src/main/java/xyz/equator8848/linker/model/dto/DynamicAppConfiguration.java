@@ -78,4 +78,10 @@ public class DynamicAppConfiguration {
      */
     @ModelTransformerField(defaultValue = "false")
     private Boolean systemAdminManageAllData;
+
+    /**
+     * 是否开启实例自动构建
+     */
+    @ModelTransformerField(defaultValue = "true")
+    private Boolean instanceAutoBuildCheckSwitch;
 }

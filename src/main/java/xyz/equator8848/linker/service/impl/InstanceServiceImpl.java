@@ -30,12 +30,10 @@ import xyz.equator8848.linker.configuration.AppConfig;
 import xyz.equator8848.linker.dao.service.*;
 import xyz.equator8848.linker.model.constant.BaseConstant;
 import xyz.equator8848.linker.model.constant.JenkinsPipelineBuildResult;
+import xyz.equator8848.linker.model.constant.ModelStatus;
 import xyz.equator8848.linker.model.constant.SeparatorEnum;
 import xyz.equator8848.linker.model.dto.DynamicAppConfiguration;
-import xyz.equator8848.linker.model.po.TbInstance;
-import xyz.equator8848.linker.model.po.TbInstanceStar;
-import xyz.equator8848.linker.model.po.TbInstanceUserRef;
-import xyz.equator8848.linker.model.po.TbProject;
+import xyz.equator8848.linker.model.po.*;
 import xyz.equator8848.linker.model.vo.instance.*;
 import xyz.equator8848.linker.model.vo.project.ProxyConfig;
 import xyz.equator8848.linker.model.vo.project.ScmConfig;
@@ -52,10 +50,7 @@ import xyz.equator8848.linker.service.version.ImageVersionGenerator;
 import xyz.equator8848.linker.service.version.ImageVersionGeneratorHolder;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -99,6 +94,12 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Autowired
     private ProjectBranchService projectBranchService;
+
+    @Autowired
+    private InstanceBuildLogDaoService instanceBuildLogDaoService;
+
+    @Autowired
+    private InstanceAutoBuildConfigDaoService instanceAutoBuildConfigDaoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -259,7 +260,10 @@ public class InstanceServiceImpl implements InstanceService {
         ResourcePermissionValidateUtil.permissionCheck(tbInstance.getCreateUserId());
         instanceUserRefDaoService.remove(Wrappers.<TbInstanceUserRef>lambdaQuery()
                 .eq(TbInstanceUserRef::getInstanceId, instanceId));
+
         publicEntranceDaoService.deleteByInstanceId(instanceId);
+        instanceAutoBuildConfigDaoService.deleteByInstanceId(instanceId);
+
 
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             // 删除流水线配置
@@ -448,6 +452,9 @@ public class InstanceServiceImpl implements InstanceService {
             tbInstance.setLastBuildCommit(projectBranchService.getLatestCommitId(tbProject, tbInstance));
 
             instanceDaoService.updateById(tbInstance);
+
+            instanceBuildLogDaoService.saveBuildLog(tbInstance);
+
             IntegerResponse buildPipelineResult = jobsApi.build(null, pipelineName);
             log.info("buildPipeline, instanceId {}, buildPipelineResult {}", instanceId, buildPipelineResult);
         } catch (IOException e) {
@@ -595,6 +602,79 @@ public class InstanceServiceImpl implements InstanceService {
                             UserContextUtil.getUserId(),
                             instanceStarRequest.getInstanceId());
         }
+    }
+
+    @Override
+    public Long copy(Long instanceId) {
+
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance, "找不到实例信息");
+
+        TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
+        PreCondition.isNotNull(tbProject, "项目不存在");
+
+        DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
+        Integer nextAccessPort = instanceDaoService.getBaseMapper().getNextAccessPort(dynamicAppConfiguration.getMinAccessPort());
+
+        String deployFolder = Optional.ofNullable(TemplateUtil.getDeployFolder(tbProject, tbInstance)).orElse("");
+
+        String accessEntrance = Optional.ofNullable(TemplateUtil.getAccessEntrance(tbProject, tbInstance)).orElse("");
+        if (StringUtils.isNotBlank(deployFolder)) {
+            if (!accessEntrance.startsWith(SeparatorEnum.SLASH.getSeparator())) {
+                accessEntrance = SeparatorEnum.SLASH.getSeparator() + accessEntrance;
+            }
+        }
+
+
+        tbInstance.setAccessPort(nextAccessPort);
+        tbInstance.setAccessLink(String.format("%s:%s/%s%s",
+                dynamicAppConfiguration.getDeployAccessHost(), nextAccessPort,
+                deployFolder,
+                accessEntrance));
+
+        tbInstance.setName(Optional.ofNullable(tbInstance.getName()).orElse("") + "_克隆");
+        tbInstance.setIntro(Optional.ofNullable(tbInstance.getIntro()).orElse("") + "_克隆");
+
+
+        tbInstance.setImageVersion(null);
+        tbInstance.setPipelineName(null);
+        tbInstance.setLatestBuildNumber(null);
+        tbInstance.setLatestSubmitTimestamp(null);
+        tbInstance.setLatestBuildPipelineUrl(null);
+        tbInstance.setBuildingFlag(false);
+        tbInstance.setLatestBuildResult(null);
+        tbInstance.setLatestBuildDuration(null);
+        tbInstance.setLastBuildCommit(null);
+        tbInstance.setId(null);
+        tbInstance.setCreateTime(null);
+        tbInstance.setCreateUserId(null);
+        tbInstance.setUpdateTime(null);
+        tbInstance.setUpdateUserId(null);
+
+        instanceDaoService.saveOrUpdate(tbInstance);
+
+        return tbInstance.getId();
+    }
+
+    @Override
+    public List<InstanceBuildLogInfo> getInstanceBuildLog(Long instanceId, Integer logSize) {
+        return instanceBuildLogDaoService.list(Wrappers.<TbInstanceBuildLog>lambdaQuery()
+                        .eq(TbInstanceBuildLog::getInstanceId, instanceId)
+                        .orderByDesc(TbInstanceBuildLog::getId)
+                        .last("LIMIT %s".formatted(logSize))
+                ).stream()
+                .map(tbInstanceBuildLog -> {
+                    InstanceBuildLogInfo instanceBuildLogInfo = new InstanceBuildLogInfo();
+                    BeanUtils.copyProperties(tbInstanceBuildLog, instanceBuildLogInfo);
+                    Long buildUserId = tbInstanceBuildLog.getBuildUserId();
+                    if (ModelStatus.DUMMY_ID.equals(buildUserId)) {
+                        instanceBuildLogInfo.setBuildUserName("Linker系统");
+                    } else {
+                        TbUser userFromCacheByUid = userDaoService.getUserFromCacheByUid(buildUserId);
+                        instanceBuildLogInfo.setBuildUserName(userFromCacheByUid.getUserName());
+                    }
+                    return instanceBuildLogInfo;
+                }).collect(Collectors.toList());
     }
 
     private void starInstance(Long projectId, Long instanceId) {

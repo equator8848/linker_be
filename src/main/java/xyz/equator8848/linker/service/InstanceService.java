@@ -25,4 +25,8 @@ public interface InstanceService {
     InstancePipelineBuildResult getPipelineBuildResult(Long instanceId);
 
     void instanceStarAction(InstanceStarRequest instanceStarRequest);
+
+    Long copy(Long instanceId);
+
+    List<InstanceBuildLogInfo> getInstanceBuildLog(Long instanceId, Integer logSize);
 }

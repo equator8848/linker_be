@@ -61,4 +61,13 @@ public class ModelStatus {
         public final static Integer TIMESTAMP = 2;
     }
 
+    /**
+     * 实例自动构建检查结果
+     */
+    public static class InstanceAutoBuildCheckResult {
+        public final static Integer DO_NOT_THING = 0;
+
+        public final static Integer AUTO_BUILD = 1;
+    }
+
 }
