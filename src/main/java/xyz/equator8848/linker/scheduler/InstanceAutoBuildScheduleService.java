@@ -41,7 +41,7 @@ public class InstanceAutoBuildScheduleService {
     @Autowired
     private InstanceService instanceService;
 
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 */3 * * * ?")
     public void instanceAutoBuildCheck() {
         DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
         if (Boolean.FALSE.equals(dynamicAppConfiguration.getInstanceAutoBuildCheckSwitch())) {
@@ -57,7 +57,7 @@ public class InstanceAutoBuildScheduleService {
             instanceAutoBuildConfig.setLastCheckTimestamp(nowTimestamp);
             instanceAutoBuildConfig.setNextCheckTimestamp(Instant.ofEpochMilli(instanceAutoBuildConfig.getNextCheckTimestamp())
                     .plus(instanceAutoBuildConfig.getCheckInterval(), ChronoUnit.MINUTES).toEpochMilli());
-            log.info("instanceAutoBuildConfig set NextCheckTimestamp {} {}", instanceId, instanceAutoBuildConfig);
+            log.debug("instanceAutoBuildConfig set NextCheckTimestamp {} {}", instanceId, instanceAutoBuildConfig);
             instanceAutoBuildConfig.setLastCheckResult(ModelStatus.InstanceAutoBuildCheckResult.DO_NOT_THING);
             // 判断代码是否有变化
 
