@@ -635,8 +635,6 @@ public class InstanceServiceImpl implements InstanceService {
         tbInstance.setName(Optional.ofNullable(tbInstance.getName()).orElse("") + "_克隆");
         tbInstance.setIntro(Optional.ofNullable(tbInstance.getIntro()).orElse("") + "_克隆");
 
-
-        tbInstance.setImageVersion(null);
         tbInstance.setPipelineName(null);
         tbInstance.setLatestBuildNumber(null);
         tbInstance.setLatestSubmitTimestamp(null);
