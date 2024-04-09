@@ -112,8 +112,15 @@ public class TemplateUtil {
         return getTemplateAsString("template/nginx/", () -> getNginxConfFileName(templateId));
     }
 
+    public static Integer getRouteMode(TbProject tbProject, TbInstance tbInstance) {
+        if (Boolean.TRUE.equals(tbInstance.getRouteModeOverrideFlag())) {
+            return Optional.ofNullable(tbInstance.getRouteMode()).orElse(RouteMode.HASH.ordinal());
+        }
+        return Optional.ofNullable(tbProject.getRouteMode()).orElse(RouteMode.HASH.ordinal());
+    }
+
     public static String getNginxRootConf(TbProject tbProject, TbInstance tbInstance) {
-        Integer routeMode = Optional.ofNullable(tbProject.getRouteMode()).orElse(RouteMode.HASH.ordinal());
+        Integer routeMode = getRouteMode(tbProject, tbInstance);
         if (routeMode.equals(RouteMode.HASH.ordinal())) {
             return """
                     location / {

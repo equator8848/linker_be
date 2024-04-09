@@ -6,8 +6,6 @@ import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.service.template.TemplateUtil;
 
-import java.util.Optional;
-
 @Service
 public class TemplateBuilderService20240111 extends AbstractTemplateBuilderService {
 
@@ -23,7 +21,7 @@ public class TemplateBuilderService20240111 extends AbstractTemplateBuilderServi
 
 
     private String getNginxStaticConf(TbProject tbProject, TbInstance tbInstance) {
-        Integer routeMode = Optional.ofNullable(tbProject.getRouteMode()).orElse(RouteMode.HASH.ordinal());
+        Integer routeMode = TemplateUtil.getRouteMode(tbProject, tbInstance);
         if (routeMode.equals(RouteMode.HASH.ordinal())) {
             return """
                     location ^~ /%s {
