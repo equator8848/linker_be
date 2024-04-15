@@ -72,6 +72,13 @@ public class InstanceDetailsInfo {
     private String deployFolder;
 
     /**
+     * 路由模式
+     */
+    private Boolean routeModeOverrideFlag;
+
+    private Integer routeMode;
+
+    /**
      * 入口相对路径
      */
     private Boolean accessEntranceOverrideFlag;
