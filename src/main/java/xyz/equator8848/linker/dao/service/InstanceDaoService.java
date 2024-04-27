@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.cache.LoadingCache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import xyz.equator8848.inf.cache.common.LogSimpleCacheLoader;
@@ -11,6 +12,7 @@ import xyz.equator8848.inf.cache.common.SimpleCacheElement;
 import xyz.equator8848.inf.cache.guava.SimpleCacheBuilder;
 import xyz.equator8848.inf.core.thread.ThreadPoolService;
 import xyz.equator8848.linker.dao.mapper.TbInstanceMapper;
+import xyz.equator8848.linker.dao.mapper.TbProjectMapper;
 import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.vo.dashboard.BuildStatisticalResult;
 
@@ -26,6 +28,10 @@ import java.util.stream.Collectors;
  **/
 @Component
 public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance> implements IService<TbInstance> {
+
+    @Autowired
+    private TbProjectMapper projectMapper;
+
     private final LoadingCache<Long, SimpleCacheElement<TbInstance>> instanceCache =
             SimpleCacheBuilder.newBuilder().refreshAfterWrite(1, TimeUnit.MINUTES).expireAfterWrite(6,
                     TimeUnit.HOURS).maximumSize(512).build(new LogSimpleCacheLoader<>() {
@@ -75,6 +81,7 @@ public class InstanceDaoService extends ServiceImpl<TbInstanceMapper, TbInstance
     private BuildStatisticalResult buildBuildStatisticalResult(Long projectId) {
         BuildStatisticalResult buildStatisticalResult = new BuildStatisticalResult();
         buildStatisticalResult.setInstanceBuildTimes(Optional.ofNullable(baseMapper.getGlobalBuildCount()).orElse(0L));
+        buildStatisticalResult.setProjectCount(Optional.ofNullable(projectMapper.selectCount(Wrappers.lambdaQuery())).orElse(0L));
         if (Long.MIN_VALUE != projectId) {
             buildStatisticalResult.setProjectInstanceBuildTimes(Optional.ofNullable(baseMapper.getProjectBuildCount(projectId)).orElse(0L));
         }
