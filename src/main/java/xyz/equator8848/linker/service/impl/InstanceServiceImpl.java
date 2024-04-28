@@ -25,6 +25,7 @@ import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.model.page.PageData;
 import xyz.equator8848.inf.core.util.json.JsonUtil;
 import xyz.equator8848.inf.core.util.time.TimeTransformUtil;
+import xyz.equator8848.inf.security.random.SnowFlakeUtil;
 import xyz.equator8848.inf.security.sm4.SM4Util;
 import xyz.equator8848.linker.configuration.AppConfig;
 import xyz.equator8848.linker.dao.service.*;
@@ -50,8 +51,13 @@ import xyz.equator8848.linker.service.version.ImageVersionGenerator;
 import xyz.equator8848.linker.service.version.ImageVersionGeneratorHolder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static xyz.equator8848.linker.model.constant.BaseConstant.DEFAULT_IMAGE_VERSION;
 
 @Slf4j
 @Service
@@ -159,6 +165,9 @@ public class InstanceServiceImpl implements InstanceService {
         imageVersionGenerator.validate(instanceCreateRequest.getImageVersion());
         tbInstance.setImageVersion(instanceCreateRequest.getImageVersion());
         tbInstance.setImageRepositoryPrefix(instanceCreateRequest.getImageRepositoryPrefix());
+
+        // 先生成ID
+        tbInstance.setId(SnowFlakeUtil.getId());
         tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceCreateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
 
 
@@ -634,6 +643,12 @@ public class InstanceServiceImpl implements InstanceService {
 
         tbInstance.setName(Optional.ofNullable(tbInstance.getName()).orElse("") + "_克隆");
         tbInstance.setIntro(Optional.ofNullable(tbInstance.getIntro()).orElse("") + "_克隆");
+
+        // 设置镜像信息
+        tbInstance.setImageVersionType(ModelStatus.ImageVersionType.CUSTOM);
+        tbInstance.setImageName(String.format("docker-container-img-%s", tbInstance.getId()));
+        tbInstance.setImageVersion(DEFAULT_IMAGE_VERSION);
+        tbInstance.setImageArchiveFlag(false);
 
         tbInstance.setPipelineName(null);
         tbInstance.setLatestBuildNumber(null);
