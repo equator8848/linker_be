@@ -24,8 +24,8 @@ import xyz.equator8848.inf.core.model.exception.InnerException;
 import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.model.page.PageData;
 import xyz.equator8848.inf.core.util.json.JsonUtil;
+import xyz.equator8848.inf.core.util.snowflake.SnowFlakeUtil;
 import xyz.equator8848.inf.core.util.time.TimeTransformUtil;
-import xyz.equator8848.inf.security.random.SnowFlakeUtil;
 import xyz.equator8848.inf.security.sm4.SM4Util;
 import xyz.equator8848.linker.configuration.AppConfig;
 import xyz.equator8848.linker.dao.service.*;
@@ -634,6 +634,7 @@ public class InstanceServiceImpl implements InstanceService {
             }
         }
 
+        tbInstance.setId(SnowFlakeUtil.getId());
 
         tbInstance.setAccessPort(nextAccessPort);
         tbInstance.setAccessLink(String.format("%s:%s/%s%s",
@@ -658,7 +659,6 @@ public class InstanceServiceImpl implements InstanceService {
         tbInstance.setLatestBuildResult(null);
         tbInstance.setLatestBuildDuration(null);
         tbInstance.setLastBuildCommit(null);
-        tbInstance.setId(null);
         tbInstance.setCreateTime(null);
         tbInstance.setCreateUserId(null);
         tbInstance.setUpdateTime(null);
