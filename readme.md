@@ -4,11 +4,6 @@
 
 - [用户文档知识库](https://m1lifwiv5r.feishu.cn/wiki/G96mwEUH0ig1pfkxEfrcGFBbnZf?from=from_copylink)
 
-## 代码混淆
-
-- jd-gui，有缓存~重新打包后，拖jar包进去，显示还是原来的代码。需要关闭窗口后再把jar包托进入验证。
-- 实体类都需要加上注解：@TableField
-
 ## docker部署
 
 > 需要文件
