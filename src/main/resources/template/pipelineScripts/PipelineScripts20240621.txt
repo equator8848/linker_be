@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clean') {
+            steps {
+                script {
+                    echo "cleanWs >>>"
+                    cleanWs()
+                }
+            }
+        }
+        stage('PackageAndArchive') {
+            agent {
+                docker {
+                    image '$PACKAGE_IMAGE'
+                }
+            }
+            steps {
+                sh 'git --version'
+                sh 'rm -rf $SCM_PROJECT_NAME'
+                sh 'git clone -b $SCM_BRANCH $SCM_REPOSITORY_URL'
+                dir('$SCM_PROJECT_NAME') {
+                    $PACKAGE_SCRIPTS
+                    sh 'pwd'
+                    sh 'ls'
+                    sh "tar -zcvf $DOCKER_CONTAINER_IMAGE_NAME-$DOCKER_CONTAINER_IMAGE_VERSION.tar.gz '$PACKAGE_OUTPUT_DIR/'"
+                    archiveArtifacts artifacts: '$DOCKER_CONTAINER_IMAGE_NAME-$DOCKER_CONTAINER_IMAGE_VERSION.tar.gz', fingerprint: true
+                }
+            }
+        }
+    }
+}

@@ -8,8 +8,16 @@ public class RemoveDockerContainerServiceTest extends SpringBaseTest {
     @Autowired
     private RemoveDockerContainerService removeDockerContainerService;
 
+    @Autowired
+    private RemoveDockerImageService removeDockerImageService;
+
     @Test
-    public void test() {
+    public void test1() {
         removeDockerContainerService.removeDockerContainer("docker-container-1725898110754353153");
+    }
+
+    @Test
+    public void test2() {
+        removeDockerImageService.removeDockerImage("3");
     }
 }

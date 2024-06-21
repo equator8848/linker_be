@@ -15,6 +15,7 @@ import xyz.equator8848.linker.model.po.TbInstanceAutoBuildConfig;
 import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.service.InstanceService;
 import xyz.equator8848.linker.service.ProjectBranchService;
+import xyz.equator8848.linker.service.jenkins.RemoveDockerImageService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -40,6 +41,9 @@ public class InstanceAutoBuildScheduleService {
 
     @Autowired
     private InstanceService instanceService;
+
+    @Autowired
+    private RemoveDockerImageService removeDockerImageService;
 
     @Scheduled(cron = "0 */3 * * * ?")
     public void instanceAutoBuildCheck() {
@@ -94,5 +98,14 @@ public class InstanceAutoBuildScheduleService {
 
             instanceAutoBuildConfigDaoService.updateById(instanceAutoBuildConfig);
         }
+    }
+
+    @Scheduled(cron = "0 0 2 ? * SUN")
+    public void deleteDockerImage() {
+        DynamicAppConfiguration dynamicAppConfiguration = appConfig.getConfig();
+        if (Boolean.FALSE.equals(dynamicAppConfiguration.getDockerImageDeleteSwitch())) {
+            return;
+        }
+        removeDockerImageService.removeDockerImage("3");
     }
 }

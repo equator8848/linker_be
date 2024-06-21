@@ -485,7 +485,8 @@ public class InstanceServiceImpl implements InstanceService {
 
         try (JenkinsClient jenkinsClient = jenkinsClientFactory.buildJenkinsClient()) {
             JobsApi jobsApi = jenkinsClient.api().jobsApi();
-            RequestStatus result = jobsApi.stop(null, tbInstance.getName(), tbInstance.getLatestBuildNumber());
+            String pipelineName = TemplateUtil.getPipelineName(instanceId);
+            RequestStatus result = jobsApi.stop(null, pipelineName, tbInstance.getLatestBuildNumber());
             log.info("stopPipeline {} {}", instanceId, result);
 
             tbInstance.setBuildingFlag(false);

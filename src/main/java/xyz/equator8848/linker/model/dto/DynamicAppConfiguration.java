@@ -84,4 +84,10 @@ public class DynamicAppConfiguration {
      */
     @ModelTransformerField(defaultValue = "true")
     private Boolean instanceAutoBuildCheckSwitch;
+
+    /**
+     * 是否开启定时删除镜像任务
+     */
+    @ModelTransformerField(defaultValue = "false")
+    private Boolean dockerImageDeleteSwitch;
 }

@@ -1,0 +1,58 @@
+<flow-definition plugin="workflow-job@1360.vc6700e3136f5">
+    <actions>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction
+                plugin="pipeline-model-definition@2.2150.v4cfd8916915c"/>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction
+                plugin="pipeline-model-definition@2.2150.v4cfd8916915c">
+            <jobProperties/>
+            <triggers/>
+            <parameters>
+                <string>createTimeThresholdDay</string>
+            </parameters>
+            <options/>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+    </actions>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <hudson.model.ParametersDefinitionProperty>
+            <parameterDefinitions>
+                <hudson.model.StringParameterDefinition>
+                    <name>createTimeThresholdDay</name>
+                    <defaultValue>7</defaultValue>
+                    <trim>false</trim>
+                </hudson.model.StringParameterDefinition>
+            </parameterDefinitions>
+        </hudson.model.ParametersDefinitionProperty>
+    </properties>
+    <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition"
+                plugin="workflow-cps@3806.va_3a_6988277b_2">
+        <script>
+            pipeline {
+                agent any
+                parameters {
+                    string defaultValue: '7', name: 'createTimeThresholdDay'
+                }
+                stages {
+                    stage('Remove Docker Container Image') {
+                        steps {
+                            script {
+                                sh "docker images"
+                                sh "echo '${params.createTimeThresholdDay}'"
+                                sh "docker image prune -f"
+                            }
+                        }
+                    }
+                }
+                post {
+                    always {
+                        sh "docker images"
+                    }
+                }
+            }
+        </script>
+        <sandbox>true</sandbox>
+    </definition>
+    <triggers/>
+    <disabled>false</disabled>
+</flow-definition>
