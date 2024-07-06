@@ -42,6 +42,12 @@ public class TbInstance extends BaseEntityField {
     private String scmBranch;
 
     /**
+     * SCM Commit
+     */
+    @TableField(value = "scm_commit")
+    private String scmCommit;
+
+    /**
      * 打包脚本
      */
     @TableField(value = "package_script_override_flag")

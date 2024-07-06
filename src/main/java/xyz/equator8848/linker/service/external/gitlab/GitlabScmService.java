@@ -7,10 +7,14 @@ import org.springframework.stereotype.Service;
 import xyz.equator8848.inf.core.http.HttpUtil;
 import xyz.equator8848.inf.core.model.exception.VerifyException;
 import xyz.equator8848.inf.core.util.json.JsonUtil;
+import xyz.equator8848.linker.model.constant.ScmConstant;
 import xyz.equator8848.linker.model.constant.ScmType;
 import xyz.equator8848.linker.service.external.ScmService;
 import xyz.equator8848.linker.service.external.gitlab.model.GitlabBranchInfo;
+import xyz.equator8848.linker.service.external.gitlab.model.GitlabCommitInfo;
 import xyz.equator8848.linker.service.external.model.BranchInfo;
+import xyz.equator8848.linker.service.external.model.CommitInfo;
+import xyz.equator8848.linker.service.util.DateTimeUtils;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -69,15 +73,44 @@ public class GitlabScmService implements ScmService {
             return gitlabBranchInfos.stream().map(gitlabBranchInfo -> {
                 BranchInfo branchInfo = new BranchInfo();
                 branchInfo.setName(gitlabBranchInfo.getName());
-                GitlabBranchInfo.Commit commit = gitlabBranchInfo.getCommit();
+                GitlabCommitInfo commit = gitlabBranchInfo.getCommit();
                 if (commit == null) {
                     return branchInfo;
                 }
                 branchInfo.setLatestCommitId(commit.getShortId());
                 branchInfo.setLatestCommitTitle(commit.getTitle());
                 branchInfo.setLatestCommitUser(commit.getAuthorName());
-                branchInfo.setLatestCommitDate(commit.getCommittedDate());
+                branchInfo.setLatestCommitDate(DateTimeUtils.getTimeFromISO8601(commit.getCommittedDate()));
                 return branchInfo;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("getBranchInfo failed {} ", repositoryUrl, e);
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<CommitInfo> getCommitInfo(String repositoryUrl, String token, String refName) {
+        Request request = new Request.Builder()
+                .url("%s/api/v4/projects/%s/repository/commits?ref_name=%s"
+                        .formatted(getApiHostFromRepositoryUrl(repositoryUrl),
+                                getProjectPathFromRepositoryUrl(repositoryUrl),
+                                Optional.ofNullable(refName).orElse(ScmConstant.DEFAULT_BRANCH)))
+                .addHeader("PRIVATE-TOKEN", token)
+                .build();
+        try {
+            String body = HttpUtil.doRequestGetBody(request);
+            List<GitlabCommitInfo> gitlabCommitInfos = JsonUtil.fromJson(body, new TypeReference<>() {
+            });
+            return gitlabCommitInfos.stream().map(gitlabCommitInfo -> {
+                CommitInfo commitInfo = new CommitInfo();
+                commitInfo.setId(gitlabCommitInfo.getId());
+                commitInfo.setShortId(gitlabCommitInfo.getShortId());
+                commitInfo.setCreatedAt(gitlabCommitInfo.getCreatedAt());
+                commitInfo.setTitle(gitlabCommitInfo.getTitle());
+                commitInfo.setCommitterName(gitlabCommitInfo.getCommitterName());
+                commitInfo.setCommittedDate(DateTimeUtils.getTimeFromISO8601(gitlabCommitInfo.getCommittedDate()));
+                return commitInfo;
             }).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getBranchInfo failed {} ", repositoryUrl, e);

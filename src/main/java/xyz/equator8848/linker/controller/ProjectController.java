@@ -6,14 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import xyz.equator8848.inf.auth.annotation.SimpleRBACApi;
 import xyz.equator8848.inf.auth.model.constant.RoleType;
 import xyz.equator8848.inf.core.http.model.Response;
-import xyz.equator8848.linker.model.vo.project.ProjectBranchesRequest;
-import xyz.equator8848.linker.model.vo.project.ProjectCreateRequest;
-import xyz.equator8848.linker.model.vo.project.ProjectListRequest;
-import xyz.equator8848.linker.model.vo.project.ProjectUpdateRequest;
+import xyz.equator8848.linker.model.vo.project.*;
 import xyz.equator8848.linker.service.ProjectBranchService;
 import xyz.equator8848.linker.service.ProjectService;
 import xyz.equator8848.linker.service.ProjectTemplateService;
 
+@SimpleRBACApi(requireRoleType = RoleType.USER)
 @RestController
 @RequestMapping("/api/v1/project")
 public class ProjectController {
@@ -65,14 +63,38 @@ public class ProjectController {
         return Response.success(projectBranchService.branches(projectId));
     }
 
+    /**
+     * 项目使用
+     *
+     * @param projectBranchesRequest
+     * @return
+     */
+    @PostMapping("/peek-branches-with-tips")
+    public Response branchesWithTips(@Valid @RequestBody ProjectBranchesRequest projectBranchesRequest) {
+        return Response.success(projectBranchService.branchesWithTips(projectBranchesRequest));
+    }
+
+    /**
+     * 实例使用
+     *
+     * @param projectId
+     * @param searchKeyword
+     * @return
+     */
     @GetMapping("/branches-with-tips")
     public Response branchesWithTips(@RequestParam Long projectId, @RequestParam(required = false) String searchKeyword) {
         return Response.success(projectBranchService.branchesWithTips(projectId, searchKeyword));
     }
 
-    @PostMapping("/peek-branches-with-tips")
-    public Response branchesWithTips(@Valid @RequestBody ProjectBranchesRequest projectBranchesRequest) {
-        return Response.success(projectBranchService.branchesWithTips(projectBranchesRequest));
+    /**
+     * 实例使用
+     *
+     * @param projectCommitsRequest
+     * @return
+     */
+    @PostMapping("/commits-info")
+    public Response commitsInfo(@Valid @RequestBody ProjectCommitsRequest projectCommitsRequest) {
+        return Response.success(projectBranchService.commitsInfo(projectCommitsRequest));
     }
 
     @GetMapping("/templates")

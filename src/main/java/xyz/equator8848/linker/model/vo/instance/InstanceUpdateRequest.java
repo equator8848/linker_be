@@ -37,6 +37,11 @@ public class InstanceUpdateRequest {
     private String scmBranch;
 
     /**
+     * SCM Commit
+     */
+    private String scmCommit;
+
+    /**
      * 打包脚本
      */
     private Boolean packageScriptOverrideFlag;

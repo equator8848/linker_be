@@ -13,6 +13,7 @@ import xyz.equator8848.linker.model.vo.user.UserPasswordUpdateVO;
 import xyz.equator8848.linker.model.vo.user.UserUpdateVO;
 import xyz.equator8848.linker.service.UserService;
 
+@SimpleRBACApi(requireRoleType = RoleType.USER)
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {

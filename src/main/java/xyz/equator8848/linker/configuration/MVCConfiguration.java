@@ -1,7 +1,6 @@
 package xyz.equator8848.linker.configuration;
 
 
-import xyz.equator8848.linker.configuration.interceptor.LoginInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -12,6 +11,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import xyz.equator8848.inf.auth.interceptor.ApiPermissionInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +42,8 @@ public class MVCConfiguration implements WebMvcConfigurer {
      * 添加拦截器
      */
     @Bean
-    public LoginInterceptor loginInterceptor() {
-        return new LoginInterceptor();
+    public ApiPermissionInterceptor loginInterceptor() {
+        return new ApiPermissionInterceptor();
     }
 
     @Override

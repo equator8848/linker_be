@@ -10,17 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import xyz.equator8848.inf.core.model.exception.PreCondition;
 import xyz.equator8848.inf.core.util.json.JsonUtil;
+import xyz.equator8848.linker.dao.service.InstanceDaoService;
 import xyz.equator8848.linker.dao.service.ProjectDaoService;
 import xyz.equator8848.linker.model.constant.ScmType;
 import xyz.equator8848.linker.model.po.TbInstance;
 import xyz.equator8848.linker.model.po.TbProject;
-import xyz.equator8848.linker.model.vo.project.ProjectBranchInfo;
-import xyz.equator8848.linker.model.vo.project.ProjectBranchResult;
-import xyz.equator8848.linker.model.vo.project.ProjectBranchesRequest;
-import xyz.equator8848.linker.model.vo.project.ScmConfig;
+import xyz.equator8848.linker.model.vo.project.*;
 import xyz.equator8848.linker.service.ProjectBranchService;
 import xyz.equator8848.linker.service.external.ScmService;
 import xyz.equator8848.linker.service.external.model.BranchInfo;
+import xyz.equator8848.linker.service.external.model.CommitInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +34,9 @@ import java.util.stream.Collectors;
 public class ProjectBranchServiceImpl implements ProjectBranchService {
     @Autowired
     private ProjectDaoService projectDaoService;
+
+    @Autowired
+    private InstanceDaoService instanceDaoService;
 
     private Map<ScmType, ScmService> scmTypeScmServiceMap;
 
@@ -129,6 +131,25 @@ public class ProjectBranchServiceImpl implements ProjectBranchService {
             scmCommitIdCache.put(commitCacheKey, commitIdFromDb);
         }
         return commitIdFromDb;
+    }
+
+    @Override
+    public List<CommitInfo> commitsInfo(ProjectCommitsRequest projectCommitsRequest) {
+        TbInstance tbInstance = instanceDaoService.getById(projectCommitsRequest.getInstanceId());
+
+        TbProject tbProject = projectDaoService.getById(tbInstance.getProjectId());
+        PreCondition.isNotNull(tbProject, "项目不存在");
+
+        ProjectBranchResult projectBranchResult = new ProjectBranchResult();
+        projectBranchResult.setIsDefaultData(true);
+        ScmConfig scmConfig = JsonUtil.fromJson(tbProject.getScmConfig(), ScmConfig.class);
+        ScmService scmService = scmTypeScmServiceMap.get(ScmType.valueOf(scmConfig.getScmType()));
+        if (scmService == null) {
+            return Collections.emptyList();
+        }
+        return scmService.getCommitInfo(scmConfig.getRepositoryUrl(),
+                scmConfig.getAccessToken(),
+                Optional.ofNullable(projectCommitsRequest.getRefName()).orElse(tbInstance.getScmBranch()));
     }
 
     private String getBuildCommitIdFromDb(TbProject tbProject, TbInstance tbInstance) {

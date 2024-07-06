@@ -11,6 +11,7 @@ import xyz.equator8848.linker.service.InstanceAutoBuildConfigService;
 import xyz.equator8848.linker.service.InstanceService;
 import xyz.equator8848.linker.service.PublicEntranceService;
 
+@SimpleRBACApi(requireRoleType = RoleType.USER)
 @RestController
 @RequestMapping("/api/v1/instance")
 public class InstanceController {

@@ -5,6 +5,8 @@ import xyz.equator8848.linker.model.po.TbProject;
 import xyz.equator8848.linker.model.vo.project.ProjectBranchInfo;
 import xyz.equator8848.linker.model.vo.project.ProjectBranchResult;
 import xyz.equator8848.linker.model.vo.project.ProjectBranchesRequest;
+import xyz.equator8848.linker.model.vo.project.ProjectCommitsRequest;
+import xyz.equator8848.linker.service.external.model.CommitInfo;
 
 import java.util.List;
 
@@ -16,4 +18,6 @@ public interface ProjectBranchService {
     ProjectBranchResult branchesWithTips(Long projectId, String searchKeyword);
 
     String getLatestCommitId(TbProject tbProject, TbInstance tbInstance);
+
+    List<CommitInfo> commitsInfo(ProjectCommitsRequest projectCommitsRequest);
 }

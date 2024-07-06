@@ -55,6 +55,7 @@ public class TemplateBuilderService20240621 extends AbstractTemplateBuilderServi
                 .replaceAll("\\$PACKAGE_IMAGE", tbProject.getPackageImage())
                 .replaceAll("\\$SCM_PROJECT_NAME", scmProjectNameFromUrl)
                 .replaceAll("\\$SCM_BRANCH", tbInstance.getScmBranch())
+                .replaceAll("\\$SCM_COMMIT", tbInstance.getScmCommit())
                 .replaceAll("\\$SCM_REPOSITORY_URL", scmUrlWithAccessToken)
                 .replaceAll("\\$PACKAGE_SCRIPTS", packageScripts)
                 .replaceAll("\\$PACKAGE_OUTPUT_DIR", TemplateUtil.getPackageOutputDir(tbProject, tbInstance))

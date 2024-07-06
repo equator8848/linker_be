@@ -29,10 +29,7 @@ import xyz.equator8848.inf.core.util.time.TimeTransformUtil;
 import xyz.equator8848.inf.security.sm4.SM4Util;
 import xyz.equator8848.linker.configuration.AppConfig;
 import xyz.equator8848.linker.dao.service.*;
-import xyz.equator8848.linker.model.constant.BaseConstant;
-import xyz.equator8848.linker.model.constant.JenkinsPipelineBuildResult;
-import xyz.equator8848.linker.model.constant.ModelStatus;
-import xyz.equator8848.linker.model.constant.SeparatorEnum;
+import xyz.equator8848.linker.model.constant.*;
 import xyz.equator8848.linker.model.dto.DynamicAppConfiguration;
 import xyz.equator8848.linker.model.po.*;
 import xyz.equator8848.linker.model.vo.instance.*;
@@ -127,6 +124,12 @@ public class InstanceServiceImpl implements InstanceService {
             tbInstance.setScmBranch(scmConfig.getDefaultBranch());
         } else {
             tbInstance.setScmBranch(instanceCreateRequest.getScmBranch());
+        }
+
+        if (StringUtils.isEmpty(instanceCreateRequest.getScmCommit())) {
+            tbInstance.setScmCommit(ScmConstant.DEFAULT_COMMIT);
+        } else {
+            tbInstance.setScmCommit(instanceCreateRequest.getScmCommit());
         }
 
         tbInstance.setPackageScriptOverrideFlag(instanceCreateRequest.getPackageScriptOverrideFlag());
@@ -224,6 +227,12 @@ public class InstanceServiceImpl implements InstanceService {
 
         if (StringUtils.isNotEmpty(instanceUpdateRequest.getScmBranch())) {
             tbInstance.setScmBranch(instanceUpdateRequest.getScmBranch());
+        }
+
+        if (StringUtils.isEmpty(instanceUpdateRequest.getScmCommit())) {
+            tbInstance.setScmCommit(ScmConstant.DEFAULT_COMMIT);
+        } else {
+            tbInstance.setScmCommit(instanceUpdateRequest.getScmCommit());
         }
 
         tbInstance.setPackageScriptOverrideFlag(instanceUpdateRequest.getPackageScriptOverrideFlag());
