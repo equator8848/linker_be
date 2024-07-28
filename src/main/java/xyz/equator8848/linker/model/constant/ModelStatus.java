@@ -59,6 +59,8 @@ public class ModelStatus {
         public final static Integer COMPARABLE_VERSION = 1;
 
         public final static Integer TIMESTAMP = 2;
+
+        public final static Integer CUSTOM_PREFIX_TIMESTAMP = 3;
     }
 
     /**

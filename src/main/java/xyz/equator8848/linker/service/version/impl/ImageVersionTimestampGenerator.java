@@ -1,10 +1,8 @@
-package xyz.equator8848.linker.service.version;
+package xyz.equator8848.linker.service.version.impl;
 
 import xyz.equator8848.linker.model.constant.ModelStatus;
 import xyz.equator8848.linker.model.po.TbInstance;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import xyz.equator8848.linker.service.version.ImageVersionGenerator;
 
 public class ImageVersionTimestampGenerator implements ImageVersionGenerator {
     @Override
@@ -20,8 +18,6 @@ public class ImageVersionTimestampGenerator implements ImageVersionGenerator {
 
     @Override
     public String genNextVersion(TbInstance tbInstance) {
-        Date currentTime = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-        return dateFormat.format(currentTime);
+        return getTimestamp();
     }
 }

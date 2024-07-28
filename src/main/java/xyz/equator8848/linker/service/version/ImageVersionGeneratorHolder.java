@@ -5,6 +5,10 @@ import xyz.equator8848.inf.core.model.exception.PreCondition;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import xyz.equator8848.linker.service.version.impl.ImageVersionComparableVersionGenerator;
+import xyz.equator8848.linker.service.version.impl.ImageVersionCustomGenerator;
+import xyz.equator8848.linker.service.version.impl.ImageVersionCustomTimestampGenerator;
+import xyz.equator8848.linker.service.version.impl.ImageVersionTimestampGenerator;
 
 import java.util.Map;
 
@@ -16,6 +20,7 @@ public class ImageVersionGeneratorHolder {
             .put(ModelStatus.ImageVersionType.CUSTOM, new ImageVersionCustomGenerator())
             .put(ModelStatus.ImageVersionType.COMPARABLE_VERSION, new ImageVersionComparableVersionGenerator())
             .put(ModelStatus.ImageVersionType.TIMESTAMP, new ImageVersionTimestampGenerator())
+            .put(ModelStatus.ImageVersionType.CUSTOM_PREFIX_TIMESTAMP, new ImageVersionCustomTimestampGenerator())
             .build();
 
     public ImageVersionGenerator getImageVersionGenerator(Integer imageVersionType) {

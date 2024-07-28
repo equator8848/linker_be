@@ -1,7 +1,7 @@
 package xyz.equator8848.linker.service;
 
 import xyz.equator8848.linker.model.po.TbInstance;
-import xyz.equator8848.linker.service.version.ImageVersionComparableVersionGenerator;
+import xyz.equator8848.linker.service.version.impl.ImageVersionComparableVersionGenerator;
 import xyz.equator8848.linker.service.version.ImageVersionGenerator;
 import org.junit.Assert;
 import org.junit.Test;
