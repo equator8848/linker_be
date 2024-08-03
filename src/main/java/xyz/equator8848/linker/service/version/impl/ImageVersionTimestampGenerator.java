@@ -12,7 +12,7 @@ public class ImageVersionTimestampGenerator implements ImageVersionGenerator {
 
 
     @Override
-    public void validate(String initVersion) {
+    public void validate(String initVersion, String versionPrefix) {
         // 无需校验
     }
 

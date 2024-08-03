@@ -16,14 +16,14 @@ public class ImageVersionCustomTimestampGenerator implements ImageVersionGenerat
     }
 
     @Override
-    public void validate(String initVersion) {
-        if (StringUtils.isBlank(initVersion)) {
+    public void validate(String initVersion, String versionPrefix) {
+        if (StringUtils.isBlank(versionPrefix)) {
             throw new VerifyException("自定义镜像版本前缀不能为空");
         }
     }
 
     @Override
     public String genNextVersion(TbInstance tbInstance) {
-        return Optional.ofNullable(tbInstance.getImageVersion()).orElse(BaseConstant.DEFAULT_IMAGE_VERSION) + getTimestamp();
+        return Optional.ofNullable(tbInstance.getImageVersionPrefix()).orElse(BaseConstant.DEFAULT_IMAGE_VERSION) + getTimestamp();
     }
 }

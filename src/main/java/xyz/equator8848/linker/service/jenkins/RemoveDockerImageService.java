@@ -16,7 +16,7 @@ import java.util.Collections;
 @Slf4j
 @Service
 public class RemoveDockerImageService {
-    private static final String FIXED_JOB_NAME = "removeDockerImage";
+    private static final String FIXED_JOB_NAME = "RemoveDockerImage";
 
     @Autowired
     private JenkinsClientFactory jenkinsClientFactory;

@@ -103,6 +103,8 @@ public class InstanceCreateRequest {
 
     private Integer imageVersionType;
 
+    private String imageVersionPrefix;
+
 
     /**
      * 自定义镜像版本

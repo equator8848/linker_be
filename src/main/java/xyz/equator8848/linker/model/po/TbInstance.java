@@ -136,6 +136,12 @@ public class TbInstance extends BaseEntityField {
     private Integer imageVersionType;
 
     /**
+     * 镜像版本生成类型
+     */
+    @TableField(value = "image_version_prefix")
+    private String imageVersionPrefix;
+
+    /**
      * 自定义镜像版本
      */
     @TableField(value = "image_version")

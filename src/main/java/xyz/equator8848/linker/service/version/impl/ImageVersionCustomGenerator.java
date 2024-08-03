@@ -16,7 +16,7 @@ public class ImageVersionCustomGenerator implements ImageVersionGenerator {
     }
 
     @Override
-    public void validate(String initVersion) {
+    public void validate(String initVersion, String versionPrefix) {
         if (StringUtils.isBlank(initVersion)) {
             throw new VerifyException("自定义镜像版本不能为空");
         }

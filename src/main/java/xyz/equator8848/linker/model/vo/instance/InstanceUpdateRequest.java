@@ -107,6 +107,8 @@ public class InstanceUpdateRequest {
      */
     private Integer imageVersionType;
 
+    private String imageVersionPrefix;
+
     /**
      * 是否归档镜像
      */

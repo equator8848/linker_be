@@ -165,7 +165,8 @@ public class InstanceServiceImpl implements InstanceService {
         // 镜像版本处理
         tbInstance.setImageVersionType(instanceCreateRequest.getImageVersionType());
         ImageVersionGenerator imageVersionGenerator = imageVersionGeneratorHolder.getImageVersionGenerator(instanceCreateRequest.getImageVersionType());
-        imageVersionGenerator.validate(instanceCreateRequest.getImageVersion());
+        imageVersionGenerator.validate(instanceCreateRequest.getImageVersion(), instanceCreateRequest.getImageVersionPrefix());
+        tbInstance.setImageVersionPrefix(instanceCreateRequest.getImageVersionPrefix());
         tbInstance.setImageVersion(instanceCreateRequest.getImageVersion());
         tbInstance.setImageRepositoryPrefix(instanceCreateRequest.getImageRepositoryPrefix());
 
@@ -254,7 +255,8 @@ public class InstanceServiceImpl implements InstanceService {
 
         tbInstance.setImageVersionType(instanceUpdateRequest.getImageVersionType());
         ImageVersionGenerator imageVersionGenerator = imageVersionGeneratorHolder.getImageVersionGenerator(instanceUpdateRequest.getImageVersionType());
-        imageVersionGenerator.validate(instanceUpdateRequest.getImageVersion());
+        imageVersionGenerator.validate(instanceUpdateRequest.getImageVersion(), instanceUpdateRequest.getImageVersionPrefix());
+        tbInstance.setImageVersionPrefix(instanceUpdateRequest.getImageVersionPrefix());
         tbInstance.setImageVersion(instanceUpdateRequest.getImageVersion());
         tbInstance.setImageRepositoryPrefix(instanceUpdateRequest.getImageRepositoryPrefix());
         tbInstance.setImageName(TemplateUtil.getStringOrDefault(instanceUpdateRequest.getImageName(), String.format("docker-container-img-%s", tbInstance.getId())));
@@ -354,11 +356,15 @@ public class InstanceServiceImpl implements InstanceService {
                     instanceDetailsInfo.setStared(starInstanceId.contains(tbInstance.getId()));
 
                     // 判断代码是否有变化
-                    String latestCommitId = projectBranchService.getLatestCommitId(tbProject, tbInstance);
-                    if (latestCommitId != null) {
-                        instanceDetailsInfo.setCommitIsChange(!latestCommitId.equals(tbInstance.getLastBuildCommit()));
-                    } else {
+                    if (Boolean.TRUE.equals(instanceListRequest.getIgnoreCodeUpdate())) {
                         instanceDetailsInfo.setCommitIsChange(false);
+                    } else {
+                        String latestCommitId = projectBranchService.getLatestCommitId(tbProject, tbInstance);
+                        if (latestCommitId != null) {
+                            instanceDetailsInfo.setCommitIsChange(!latestCommitId.equals(tbInstance.getLastBuildCommit()));
+                        } else {
+                            instanceDetailsInfo.setCommitIsChange(false);
+                        }
                     }
 
 
@@ -479,6 +485,21 @@ public class InstanceServiceImpl implements InstanceService {
             log.error("buildPipeline error {}", instanceId, e);
             throw new InnerException("实例构建触发失败，请联系管理员");
         }
+    }
+
+    @Override
+    public boolean isCodeUpdate(Long instanceId) {
+        TbInstance tbInstance = instanceDaoService.getById(instanceId);
+        PreCondition.isNotNull(tbInstance);
+
+        TbProject projectByIdFromCache = projectDaoService.getProjectByIdFromCache(tbInstance.getProjectId());
+        PreCondition.isNotNull(projectByIdFromCache);
+
+        String latestCommitId = projectBranchService.getLatestCommitId(projectByIdFromCache, tbInstance);
+        if (latestCommitId != null) {
+            return !latestCommitId.equals(tbInstance.getLastBuildCommit());
+        }
+        return false;
     }
 
     @Override

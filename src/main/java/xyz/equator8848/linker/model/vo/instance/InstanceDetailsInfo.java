@@ -139,6 +139,8 @@ public class InstanceDetailsInfo {
      */
     private String imageVersion;
 
+    private String imageVersionPrefix;
+
     private Integer imageVersionType;
 
     /**

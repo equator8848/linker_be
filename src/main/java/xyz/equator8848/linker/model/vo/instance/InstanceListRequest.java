@@ -31,4 +31,9 @@ public class InstanceListRequest {
      * 只返回收藏的实例
      */
     private Boolean onlyStar;
+
+    /**
+     * 忽略代码是否更新
+     */
+    private Boolean ignoreCodeUpdate;
 }

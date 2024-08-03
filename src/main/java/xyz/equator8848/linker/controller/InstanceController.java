@@ -46,6 +46,17 @@ public class InstanceController {
         return Response.success(instanceService.list(instanceListRequest));
     }
 
+    @PostMapping("/list-instance-light")
+    public Response listInstanceLight(@RequestBody @Valid InstanceListRequest instanceListRequest) {
+        instanceListRequest.setIgnoreCodeUpdate(true);
+        return Response.success(instanceService.list(instanceListRequest));
+    }
+
+    @GetMapping("/is-code-update")
+    public Response isCodeUpdate(@RequestParam Long instanceId) {
+        return Response.success(instanceService.isCodeUpdate(instanceId));
+    }
+
     @SimpleRBACApi(requireRoleType = RoleType.SYSTEM_ADMIN)
     @PostMapping("/all")
     public Response all(@RequestBody @Valid InstanceListRequest instanceListRequest) {

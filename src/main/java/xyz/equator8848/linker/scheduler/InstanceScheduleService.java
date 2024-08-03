@@ -23,7 +23,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class InstanceAutoBuildScheduleService {
+public class InstanceScheduleService {
     @Autowired
     private InstanceAutoBuildConfigDaoService instanceAutoBuildConfigDaoService;
 

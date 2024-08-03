@@ -16,7 +16,7 @@ public class ImageVersionComparableVersionGenerator implements ImageVersionGener
     private static final String VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+";
 
     @Override
-    public void validate(String initVersion) {
+    public void validate(String initVersion, String versionPrefix) {
         if (StringUtils.isBlank(initVersion)) {
             throw new VerifyException("初始镜像版本不能为空");
         }
