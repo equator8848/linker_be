@@ -34,6 +34,10 @@ public class TemplateBuilderService20240111 extends AbstractTemplateBuilderServi
                         
                         root   /usr/share/nginx/html;
                         index  index.html index.htm;
+                        
+                        if (\\$request_filename ~* .*.(?:htm|html)\\$) {
+                            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
+                        }
                     }
                     """.formatted(TemplateUtil.getDeployFolderWithoutSlashOrBlank(tbProject, tbInstance));
         } else {
@@ -49,6 +53,10 @@ public class TemplateBuilderService20240111 extends AbstractTemplateBuilderServi
                         root   /usr/share/nginx/html;
                         try_files \\$uri \\$uri/ %s/index.html;
                         index  index.html index.htm;
+
+                        if (\\$request_filename ~* .*.(?:htm|html)\\$) {
+                            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
+                        }
                     }
                     """.formatted(TemplateUtil.getDeployFolderWithoutSlashOrBlank(tbProject, tbInstance),
                     TemplateUtil.getDeployFolderStartWithSlashOrBlank(tbProject, tbInstance));

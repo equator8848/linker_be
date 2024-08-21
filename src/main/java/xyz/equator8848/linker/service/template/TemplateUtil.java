@@ -119,6 +119,12 @@ public class TemplateUtil {
         return Optional.ofNullable(tbProject.getRouteMode()).orElse(RouteMode.HASH.ordinal());
     }
 
+    /**
+     * 需要对$进行转义
+     * @param tbProject
+     * @param tbInstance
+     * @return
+     */
     public static String getNginxRootConf(TbProject tbProject, TbInstance tbInstance) {
         Integer routeMode = getRouteMode(tbProject, tbInstance);
         if (routeMode.equals(RouteMode.HASH.ordinal())) {
@@ -126,6 +132,9 @@ public class TemplateUtil {
                     location / {
                         root   /usr/share/nginx/html;
                         index  index.html index.htm;
+                        if (\\$request_filename ~* .*.(?:htm|html)\\$) {
+                            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
+                        }
                     }
                     """;
         } else {
@@ -134,6 +143,9 @@ public class TemplateUtil {
                         root   /usr/share/nginx/html;
                         try_files \\$uri \\$uri/ %s/index.html;
                         index  index.html index.htm;
+                        if (\\$request_filename ~* .*.(?:htm|html)\\$) {
+                            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
+                        }
                     }
                     """.formatted(getDeployFolderStartWithSlashOrBlank(tbProject, tbInstance));
         }
