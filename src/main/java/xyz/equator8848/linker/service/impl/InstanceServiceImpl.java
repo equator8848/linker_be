@@ -539,9 +539,11 @@ public class InstanceServiceImpl implements InstanceService {
             pipelineBuildLog.setText(progressiveText.text());
 
             if (!pipelineBuildLog.getHasMoreData()) {
-                pipelineBuildLog.setImageArchiveUrl(templateBuilderServiceHolder
-                        .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
-                        .getImageArchiveUrl(tbInstance));
+                if (Boolean.TRUE.equals(tbInstance.getImageArchiveFlag())) {
+                    pipelineBuildLog.setImageArchiveUrl(templateBuilderServiceHolder
+                            .getTemplateBuilderServiceById(tbInstance.getPipelineTemplateId())
+                            .getImageArchiveUrl(tbInstance));
+                }
             }
             return pipelineBuildLog;
         } catch (Exception e) {
@@ -696,6 +698,9 @@ public class InstanceServiceImpl implements InstanceService {
         tbInstance.setUpdateUserId(null);
 
         instanceDaoService.saveOrUpdate(tbInstance);
+
+        // 默认收藏复制的实例
+        starInstance(tbInstance.getProjectId(), tbInstance.getId());
 
         return tbInstance.getId();
     }

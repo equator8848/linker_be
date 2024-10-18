@@ -11,7 +11,7 @@ public interface PackageImageService {
 
     Boolean deletePackageImage(Long packageImageId);
 
-    List<PackageImageDetails> list();
+    List<PackageImageDetails> listPackageImage();
 
     List<PackageImageOption> getPackageImageOption();
 }

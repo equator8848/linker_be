@@ -26,6 +26,10 @@ public interface InstanceService {
 
     InstancePipelineBuildResult getPipelineBuildResult(Long instanceId);
 
+    /**
+     * 收藏与取消收藏
+     * @param instanceStarRequest
+     */
     void instanceStarAction(InstanceStarRequest instanceStarRequest);
 
     Long copy(Long instanceId);

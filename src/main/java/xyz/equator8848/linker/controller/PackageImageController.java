@@ -29,6 +29,12 @@ public class PackageImageController {
         return Response.success(packageImageService.deletePackageImage(packageImageId));
     }
 
+    @SimpleRBACApi(requireRoleType = RoleType.SYSTEM_ADMIN)
+    @GetMapping("/list-package-image")
+    public Response listPackageImage() {
+        return Response.success(packageImageService.listPackageImage());
+    }
+
 
     @SimpleRBACApi(requireRoleType = RoleType.USER)
     @GetMapping("/get-package-image-option")
