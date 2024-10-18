@@ -37,7 +37,7 @@ public class PackageImageServiceImpl implements PackageImageService {
     }
 
     @Override
-    public List<PackageImageDetails> list() {
+    public List<PackageImageDetails> listPackageImage() {
         return packageImageDaoService.list().stream().map(tbPackageImage -> {
             PackageImageDetails packageImageDetails = new PackageImageDetails();
             BeanUtils.copyProperties(tbPackageImage, packageImageDetails);
